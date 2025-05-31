@@ -1,28 +1,19 @@
-"use client"
-
 import { Button } from "@/components/ui/button";
-import { useTheme } from "next-themes"
-
+import Link from "next/link";
 
 export default function Page() {
-
-  const { setTheme } = useTheme();
-
   return (
-    <main className="h-screen dark:bg-background w-full flex items-center justify-center">
-      <h1>Welcome</h1>
-      <p onClick={() => setTheme("light")}>
-        Light
-      </p>
-      <p onClick={() => setTheme("dark")}>
-        Dark
-      </p>
-      <p onClick={() => setTheme("system")}>
-        System
-      </p>
-      <Button>
-        Hi
-      </Button>
+    <main className="min-h-screen w-full flex gap-2 items-center justify-center">
+      <Link href="/login">
+        <Button>
+          Login
+        </Button>
+      </Link>
+      <Link href="/sign-up">
+        <Button variant="secondary">
+          Sign up
+        </Button>
+      </Link>
     </main>
   )
 }
