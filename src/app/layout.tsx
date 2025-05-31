@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { Toaster } from "sonner";
+import DummyLayout from "@/components/layout/dummy-layout";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -39,7 +40,9 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem
         >
-          {children}
+          <DummyLayout>
+            {children}
+          </DummyLayout>
           <Toaster richColors position="bottom-right" />
         </ThemeProvider>
       </body>

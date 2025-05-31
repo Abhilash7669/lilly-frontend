@@ -1,7 +1,7 @@
 
 type Props = object;
 
-export default function loading({}: Props) {
+export default function Loading({}: Props) {
   return (
     <div
       role="status"
