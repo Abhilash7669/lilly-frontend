@@ -1,27 +1,20 @@
+import { getAuthStatus } from "@/lib/auth/auth";
 import { NextRequest, NextResponse } from "next/server";
 
 
 export async function middleware(request: NextRequest) {
 
-   const pathname = request.nextUrl.pathname;
 
-  const pathnameIsMissingLocale = !/^\/(en|fr|nl)(\/|$)/.test(pathname);
-  if (!pathnameIsMissingLocale) {
-    return NextResponse.next();
-  }
+  const isAuthenticated = await getAuthStatus();
 
-  const cookieLocale = request.cookies.get("locale")?.value;
+  if(!isAuthenticated) return NextResponse.redirect(new URL("/login", request.url));
+  
+  if(isAuthenticated && (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/sign-up" || request.nextUrl.pathname === "/")) {
+    return NextResponse.redirect(new URL("/work-space", request.url));
+  };
 
-  const acceptLanguage = request.headers.get("accept-language");
-  const fallbackLocale = acceptLanguage?.split(",")[0].split("-")[0] || "en";
+  return NextResponse.next();
 
-  const locale = cookieLocale || fallbackLocale;
-
-  return NextResponse.redirect(
-    new URL(`/${locale}${pathname}`, request.url)
-  );
-
-    
 };
 
 

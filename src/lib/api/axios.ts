@@ -14,10 +14,10 @@ export const AXIOS = {
   post: async function <T, U>(
     url: string,
     data: T,
-    config: AxiosRequestConfig
+    config?: AxiosRequestConfig
   ): Promise<U> {
     try {
-      const m_data = await axios.post<U>(`${ENV.BASEURL}${url}`, data, config);
+      const m_data = await axios.post<U>(`${ENV.BASEURL}${url}`, data, { method: "POST", ...config });
       return m_data.data;
     } catch (error) {
       console.error(error);

@@ -20,6 +20,16 @@ export async function getCookie(): Promise<Record<string, string> | boolean> {
 }
 
 
+export async function setCookieValue({ key, value }: { key: string, value: string }): Promise<boolean> {
+
+  const cookieStore = await cookies();
+
+  cookieStore.set(key, value, { httpOnly: true, sameSite: "lax", maxAge: 60 * 60 });
+
+  return true;
+
+}
+
 export async function setCookieLocale(locale: string) {
 
   if(!locale) return false;
