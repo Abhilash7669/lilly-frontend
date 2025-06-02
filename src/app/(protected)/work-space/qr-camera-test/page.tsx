@@ -1,16 +1,22 @@
 "use client";
 
-import { useEffect } from "react";
+// import { useEffect } from "react";
 
 type Props = object;
 
 export default function Page({}: Props) {
 
-  useEffect(() => {
-  
-    navigator.mediaDevices.getUserMedia({ video: true }).then(() => console.log("YES") ).catch(() => console.log("REJECTED"));
+  // useEffect(() => {
 
-  }, []);
+  //   if("mediaDevices" in navigator && "getUserMedia" in navigator.mediaDevices) {
+  //     console.log("Yes");
+
+  //     navigator.mediaDevices.getUserMedia({ video: true })
+
+  //   }
+  
+
+  // }, []);
 
 
   return (
@@ -18,6 +24,10 @@ export default function Page({}: Props) {
       <p>
         Test QR Camera functionality
       </p>
+      <p>
+        Take a photo
+      </p>
+      <input type="file" accept="image/*" capture="environment" />
     </div>
   )
 }
