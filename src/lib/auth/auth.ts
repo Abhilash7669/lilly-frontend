@@ -1,5 +1,4 @@
 import { AXIOS } from "@/lib/api/axios";
-import { AxiosError } from "axios";
 import { cookies } from "next/headers";
 
 

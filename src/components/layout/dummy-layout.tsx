@@ -20,7 +20,6 @@ export default function DummyLayout({ children }: Props) {
             const currrentPath = pathName;
             const segments = currrentPath.split("/").filter(Boolean);
 
-            const localeSegement = segments[0];
             const restOfPath = segments.slice(1).join("/");
 
             router.push(`/${locale}/${restOfPath}`);

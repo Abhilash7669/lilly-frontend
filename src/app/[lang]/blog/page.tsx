@@ -1,9 +1,7 @@
 import { getCookieLocale } from '@/lib/cookies/cookie'
-import React from 'react'
 
-type Props = {}
 
-export default async function page({}: Props) {
+export default async function page() {
 
     const locale = await getCookieLocale();
 
