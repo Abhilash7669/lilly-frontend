@@ -28,10 +28,12 @@ export default function Page({}: Props) {
 
       const imageSrc = URL.createObjectURL(imageData);
 
+      console.log(e.target.files[0]);
+
       setImageSrc(() => ({ src: imageSrc, hasImage: true }));
 
     }
-    
+
   }
 
   return (
@@ -68,6 +70,7 @@ export default function Page({}: Props) {
               type="file"
               name="qrImage"
               accept="image/*"
+              capture="environment"
               onChange={handleSubmit}
             />
             <Button onClick={() => imageRef.current?.click()}>
