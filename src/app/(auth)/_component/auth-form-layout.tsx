@@ -14,7 +14,7 @@ type Props = {
 
 export default function AuthFormLayout({ title="Welcome", description="", children }: Props) {
   return (
-    <Card className="min-w-sm">
+    <Card className="min-w-[90%] md:min-w-sm">
       <CardHeader>
         <CardTitle>
           <h1 className="text-2xl">{title}</h1>

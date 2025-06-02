@@ -37,7 +37,7 @@ export default function Page({}: Props) {
   }
 
   return (
-    <div className="p-6 flex flex-col items-center justify-center">
+    <div className="p-6 flex flex-col items-center justify-center w-[90%] md:w-auto">
       <AuthFormLayout title="Hi!" description="Testing QR triggered Camera">
         {imageSrc.hasImage && (
           <div className="space-y-4">
