@@ -5,6 +5,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 
 type Props = {
   children: React.ReactNode;
+  className?: string;
 };
 
 
