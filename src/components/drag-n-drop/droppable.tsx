@@ -20,7 +20,7 @@ export default function Droppable({ children, className, id="" }: Props) {
     }
 
   return (
-    <Card className={cn("border rounded-xl min-h-screen w-[33.33%] flex items-center", className)} ref={setNodeRef} style={style}>
+    <Card className={cn("border rounded-xl flex items-center", className)} ref={setNodeRef} style={style}>
         { children }
     </Card>
   )

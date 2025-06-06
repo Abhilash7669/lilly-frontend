@@ -11,6 +11,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import Link from "next/link";
 
 // import {
 //   AudioWaveform,
@@ -29,13 +30,13 @@ type Props = object;
 
 const items = [
   {
-    title: "Home",
-    url: "#",
+    title: "Workspace",
+    url: "/dashboard/work-space",
     icon: Home,
   },
   {
-    title: "Inbox",
-    url: "#",
+    title: "Credential Manager",
+    url: "/dashboard/credential-manager",
     icon: Inbox,
   },
   {
@@ -184,6 +185,8 @@ const items = [
 //   ],
 // }
 
+console.log("HIT NAV");
+
 
 export default function AppSidebar({}: Props) {
   return (
@@ -197,10 +200,10 @@ export default function AppSidebar({}: Props) {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

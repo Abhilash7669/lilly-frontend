@@ -22,6 +22,7 @@ import { JSX } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { FaCheck } from "react-icons/fa";
 
 type Data = {
   email: string;
@@ -50,6 +51,8 @@ export default function LoginForm(): JSX.Element {
 
   const isSubmitting = form.formState.isSubmitting;
 
+  const submitted = form.formState.isSubmitted;
+
   async function handleLogin(
     formData: z.infer<typeof loginSchema>
   ): Promise<void> {
@@ -62,7 +65,6 @@ export default function LoginForm(): JSX.Element {
     if(m_data) {
 
       const response = await AXIOS.post<Data, LoginResponse>("/auth/login", m_data, {
-        method: "POST",
         headers: {
           "Content-type": "application/json"
         }
@@ -80,7 +82,7 @@ export default function LoginForm(): JSX.Element {
         value: response.data.token
       });
 
-      if(isCookieSet) router.push("/work-space");
+      if(isCookieSet) router.push("/dashboard/work-space");
 
     }
 
@@ -129,7 +131,15 @@ export default function LoginForm(): JSX.Element {
           />
           <div className="w-full">
             <Button type="submit" className="w-full">
-              {isSubmitting ? <Spinner /> : "Login"}
+              {isSubmitting && !submitted && (
+                <Spinner />
+              )}
+              {!isSubmitting && !submitted && (
+                "Login"
+              )}
+              {!isSubmitting && submitted && (
+                <FaCheck />
+              )}
             </Button>
           </div>
         </form>

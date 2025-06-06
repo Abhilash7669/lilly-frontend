@@ -79,7 +79,7 @@ export default function SignupForm(): JSX.Element {
     if (storeCookie) {
       form.reset();
       toast.success(response.message);
-      setTimeout(() => router.push("/work-space"), 3500);
+      setTimeout(() => router.push("/dashboard/work-space"), 3500);
     }
   }
 
