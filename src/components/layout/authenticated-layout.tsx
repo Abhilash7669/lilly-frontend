@@ -1,4 +1,5 @@
 import AppSidebar from "@/components/app-sidebar";
+import InnerLayout from "@/components/layout/inner-layout";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -36,9 +37,9 @@ export default function AuthenticatedLayout({ children }: Props) {
             </Breadcrumb>
           </div>
         </header>
-        <main>
+        <InnerLayout>
           {children}
-        </main>
+        </InnerLayout>
       </SidebarInset>
     </SidebarProvider>
   );

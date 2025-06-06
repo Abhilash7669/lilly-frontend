@@ -80,7 +80,7 @@ export default function Page({}: Props) {
   };
 
   return (
-    <main className="p-6 space-y-12">
+    <main className="space-y-12">
       <div>Hi, Welcome to the protected page</div>
       <div className="h-fit flex flex-col gap-4 w-full">
         <p>
@@ -107,7 +107,7 @@ export default function Page({}: Props) {
                 ))}
             </SortableContext>
             <DragOverlay 
-              adjustScale
+              // adjustScale
               dropAnimation={{
                 duration: 150,
                 easing: "cubic-bezier(0.18, 0.67, 0.6, 1.22)"
