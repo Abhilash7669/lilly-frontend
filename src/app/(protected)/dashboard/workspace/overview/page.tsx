@@ -1,7 +1,6 @@
 
-
 export default function page() {
   return (
-    <div>Credential Manager (Coming Soon)</div>
+    <div>WorkSpace Overview (Coming Soon)</div>
   )
 }
