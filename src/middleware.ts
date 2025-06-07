@@ -14,7 +14,7 @@ export async function middleware(request: NextRequest) {
   if(!isAuthenticated) return NextResponse.redirect(new URL("/login", request.url));
   
   if(isAuthenticated && (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/sign-up" || request.nextUrl.pathname === "/")) {
-    return NextResponse.redirect(new URL("/dashboard/work-space", request.url));
+    return NextResponse.redirect(new URL("/dashboard/workspace", request.url));
   };
 
 

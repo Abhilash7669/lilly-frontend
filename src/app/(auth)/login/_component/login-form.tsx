@@ -82,7 +82,7 @@ export default function LoginForm(): JSX.Element {
         value: response.data.token
       });
 
-      if(isCookieSet) router.push("/dashboard/work-space");
+      if(isCookieSet) router.push("/dashboard/workspace");
 
     }
 
