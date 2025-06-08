@@ -1,6 +1,6 @@
 "use client";
 
-import AuthFormLayout from "@/app/(auth)/_component/auth-form-layout";
+import AuthFormLayout from "@/app/(auth)/_components/auth-form-layout";
 import { loginSchema } from "@/app/(auth)/login/_schema/login-schema";
 import PasswordInput from "@/components/common/input/password-input";
 import Spinner from "@/components/common/spinner/spinner";
@@ -23,6 +23,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { FaCheck } from "react-icons/fa";
+import Link from "next/link";
 
 type Data = {
   email: string;
@@ -34,11 +35,10 @@ type LoginResponse = {
   message: string;
   data: {
     token: string;
-  }
-}
+  };
+};
 
 export default function LoginForm(): JSX.Element {
-
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -56,43 +56,42 @@ export default function LoginForm(): JSX.Element {
   async function handleLogin(
     formData: z.infer<typeof loginSchema>
   ): Promise<void> {
-
     const m_data: Data = {
       email: formData.email,
-      password: formData.password
+      password: formData.password,
     };
 
-    if(m_data) {
-
-      const response = await AXIOS.post<Data, LoginResponse>("/auth/login", m_data, {
-        headers: {
-          "Content-type": "application/json"
+    if (m_data) {
+      const response = await AXIOS.post<Data, LoginResponse>(
+        "/auth/login",
+        m_data,
+        {
+          headers: {
+            "Content-type": "application/json",
+          },
         }
-      });
+      );
 
-      if(!response.success) {
+      if (!response.success) {
         toast.error(response.message);
-        return; 
+        return;
       }
 
       toast.success(response.message);
 
       const isCookieSet = await setCookieValue({
         key: "lillyToken",
-        value: response.data.token
+        value: response.data.token,
       });
 
-      if(isCookieSet) router.push("/dashboard/workspace");
-
+      if (isCookieSet) router.push("/dashboard/workspace");
     }
-
-
   }
 
   return (
     <AuthFormLayout
-        title="Login"
-        description="A gentle companion, inspired by a little soul full of love."
+      title="Login"
+      description="A gentle companion, inspired by a little soul full of love."
     >
       <Form {...form}>
         <form className="space-y-8" onSubmit={form.handleSubmit(handleLogin)}>
@@ -131,19 +130,19 @@ export default function LoginForm(): JSX.Element {
           />
           <div className="w-full">
             <Button type="submit" className="w-full">
-              {isSubmitting && !submitted && (
-                <Spinner />
-              )}
-              {!isSubmitting && !submitted && (
-                "Login"
-              )}
-              {!isSubmitting && submitted && (
-                <FaCheck />
-              )}
+              {isSubmitting && !submitted && <Spinner />}
+              {!isSubmitting && !submitted && "Login"}
+              {!isSubmitting && submitted && <FaCheck />}
             </Button>
           </div>
         </form>
       </Form>
+      <div className="text-center text-sm">
+        Don&apos;t have an account?{" "}
+        <Link href="/sign-up" className="underline underline-offset-4">
+          Sign up
+        </Link>
+      </div>
     </AuthFormLayout>
   );
 }

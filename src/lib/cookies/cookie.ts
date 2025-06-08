@@ -50,4 +50,18 @@ export async function getCookieLocale(): Promise<string | null> {
 
   return cookieValue;
 
+};
+
+export async function deleteCookie(key: string): Promise<boolean> {
+
+  const cookieStore = await cookies();
+  const cookieValue = cookieStore.get(key)?.value;
+
+  if(cookieValue) {
+    cookieStore.delete(key);
+    return true;
+  };
+
+  return false;
+
 }

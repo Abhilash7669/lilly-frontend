@@ -1,6 +1,6 @@
 "use client";
 
-import AuthFormLayout from "@/app/(auth)/_component/auth-form-layout";
+import AuthFormLayout from "@/app/(auth)/_components/auth-form-layout";
 import { signUpSchema } from "@/app/(auth)/sign-up/_schema/sign-up-schema";
 import InputRow from "@/components/common/input/input-row";
 import PasswordInput from "@/components/common/input/password-input";
@@ -23,6 +23,7 @@ import { JSX } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
+import Link from "next/link";
 
 type Response = {
   success: boolean;
@@ -40,7 +41,6 @@ type Data = {
 };
 
 export default function SignupForm(): JSX.Element {
-
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -88,9 +88,6 @@ export default function SignupForm(): JSX.Element {
       title="Sign up"
       description="A gentle companion, inspired by a little soul full of love."
     >
-      <p onClick={() => toast("Show")}>
-        Light
-      </p>
       <Form {...form}>
         <form
           className="space-y-6 w-full"
@@ -154,9 +151,9 @@ export default function SignupForm(): JSX.Element {
               <FormItem>
                 <FormLabel>Confirm Password*</FormLabel>
                 <FormControl>
-                  <PasswordInput 
+                  <PasswordInput
                     disabled={isSubmitting}
-                    onChange={(e) => field.onChange(e)} 
+                    onChange={(e) => field.onChange(e)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -174,6 +171,12 @@ export default function SignupForm(): JSX.Element {
           </div>
         </form>
       </Form>
+      <div className="text-center text-sm">
+        Already have an account?{" "}
+        <Link href="/login" className="underline underline-offset-4">
+          Login
+        </Link>
+      </div>
     </AuthFormLayout>
   );
 }

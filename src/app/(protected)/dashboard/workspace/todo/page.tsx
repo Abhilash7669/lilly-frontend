@@ -24,6 +24,7 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { Ellipsis, Plus } from "lucide-react";
 
 type DummyData = {
   id: string;
@@ -34,7 +35,7 @@ type DummyData = {
   }[];
 };
 
-function TempSortableItem({ id, content }: { id: string; content: string }) {
+function SortableItem({ id, content }: { id: string; content: string }) {
   const {
     attributes,
     listeners,
@@ -55,7 +56,7 @@ function TempSortableItem({ id, content }: { id: string; content: string }) {
       style={style}
       {...attributes}
       {...listeners}
-      className={`w-full border flex items-center justify-center cursor-grab text-center p-2 ${
+      className={`w-full border flex items-center justify-center cursor-grab text-center px-2 ${
         isDragging && "opacity-55 scale-110 cursor-grabbing"
       }`}
     >
@@ -64,12 +65,12 @@ function TempSortableItem({ id, content }: { id: string; content: string }) {
   );
 }
 
-function TempDroppable({
+function Droppable({
   id,
   title,
   items,
 }: {
-  id: string;
+  id: "todo" | "inProgress" | "done";
   title: string;
   items: {
     id: string;
@@ -79,36 +80,43 @@ function TempDroppable({
   const { setNodeRef } = useDroppable({ id });
 
   return (
-    <div className="p-6" ref={setNodeRef}>
-      <Card className="">
-        <CardTitle className="mx-auto">{title}</CardTitle>
-        <CardContent className="space-y-4">
-          <SortableContext
-            items={items.map((item) => item.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            {items.map((task) => (
-              <TempSortableItem
-                key={task.id}
-                id={task.id}
-                content={task.content}
-              />
-            ))}
-          </SortableContext>
-        </CardContent>
-      </Card>
-    </div>
+    <Card className="px-4 bg-transparent" ref={setNodeRef}>
+      <CardTitle className="mx-auto flex items-center justify-between w-full">
+        <div className="flex items-center gap-2">
+          <span
+            className={`h-2 w-2 rounded-full 
+            ${id === "todo" && "bg-amber-300"}
+            ${id === "inProgress" && "bg-primary"}
+            ${id === "done" && "bg-green-500"}
+          `}
+          ></span>
+          {title}
+        </div>
+        <div className="flex items-center gap-2">
+          <Plus className="cursor-pointer" size={16} />
+          <Ellipsis className="cursor-pointer" size={16} />
+        </div>
+      </CardTitle>
+      <CardContent className="space-y-4 px-0">
+        <SortableContext
+          items={items.map((item) => item.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {items.map((task) => (
+            <SortableItem key={task.id} id={task.id} content={task.content} />
+          ))}
+        </SortableContext>
+      </CardContent>
+    </Card>
   );
-};
+}
 
 function ItemOverlay({ children }: { children: React.ReactNode }): JSX.Element {
-  return(
-     <Card
-      className="w-full border flex items-center justify-center cursor-grabbing text-center p-2"
-    >
+  return (
+    <Card className="w-full border flex items-center justify-center cursor-grabbing text-center px-2">
       {children}
     </Card>
-  )
+  );
 }
 
 export default function Page() {
@@ -124,7 +132,13 @@ export default function Page() {
         {
           id: "task-b",
           content: "Component Composition for work-space",
-        },
+        }
+      ],
+    },
+    {
+      id: "inProgress",
+      title: "In Progress",
+      items: [
         {
           id: "task-c",
           content: "Weather API",
@@ -133,12 +147,11 @@ export default function Page() {
           id: "task-d",
           content: "Clock",
         },
+        {
+          id: "task-e",
+          content: "TODO UI, Re-structure and cleanup",
+        },
       ],
-    },
-    {
-      id: "inProgress",
-      title: "In Progress",
-      items: [],
     },
     {
       id: "done",
@@ -247,13 +260,12 @@ export default function Page() {
 
       return newContainers;
     });
-  };
+  }
 
   function handleDragCancel(e: DragCancelEvent): void {
     void e;
 
     setActiveId(() => null);
-
   }
 
   function handleDragEnd(e: DragEndEvent): void {
@@ -305,21 +317,26 @@ export default function Page() {
 
       setActiveId(() => null);
     }
-  };
+  }
 
   const getActiveItem = () => {
-    for(const container of containers) {
-      const item = container.items.find(
-        item => item.id === activeid
-      );
-      if(item) return item;
+    for (const container of containers) {
+      const item = container.items.find((item) => item.id === activeid);
+      if (item) return item;
     }
     return null;
-  }
+  };
 
   return (
     <div className="space-y-12">
-      <p>Multiple Containers</p>
+      <div>
+        <div>
+          <h1 className="text-2xl">Tasks</h1>
+          <p className="text-sm text-muted-foreground">
+            Keep track of your tasks
+          </p>
+        </div>
+      </div>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
@@ -330,9 +347,9 @@ export default function Page() {
       >
         <div className="grid grid-cols-3 gap-12">
           {containers.map((item) => (
-            <TempDroppable
+            <Droppable
               key={item.id}
-              id={item.id}
+              id={item.id as "todo" | "inProgress" | "done"}
               title={item.title}
               items={item.items}
             />
@@ -344,11 +361,7 @@ export default function Page() {
             easing: "cubic-bezier(0.18, 0.67, 0.6, 1.22)",
           }}
         >
-          {activeid && (
-            <ItemOverlay>
-              {getActiveItem()?.content}
-            </ItemOverlay>
-          )}
+          {activeid && <ItemOverlay>{getActiveItem()?.content}</ItemOverlay>}
         </DragOverlay>
       </DndContext>
     </div>

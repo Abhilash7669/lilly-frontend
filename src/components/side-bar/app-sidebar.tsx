@@ -57,7 +57,7 @@ const data = {
     },
     {
       title: "Credential Manager",
-      url: "/dashboard/credential-manager",
+      url: "/dashboard/credentialmanager",
       icon: Inbox,
     },
     {

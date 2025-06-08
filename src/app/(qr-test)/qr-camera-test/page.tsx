@@ -1,6 +1,6 @@
 "use client";
 
-import AuthFormLayout from "@/app/(auth)/_component/auth-form-layout";
+import AuthFormLayout from "@/app/(auth)/_components/auth-form-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
@@ -31,9 +31,7 @@ export default function Page({}: Props) {
       console.log(e.target.files[0]);
 
       setImageSrc(() => ({ src: imageSrc, hasImage: true }));
-
     }
-
   }
 
   return (

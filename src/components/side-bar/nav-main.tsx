@@ -39,7 +39,7 @@ export function NavMain({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel>Platforms</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
           const hasNestedItems = item?.items && item.items.length > 0;
@@ -61,10 +61,12 @@ export function NavMain({
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
                 ) : (
-                  <SidebarMenuButton className="cursor-pointer" tooltip={item.title}>
-                    {item.icon && <item.icon />}
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
+                  <Link href={item.url}>
+                    <SidebarMenuButton className="cursor-pointer" tooltip={item.title}>
+                      {item.icon && <item.icon />}
+                      <span>{item.title}</span>
+                    </SidebarMenuButton>
+                  </Link>
                 )}
                 <CollapsibleContent>
                   <SidebarMenuSub>

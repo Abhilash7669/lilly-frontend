@@ -1,22 +1,31 @@
 import AppSidebar from "@/components/side-bar/app-sidebar";
 import InnerLayout from "@/components/layout/inner-layout";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+} from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import ThemeSwitcher from "@/components/theme/theme-switcher";
 
 type Props = {
   children: React.ReactNode;
   className?: string;
 };
 
-
 export default function AuthenticatedLayout({ children }: Props) {
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
+        <header className="flex h-16 shrink-0 items-center justify-between gap-2 px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+          <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
             <Separator
               orientation="vertical"
@@ -32,10 +41,9 @@ export default function AuthenticatedLayout({ children }: Props) {
               </BreadcrumbList>
             </Breadcrumb>
           </div>
+          <ThemeSwitcher />
         </header>
-        <InnerLayout>
-          {children}
-        </InnerLayout>
+        <InnerLayout>{children}</InnerLayout>
       </SidebarInset>
     </SidebarProvider>
   );
