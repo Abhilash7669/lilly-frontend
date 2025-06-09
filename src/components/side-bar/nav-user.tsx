@@ -65,9 +65,7 @@ export function NavUser({
       return;
     };
     
-    setIsLoading(() => false);
     router.push("/login");
-
 
   }
 
@@ -76,7 +74,7 @@ export function NavUser({
       <SidebarMenu>
         <SidebarMenuItem>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger className="cursor-pointer" asChild>
               <SidebarMenuButton
                 size="lg"
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
@@ -133,7 +131,7 @@ export function NavUser({
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout}>
+              <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
                 <LogOut />
                 Log out
               </DropdownMenuItem>

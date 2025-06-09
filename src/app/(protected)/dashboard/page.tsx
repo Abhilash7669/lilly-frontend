@@ -2,7 +2,7 @@
 export default function Page() {
   return (
     <div>
-        Welcome to Project Lilly
+      Welcome to Project Lilly
     </div>
   )
 }

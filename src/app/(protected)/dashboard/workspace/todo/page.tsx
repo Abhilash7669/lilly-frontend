@@ -16,7 +16,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import {
   useSortable,
   SortableContext,
@@ -25,6 +25,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Ellipsis, Plus } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 type DummyData = {
   id: string;
@@ -35,7 +36,17 @@ type DummyData = {
   }[];
 };
 
-function SortableItem({ id, content }: { id: string; content: string }) {
+type Status = "todo" | "inProgress" | "done";
+
+function SortableItem({
+  id,
+  status,
+  content,
+}: {
+  id: string;
+  status: Status;
+  content: string;
+}) {
   const {
     attributes,
     listeners,
@@ -61,6 +72,27 @@ function SortableItem({ id, content }: { id: string; content: string }) {
       }`}
     >
       {content}
+      <CardFooter>
+        <div className="flex items-center gap-3 flex-wrap">
+          {status === "inProgress" && (
+            <Badge className="bg-amber-600/10 dark:bg-amber-600/20 hover:bg-amber-600/10 text-amber-500 border-amber-600/60 shadow-none rounded-full">
+              <div className="h-1.5 w-1.5 rounded-full bg-amber-500 mr-2" /> In
+              Progress
+            </Badge>
+          )}
+          {status === "done" && (
+            <Badge className="bg-emerald-600/10 dark:bg-emerald-600/20 hover:bg-emerald-600/10 text-emerald-500 border-emerald-600/60 shadow-none rounded-full">
+              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-2" />{" "}
+              Done
+            </Badge>
+          )}
+          {status === "todo" && (
+            <Badge className="bg-primary/10 dark:bg-primary/20 hover:bg-primary/10 text-primary border-primary/60 shadow-none rounded-full">
+              <div className="h-1.5 w-1.5 rounded-full bg-primary mr-2" /> To Do
+            </Badge>
+          )}
+        </div>
+      </CardFooter>
     </Card>
   );
 }
@@ -70,7 +102,7 @@ function Droppable({
   title,
   items,
 }: {
-  id: "todo" | "inProgress" | "done";
+  id: Status;
   title: string;
   items: {
     id: string;
@@ -78,9 +110,17 @@ function Droppable({
   }[];
 }) {
   const { setNodeRef } = useDroppable({ id });
+  const totalItems = items && items.length > 0 ? items.length : 0;
 
   return (
-    <Card className="px-4 bg-transparent" ref={setNodeRef}>
+    <Card
+      className={`px-4 backdrop-blur-lg backdrop-filter
+        ${id === "inProgress" && "bg-purple-600/20"}
+        ${id === "todo" && "bg-cyan-600/20"}
+        ${id === "done" && "bg-emerald-600/20"}
+        `}
+      ref={setNodeRef}
+    >
       <CardTitle className="mx-auto flex items-center justify-between w-full">
         <div className="flex items-center gap-2">
           <span
@@ -91,6 +131,9 @@ function Droppable({
           `}
           ></span>
           {title}
+          <Badge className="rounded-full border-none bg-gradient-to-r from-sky-500 to-indigo-600 text-white">
+            {totalItems}
+          </Badge>
         </div>
         <div className="flex items-center gap-2">
           <Plus className="cursor-pointer" size={16} />
@@ -103,7 +146,12 @@ function Droppable({
           strategy={verticalListSortingStrategy}
         >
           {items.map((task) => (
-            <SortableItem key={task.id} id={task.id} content={task.content} />
+            <SortableItem
+              status={id}
+              key={task.id}
+              id={task.id}
+              content={task.content}
+            />
           ))}
         </SortableContext>
       </CardContent>
@@ -126,20 +174,6 @@ export default function Page() {
       title: "To Do",
       items: [
         {
-          id: "task-a",
-          content: "List Items in work-space(to-do, notes, etc)",
-        },
-        {
-          id: "task-b",
-          content: "Component Composition for work-space",
-        }
-      ],
-    },
-    {
-      id: "inProgress",
-      title: "In Progress",
-      items: [
-        {
           id: "task-c",
           content: "Weather API",
         },
@@ -147,9 +181,31 @@ export default function Page() {
           id: "task-d",
           content: "Clock",
         },
+      ],
+    },
+    {
+      id: "inProgress",
+      title: "In Progress",
+      items: [
+        {
+          id: "task-b",
+          content: "Component Composition for work-space",
+        },
         {
           id: "task-e",
           content: "TODO UI, Re-structure and cleanup",
+        },
+        {
+          id: "task-e-0asd",
+          content: "Scroll Area for cards",
+        },
+        {
+          id: "task-e-asjhuia",
+          content: "Re-structure Card UI(title, desc, status, options)",
+        },
+        {
+          id: "task-e-aasdsjhuia",
+          content: "Popup Card to view card details",
         },
       ],
     },
@@ -157,6 +213,10 @@ export default function Page() {
       id: "done",
       title: "Done",
       items: [
+        {
+          id: "task-a",
+          content: "Re-structure work-space routes",
+        },
         {
           id: "task-blah",
           content: "Cooking Breakfast",
@@ -208,7 +268,7 @@ export default function Page() {
     const activeContainerId = findContainerId(activeId);
     const overContainerId = findContainerId(overId);
 
-    if (!activeContainerId || !overContainerId) return;
+    if (!activeContainerId || !overContainerId || activeContainerId === overContainerId) return;
 
     if (activeContainerId === overContainerId && activeId !== overId) return;
 
@@ -349,7 +409,7 @@ export default function Page() {
           {containers.map((item) => (
             <Droppable
               key={item.id}
-              id={item.id as "todo" | "inProgress" | "done"}
+              id={item.id as Status}
               title={item.title}
               items={item.items}
             />

@@ -129,7 +129,7 @@ export default function LoginForm(): JSX.Element {
             )}
           />
           <div className="w-full">
-            <Button type="submit" className="w-full">
+            <Button disabled={isSubmitting || submitted} type="submit" className="w-full">
               {isSubmitting && !submitted && <Spinner />}
               {!isSubmitting && !submitted && "Login"}
               {!isSubmitting && submitted && <FaCheck />}
