@@ -14,16 +14,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { AXIOS } from "@/lib/api/axios";
 import { setCookieValue } from "@/lib/cookies/cookie";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { JSX, useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { z } from "zod";
 import { FaCheck } from "react-icons/fa";
 import Link from "next/link";
+import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
 
 type Data = {
   email: string;
@@ -39,7 +38,6 @@ type LoginResponse = {
 };
 
 export default function LoginForm(): JSX.Element {
-
   const [success, setSuccess] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -65,7 +63,7 @@ export default function LoginForm(): JSX.Element {
     };
 
     if (m_data) {
-      const response = await AXIOS.post<Data, LoginResponse>(
+      const response = await AXIOS_CLIENT.post<Data, LoginResponse>(
         "/auth/login",
         m_data,
         {
@@ -75,13 +73,14 @@ export default function LoginForm(): JSX.Element {
         }
       );
 
+      if (!response) return;
+
       if (!response.success) {
-        toast.error(response.message);
+        // do something when there is an error;
         return;
       }
 
       setSuccess(() => true);
-      toast.success(response.message);
 
       const isCookieSet = await setCookieValue({
         key: "lillyToken",
@@ -133,7 +132,11 @@ export default function LoginForm(): JSX.Element {
             )}
           />
           <div className="w-full">
-            <Button disabled={isSubmitting || success} type="submit" className={`w-full ${isSubmitting && "animate-pulse"}`}>
+            <Button
+              disabled={isSubmitting || success}
+              type="submit"
+              className={`w-full ${isSubmitting && "animate-pulse"}`}
+            >
               {isSubmitting && !submitted && !success && <Spinner />}
               {!isSubmitting && !submitted && "Login"}
               {!isSubmitting && submitted && success && <FaCheck />}

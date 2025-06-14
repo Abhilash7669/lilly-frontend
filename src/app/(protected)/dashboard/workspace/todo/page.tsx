@@ -26,9 +26,8 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { Ellipsis, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { AXIOS } from "@/lib/api/axios";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
 
 type DummyData = {
   id: string;
@@ -42,12 +41,12 @@ type DummyData = {
 type Status = "todo" | "inProgress" | "done";
 
 type BasicResponse = {
-    success: boolean;
-    title: string;
-    message: string;
-    status_code?: number;
-    data?: Record<string, unknown>
-} & Record<string, unknown>
+  success: boolean;
+  title: string;
+  message: string;
+  status_code?: number;
+  data?: Record<string, unknown>;
+} & Record<string, unknown>;
 
 function SortableItem({
   id,
@@ -179,9 +178,6 @@ function ItemOverlay({ children }: { children: React.ReactNode }): JSX.Element {
 }
 
 export default function Page() {
-
-
-
   const [containers, setContainers] = useState<DummyData[]>([
     {
       id: "todo",
@@ -246,6 +242,8 @@ export default function Page() {
   const [activeid, setActiveId] = useState<UniqueIdentifier | null>(null);
   void activeid;
 
+  const [onMount, setOnMount] = useState<boolean>(false);
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -258,35 +256,24 @@ export default function Page() {
 
   const router = useRouter();
 
-
   useEffect(() => {
+
+    if(!onMount) return setOnMount(() => true);
 
     (async function getTasks() {
 
-      const response: BasicResponse = await AXIOS.get('/tasks/');
+      const response = await AXIOS_CLIENT.get<BasicResponse>("/tasks/");
 
-      if(!response.success) {
+      if (!response) return;
 
-        toast.error(response.title, {
-          duration: 3400,
-          description: response.message
-        });
-
-        if(response.status_code === 401) router.push("/login");
+      if (!response.success) {
+        if (response.status_code === 401) router.push("/login");
 
         return;
-
       }
-
-      toast.success(response.title, {
-        duration: 3400,
-        description: response.message
-      });
-
     })();
-
-  }, []);
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onMount]);
 
   function findContainerId(
     itemId: UniqueIdentifier
@@ -315,7 +302,12 @@ export default function Page() {
     const activeContainerId = findContainerId(activeId);
     const overContainerId = findContainerId(overId);
 
-    if (!activeContainerId || !overContainerId || activeContainerId === overContainerId) return;
+    if (
+      !activeContainerId ||
+      !overContainerId ||
+      activeContainerId === overContainerId
+    )
+      return;
 
     if (activeContainerId === overContainerId && activeId !== overId) return;
 

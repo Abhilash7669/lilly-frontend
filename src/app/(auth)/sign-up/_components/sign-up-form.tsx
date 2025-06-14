@@ -15,14 +15,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { AXIOS } from "@/lib/api/axios";
+import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
 import { setCookie } from "@/lib/cookies/cookie";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { JSX } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { toast } from "sonner";
 import Link from "next/link";
 
 type Response = {
@@ -63,14 +62,15 @@ export default function SignupForm(): JSX.Element {
       email: formData.email,
     };
 
-    const response = await AXIOS.post<Data, Response>("/auth/sign-up", m_data, {
+    const response = await AXIOS_CLIENT.post<Data, Response>("/auth/sign-up", m_data, {
       headers: {
         "Content-type": "application/json",
       },
     });
 
+    if(!response) return;
+
     if (!response.success) {
-      toast.error(response.message);
       return;
     }
 
@@ -78,7 +78,6 @@ export default function SignupForm(): JSX.Element {
 
     if (storeCookie) {
       form.reset();
-      toast.success(response.message);
       setTimeout(() => router.push("/dashboard/workspace"), 3500);
     }
   }
