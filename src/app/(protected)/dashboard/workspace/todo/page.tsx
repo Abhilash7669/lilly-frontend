@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX, useState } from "react";
+import { JSX, useEffect, useState } from "react";
 import {
   DndContext,
   DragCancelEvent,
@@ -26,6 +26,9 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { Ellipsis, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { AXIOS } from "@/lib/api/axios";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type DummyData = {
   id: string;
@@ -37,6 +40,14 @@ type DummyData = {
 };
 
 type Status = "todo" | "inProgress" | "done";
+
+type BasicResponse = {
+    success: boolean;
+    title: string;
+    message: string;
+    status_code?: number;
+    data?: Record<string, unknown>
+} & Record<string, unknown>
 
 function SortableItem({
   id,
@@ -168,6 +179,9 @@ function ItemOverlay({ children }: { children: React.ReactNode }): JSX.Element {
 }
 
 export default function Page() {
+
+
+
   const [containers, setContainers] = useState<DummyData[]>([
     {
       id: "todo",
@@ -231,6 +245,7 @@ export default function Page() {
 
   const [activeid, setActiveId] = useState<UniqueIdentifier | null>(null);
   void activeid;
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -240,6 +255,38 @@ export default function Page() {
     }),
     useSensor(KeyboardSensor)
   );
+
+  const router = useRouter();
+
+
+  useEffect(() => {
+
+    (async function getTasks() {
+
+      const response: BasicResponse = await AXIOS.get('/tasks/');
+
+      if(!response.success) {
+
+        toast.error(response.title, {
+          duration: 3400,
+          description: response.message
+        });
+
+        if(response.status_code === 401) router.push("/login");
+
+        return;
+
+      }
+
+      toast.success(response.title, {
+        duration: 3400,
+        description: response.message
+      });
+
+    })();
+
+  }, []);
+
 
   function findContainerId(
     itemId: UniqueIdentifier

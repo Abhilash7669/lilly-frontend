@@ -18,7 +18,7 @@ import { AXIOS } from "@/lib/api/axios";
 import { setCookieValue } from "@/lib/cookies/cookie";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { JSX } from "react";
+import { JSX, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -39,6 +39,9 @@ type LoginResponse = {
 };
 
 export default function LoginForm(): JSX.Element {
+
+  const [success, setSuccess] = useState<boolean>(false);
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -77,6 +80,7 @@ export default function LoginForm(): JSX.Element {
         return;
       }
 
+      setSuccess(() => true);
       toast.success(response.message);
 
       const isCookieSet = await setCookieValue({
@@ -129,10 +133,12 @@ export default function LoginForm(): JSX.Element {
             )}
           />
           <div className="w-full">
-            <Button disabled={isSubmitting || submitted} type="submit" className="w-full">
-              {isSubmitting && !submitted && <Spinner />}
+            <Button disabled={isSubmitting || success} type="submit" className={`w-full ${isSubmitting && "animate-pulse"}`}>
+              {isSubmitting && !submitted && !success && <Spinner />}
               {!isSubmitting && !submitted && "Login"}
-              {!isSubmitting && submitted && <FaCheck />}
+              {!isSubmitting && submitted && success && <FaCheck />}
+              {!isSubmitting && submitted && !success && "Error"}
+              {/* todo: need to re-work the login handling */}
             </Button>
           </div>
         </form>

@@ -11,9 +11,9 @@ export async function setCookie(token: string): Promise<boolean> {
   return true;
 }
 
-export async function getCookie(): Promise<Record<string, string> | boolean> {
+export async function getCookie(): Promise<string | boolean> {
   const cookieStore = await cookies();
-  const cookieValue = cookieStore.get("lillyToken");
+  const cookieValue = cookieStore.get("lillyToken")?.value;
 
   if (!cookieValue) return false;
   return cookieValue;
