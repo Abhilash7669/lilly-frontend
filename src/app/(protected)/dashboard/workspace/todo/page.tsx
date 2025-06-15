@@ -16,7 +16,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   useSortable,
   SortableContext,
@@ -28,6 +28,7 @@ import { Ellipsis, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type DummyData = {
   id: string;
@@ -72,17 +73,19 @@ function SortableItem({
   };
 
   return (
-    <Card
+    <div
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
-      className={`w-full border flex items-center justify-center cursor-grab text-center px-2 ${
+      className={`w-full border flex flex-col gap-2 px-2 py-4 bg-secondary items-center justify-center cursor-grab text-center rounded-xl ${
         isDragging && "opacity-55 scale-110 cursor-grabbing"
       }`}
     >
-      {content}
-      <CardFooter>
+      <h2>
+        {content}
+      </h2>
+      <div>
         <div className="flex items-center gap-3 flex-wrap">
           {status === "inProgress" && (
             <Badge className="bg-amber-600/10 dark:bg-amber-600/20 hover:bg-amber-600/10 text-amber-500 border-amber-600/60 shadow-none rounded-full">
@@ -102,8 +105,8 @@ function SortableItem({
             </Badge>
           )}
         </div>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -122,50 +125,59 @@ function Droppable({
   const { setNodeRef } = useDroppable({ id });
   const totalItems = items && items.length > 0 ? items.length : 0;
 
+      
+
+
   return (
-    <Card
-      className={`px-4 backdrop-blur-lg backdrop-filter
-        ${id === "inProgress" && "bg-purple-600/20"}
-        ${id === "todo" && "bg-cyan-600/20"}
-        ${id === "done" && "bg-emerald-600/20"}
+    <div className="py-4 h-fit">
+      <div
+        className={`py-4 rounded-xl backdrop-blur-lg backdrop-filter 
+          ${id === "inProgress" && "bg-purple-600/20"}
+          ${id === "todo" && "bg-cyan-600/20"}
+          ${id === "done" && "bg-emerald-600/20"}
         `}
-      ref={setNodeRef}
-    >
-      <CardTitle className="mx-auto flex items-center justify-between w-full">
-        <div className="flex items-center gap-2">
-          <span
-            className={`h-2 w-2 rounded-full 
+        ref={setNodeRef}
+      >
+        <div className={`mx-auto px-4 mb-2 py-2 flex items-center justify-between w-full`}>
+          <div className="flex items-center gap-2">
+            <span
+              className={`h-2 w-2 rounded-full 
             ${id === "todo" && "bg-amber-300"}
             ${id === "inProgress" && "bg-primary"}
             ${id === "done" && "bg-green-500"}
           `}
-          ></span>
-          {title}
-          <Badge className="rounded-full border-none bg-gradient-to-r from-sky-500 to-indigo-600 text-white">
-            {totalItems}
-          </Badge>
+            ></span>
+            {title}
+            <Badge className="rounded-full border-none bg-gradient-to-r from-sky-500 to-indigo-600 text-white">
+              {totalItems}
+            </Badge>
+          </div>
+          <div className="flex items-center gap-2">
+            <Plus className="cursor-pointer" size={16} />
+            <Ellipsis className="cursor-pointer" size={16} />
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Plus className="cursor-pointer" size={16} />
-          <Ellipsis className="cursor-pointer" size={16} />
+        <div className="px-4">
+          <SortableContext
+            items={items.map((item) => item.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <ScrollArea className="h-[calc(100dvh-22rem)] flex rounded-xl">
+              <div className="space-y-6 h-full">
+                {items.map((task) => (
+                  <SortableItem
+                    status={id}
+                    key={task.id}
+                    id={task.id}
+                    content={task.content}
+                  />
+                ))}
+              </div>
+            </ScrollArea>
+          </SortableContext>
         </div>
-      </CardTitle>
-      <CardContent className="space-y-4 px-0">
-        <SortableContext
-          items={items.map((item) => item.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          {items.map((task) => (
-            <SortableItem
-              status={id}
-              key={task.id}
-              id={task.id}
-              content={task.content}
-            />
-          ))}
-        </SortableContext>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -257,11 +269,9 @@ export default function Page() {
   const router = useRouter();
 
   useEffect(() => {
-
-    if(!onMount) return setOnMount(() => true);
+    if (!onMount) return setOnMount(() => true);
 
     (async function getTasks() {
-
       const response = await AXIOS_CLIENT.get<BasicResponse>("/tasks/");
 
       if (!response) return;
@@ -272,7 +282,7 @@ export default function Page() {
         return;
       }
     })();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onMount]);
 
   function findContainerId(
