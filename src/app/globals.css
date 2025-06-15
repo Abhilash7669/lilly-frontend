@@ -42,6 +42,8 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --color-todo-container: var(--todo-container);
+  --color-todo-card: var(--todo-card);
 }
 
 :root {
@@ -82,6 +84,8 @@
   --custom-success-border: oklch(0.6095 0.1587 149.26);
   --custom-success: oklch(0.6095 0.1587 149.26/0.2);
   --custom-toast-text: oklch(0.1913 0 0);
+  --todo-container: oklch(0.8699 0 0);
+  --todo-card: oklch(0.9491 0 0);
 }
 
 .dark {
@@ -116,6 +120,8 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
   --custom-toast-text: oklch(0.9067 0 0);
+  --todo-container: oklch(0.2891 0 0);
+  --todo-card: oklch(0.252 0 0);
 }
 
 @layer base {

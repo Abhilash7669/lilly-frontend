@@ -1,12 +1,11 @@
 "use client";
 
-import { JSX, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DndContext,
   DragCancelEvent,
   DragEndEvent,
   DragOverEvent,
-  DragOverlay,
   DragStartEvent,
   KeyboardSensor,
   PointerSensor,
@@ -16,7 +15,6 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { Card } from "@/components/ui/card";
 import {
   useSortable,
   SortableContext,
@@ -30,12 +28,18 @@ import { useRouter } from "next/navigation";
 import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-type DummyData = {
+type Priority = "High" | "Low" | "Medium";
+
+type TodoData = {
   id: string;
   title: string;
   items: {
     id: string;
-    content: string;
+    title: string;
+    description?: string;
+    tags?: Array<string>;
+    priority: Priority;
+    order: number;
   }[];
 };
 
@@ -52,11 +56,13 @@ type BasicResponse = {
 function SortableItem({
   id,
   status,
-  content,
+  title,
+  description
 }: {
   id: string;
   status: Status;
-  content: string;
+  title: string;
+  description?: string;
 }) {
   const {
     attributes,
@@ -82,9 +88,18 @@ function SortableItem({
         isDragging && "opacity-55 scale-110 cursor-grabbing"
       }`}
     >
-      <h2>
-        {content}
-      </h2>
+      <div className="">
+        <div>
+          <h2>
+            {title}
+          </h2>
+          {description && (
+            <p>
+              {description}
+            </p>
+          )}
+        </div>
+      </div>
       <div>
         <div className="flex items-center gap-3 flex-wrap">
           {status === "inProgress" && (
@@ -119,13 +134,15 @@ function Droppable({
   title: string;
   items: {
     id: string;
-    content: string;
+    title: string;
+    description?: string;
+    tags?: Array<string>;
+    priority: Priority
   }[];
 }) {
+  
   const { setNodeRef } = useDroppable({ id });
   const totalItems = items && items.length > 0 ? items.length : 0;
-
-      
 
 
   return (
@@ -169,7 +186,8 @@ function Droppable({
                     status={id}
                     key={task.id}
                     id={task.id}
-                    content={task.content}
+                    title={task.title}
+                    description={task?.description}
                   />
                 ))}
               </div>
@@ -181,27 +199,34 @@ function Droppable({
   );
 }
 
-function ItemOverlay({ children }: { children: React.ReactNode }): JSX.Element {
-  return (
-    <Card className="w-full border flex items-center justify-center cursor-grabbing text-center px-2">
-      {children}
-    </Card>
-  );
-}
+// function ItemOverlay({ children }: { children: React.ReactNode }): JSX.Element {
+//   return (
+//     <Card className="w-full border flex items-center justify-center cursor-grabbing text-center px-2">
+//       {children}
+//     </Card>
+//   );
+// }
 
 export default function Page() {
-  const [containers, setContainers] = useState<DummyData[]>([
+  
+  const [containers, setContainers] = useState<TodoData[]>([
     {
       id: "todo",
       title: "To Do",
       items: [
         {
           id: "task-c",
-          content: "Weather API",
+          title: "Weather API",
+          description: "Lorem ipsum description over here, to test it out",
+          priority: "Low",
+          order: 0
         },
         {
           id: "task-d",
-          content: "Clock",
+          title: "Clock",
+          description: "Lorem ipsum description over here, to test it out",
+          priority: "Medium",
+          order: 1
         },
       ],
     },
@@ -211,23 +236,38 @@ export default function Page() {
       items: [
         {
           id: "task-b",
-          content: "Component Composition for work-space",
+          title: "Component Composition for work-space",
+          description: "Lorem ipsum description over here, to test it out",
+          priority: "High",
+          order: 0
         },
         {
           id: "task-e",
-          content: "TODO UI, Re-structure and cleanup",
+          title: "TODO UI, Re-structure and cleanup",
+          description: "Lorem ipsum description over here, to test it out",
+          priority: "Low",
+          order: 1
         },
         {
           id: "task-e-0asd",
-          content: "Scroll Area for cards",
+          title: "Scroll Area for cards",
+          description: "Lorem ipsum description over here, to test it out",
+          priority: "Low",
+          order: 2
         },
         {
           id: "task-e-asjhuia",
-          content: "Re-structure Card UI(title, desc, status, options)",
+          title: "Re-structure Card UI(title, desc, status, options)",
+          description: "Lorem ipsum description over here, to test it out",
+          priority: "Medium",
+          order: 3
         },
         {
           id: "task-e-aasdsjhuia",
-          content: "Popup Card to view card details",
+          title: "Popup Card to view card details",
+          description: "Lorem ipsum description over here, to test it out",
+          priority: "High",
+          order: 4
         },
       ],
     },
@@ -237,15 +277,24 @@ export default function Page() {
       items: [
         {
           id: "task-a",
-          content: "Re-structure work-space routes",
+          title: "Re-structure work-space routes",
+          description: "Lorem ipsum description over here, to test it out",
+          priority: "High",
+          order: 0
         },
         {
           id: "task-blah",
-          content: "Cooking Breakfast",
+          title: "Cooking Breakfast",
+          description: "Lorem ipsum description over here, to test it out",
+          priority: "Medium",
+          order: 1
         },
         {
           id: "task-banana",
-          content: "Chopping Onions",
+          title: "Chopping Onions",
+          description: "Lorem ipsum description over here, to test it out",
+          priority: "Low",
+          order: 2
         },
       ],
     },
@@ -428,13 +477,13 @@ export default function Page() {
     }
   }
 
-  const getActiveItem = () => {
-    for (const container of containers) {
-      const item = container.items.find((item) => item.id === activeid);
-      if (item) return item;
-    }
-    return null;
-  };
+  // const getActiveItem = () => {
+  //   for (const container of containers) {
+  //     const item = container.items.find((item) => item.id === activeid);
+  //     if (item) return item;
+  //   }
+  //   return null;
+  // };
 
   return (
     <div className="space-y-12">
@@ -464,14 +513,14 @@ export default function Page() {
             />
           ))}
         </div>
-        <DragOverlay
+        {/* <DragOverlay
           dropAnimation={{
             duration: 150,
             easing: "cubic-bezier(0.18, 0.67, 0.6, 1.22)",
           }}
         >
           {activeid && <ItemOverlay>{getActiveItem()?.content}</ItemOverlay>}
-        </DragOverlay>
+        </DragOverlay> */}
       </DndContext>
     </div>
   );
