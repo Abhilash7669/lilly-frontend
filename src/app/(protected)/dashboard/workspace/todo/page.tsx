@@ -228,6 +228,13 @@ export default function Page() {
           priority: "Medium",
           order: 1
         },
+        {
+          id: "task-asda",
+          title: "New TAak",
+          description: "Lorem ipsum description over here, to test it out",
+          priority: "Medium",
+          order: 2
+        },
       ],
     },
     {
@@ -334,26 +341,28 @@ export default function Page() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onMount]);
 
-  function findContainerId(
-    itemId: UniqueIdentifier
-  ): UniqueIdentifier | undefined {
-    if (containers.some((container) => container.id === itemId)) {
-      return itemId;
-    }
 
-    return containers.find((container) =>
-      container.items.some((item) => item.id === itemId)
-    )?.id;
+  function findContainerId(itemId: UniqueIdentifier): UniqueIdentifier | undefined {
+    
+    // return the container id;
+    if(containers.some(container => container.id === itemId)) return itemId;
+
+    return containers.find(
+      container => container.items.some(item => item.id === itemId)
+    )?.id
+
   }
 
   function handleDragStart(e: DragStartEvent): void {
     setActiveId(e.active.id);
   }
 
+
   function handleDragOver(e: DragOverEvent): void {
+
     const { active, over } = e;
 
-    if (!over) return;
+    if(!active || !over) return;
 
     const activeId = active.id;
     const overId = over.id;
@@ -361,129 +370,189 @@ export default function Page() {
     const activeContainerId = findContainerId(activeId);
     const overContainerId = findContainerId(overId);
 
-    if (
-      !activeContainerId ||
-      !overContainerId ||
-      activeContainerId === overContainerId
-    )
-      return;
+    /* 
 
-    if (activeContainerId === overContainerId && activeId !== overId) return;
+      When drag over
+        - Find original container of activeItem
+        - Find activeItem in original container
 
-    if (activeContainerId === overContainerId) return;
+        - Remove activeItem from original container
+        - Append activeItem to the new container and update it's position;
+    
+    */
+
+    // defensive checks
+
+    if((!activeContainerId || !overContainerId) || (activeContainerId === overContainerId)) return;
+    if(activeId === overId) return;
 
     setContainers((prevState) => {
-      const activeContainer = prevState.find((c) => c.id === activeContainerId);
 
-      if (!activeContainer) return prevState;
+      const originalContainer = prevState.find(c => c.id === activeContainerId);
 
-      const activeItem = activeContainer.items.find(
-        (item) => item.id === activeId
-      );
+      if(!originalContainer) return prevState;
 
-      if (!activeItem) return prevState;
+      const originalItem = originalContainer.items.find(item => item.id === activeId);
 
-      const newContainers = prevState.map((item) => {
-        if (item.id === activeContainerId) {
+      if(!originalItem) return prevState;
+
+
+      const newContainers = prevState.map((container) => {
+
+        if(container.id === activeContainerId) {
           return {
-            ...item,
-            items: item.items.filter((item) => item.id !== activeId),
-          };
-        }
+            ...container,
+            items: container.items.filter(item => item.id !== activeId)
+          }
+        };
 
-        if (item.id === overContainerId) {
+        if(container.id === overContainerId) {
           return {
-            ...item,
-            items: [...item.items, activeItem],
-          };
-        }
+            ...container,
+            items: [...container.items, originalItem]
+          }
+        };
 
-        const overItemIndex = item.items.findIndex(
-          (item) => item.id === overId
-        );
+        const overIndex = container.items.findIndex(item => item.id === overId);
 
-        if (overItemIndex !== -1) {
+        if(overIndex !== -1) {
           return {
-            ...item,
+            ...container,
             items: [
-              ...item.items.slice(0, overItemIndex + 1),
-              activeItem,
-              ...item.items.slice(overItemIndex + 1),
-            ],
-          };
-        }
+              ...container.items.slice(0, overIndex + 1),
+              originalItem,
+              ...container.items.slice(overIndex + 1)
+            ]
+          }
+        };
 
-        return item;
+        return container;
+
       });
 
       return newContainers;
+
     });
-  }
+
+
+
+  } 
 
   function handleDragCancel(e: DragCancelEvent): void {
     void e;
 
     setActiveId(() => null);
-  }
+  };
 
   function handleDragEnd(e: DragEndEvent): void {
+
     const { active, over } = e;
 
-    if (!over) {
+    if(!active || !over) {
       setActiveId(() => null);
       return;
     }
+    
+    const activeId = active.id;
+    const overId = over.id;
 
-    const activeContainerId = findContainerId(active.id);
-    const overContainerId = findContainerId(over.id);
+    const activeContainerId = findContainerId(activeId);
+    const overContainerId = findContainerId(overId);
 
-    if (!activeContainerId || !overContainerId) {
-      setActiveId(() => null);
-      return;
-    }
 
-    if (activeContainerId === overContainerId && active.id !== over.id) {
-      const containerIndex = containers.findIndex(
-        (c) => c.id === activeContainerId
-      );
+    if((activeContainerId === overContainerId) && (activeId !== overId)) {
 
-      if (containerIndex === -1) {
+      const containerIndex = containers.findIndex(container => container.id === overContainerId);
+
+      if(containerIndex === -1) {
         setActiveId(() => null);
         return;
-      }
+      };
 
-      const container = containers[containerIndex];
-      const activeIndex = container.items.findIndex(
-        (item) => item.id === active.id
-      );
-      const overIndex = container.items.findIndex(
-        (item) => item.id === over.id
-      );
+      const targetContainer = containers[containerIndex];
 
-      if (activeIndex !== -1 && overIndex !== -1) {
-        const newItems = arrayMove(container.items, activeIndex, overIndex);
+      const activeIndex = targetContainer.items.findIndex(item => item.id === activeId);
+      const overIndex = targetContainer.items.findIndex(item => item.id === overId);
 
-        setContainers((containers) => {
-          return containers.map((c, i) => {
-            if (i === containerIndex) {
-              return { ...c, items: newItems };
+      if((activeIndex !== -1) && (overIndex !== -1)) {
+
+        const newArray = arrayMove(targetContainer.items, activeIndex, overIndex);
+
+        setContainers((prevState) => {
+
+          return prevState.map((c, index) => {
+
+            if(index === containerIndex) {
+
+              const m_newArray = newArray.map((item, i) => {
+
+                if(i === overIndex) {
+                  return {
+                    ...item,
+                    order: i
+                  }
+                }
+
+                if(i >= (overIndex + 1)) {
+                  return {
+                    ...item,
+                    order: item.order + 1
+                  }
+                };
+
+                if((i <= (overIndex - 1)) && (i !== 0)) {
+                  return {
+                    ...item,
+                    order: item.order -1 
+                  }
+                };
+
+                return item;
+
+              });
+
+
+              return {
+                ...c,
+                items: m_newArray
+              };
+
+            };
+
+
+            // reset the order for the activeContainerId
+
+            const m_resetArray = c.items.map((item, i) => {
+
+
+              if(i === 0) {
+                return {
+                  ...item
+                }
+              };
+
+              return {
+                ...item,
+                order: i
+              };
+
+            });
+
+            return {
+              ...c,
+              items: m_resetArray
             }
-            return c;
+            
           });
+
         });
-      }
 
-      setActiveId(() => null);
+      };
+
     }
-  }
 
-  // const getActiveItem = () => {
-  //   for (const container of containers) {
-  //     const item = container.items.find((item) => item.id === activeid);
-  //     if (item) return item;
-  //   }
-  //   return null;
-  // };
+
+  };
 
   return (
     <div className="space-y-12">
