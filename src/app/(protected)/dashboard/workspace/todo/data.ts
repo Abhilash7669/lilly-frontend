@@ -1,0 +1,1 @@
+export const TAB_LIST = [{ value: "over-view", label: "Overview"}, { value: "board", label: "Board" }];
