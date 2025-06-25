@@ -10,6 +10,10 @@ export type TodoData = {
     tags?: Array<string>;
     priority: Priority;
     order: number;
+    subTasks: Array<{
+      subTask: string;
+      status: boolean;
+    }>;
   }[];
 };
 

@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Page() {
-  
+
   const [containers, setContainers] = useState<TodoData[]>([
     {
       id: "todo",
@@ -21,6 +21,20 @@ export default function Page() {
           title: "Weather API",
           description: "Lorem ipsum description over here, to test it out",
           priority: "Low",
+          subTasks: [
+            {
+              subTask: "Tetastas",
+              status: true
+            },
+            {
+              subTask: "ANoasdad",
+              status: true
+            },
+            {
+              subTask: "asdkjakdk",
+              status: false
+            },
+          ],
           order: 0,
         },
         {
@@ -28,6 +42,20 @@ export default function Page() {
           title: "Clock",
           description: "Lorem ipsum description over here, to test it out",
           priority: "Medium",
+          subTasks: [
+            {
+              subTask: "Tetastas",
+              status: false
+            },
+            {
+              subTask: "ANoasdad",
+              status: true
+            },
+            {
+              subTask: "asdkjakdk",
+              status: false
+            },
+          ],
           order: 1,
         },
         {
@@ -35,6 +63,20 @@ export default function Page() {
           title: "New TAak",
           description: "Lorem ipsum description over here, to test it out",
           priority: "Medium",
+          subTasks: [
+            {
+              subTask: "Tetastas",
+              status: false
+            },
+            {
+              subTask: "ANoasdad",
+              status: true
+            },
+            {
+              subTask: "asdkjakdk",
+              status: false
+            },
+          ],
           order: 2,
         },
       ],
@@ -48,6 +90,20 @@ export default function Page() {
           title: "Component Composition for work-space",
           description: "Lorem ipsum description over here, to test it out",
           priority: "High",
+          subTasks: [
+            {
+              subTask: "Tetastas",
+              status: false
+            },
+            {
+              subTask: "ANoasdad",
+              status: true
+            },
+            {
+              subTask: "asdkjakdk",
+              status: false
+            },
+          ],
           order: 0,
         },
         {
@@ -55,6 +111,20 @@ export default function Page() {
           title: "TODO UI, Re-structure and cleanup",
           description: "Lorem ipsum description over here, to test it out",
           priority: "Low",
+          subTasks: [
+            {
+              subTask: "Tetastas",
+              status: false
+            },
+            {
+              subTask: "ANoasdad",
+              status: true
+            },
+            {
+              subTask: "asdkjakdk",
+              status: false
+            },
+          ],
           order: 1,
         },
         {
@@ -62,6 +132,20 @@ export default function Page() {
           title: "Scroll Area for cards",
           description: "Lorem ipsum description over here, to test it out",
           priority: "Low",
+          subTasks: [
+            {
+              subTask: "Tetastas",
+              status: false
+            },
+            {
+              subTask: "ANoasdad",
+              status: true
+            },
+            {
+              subTask: "asdkjakdk",
+              status: false
+            },
+          ],
           order: 2,
         },
         {
@@ -69,6 +153,20 @@ export default function Page() {
           title: "Re-structure Card UI(title, desc, status, options)",
           description: "Lorem ipsum description over here, to test it out",
           priority: "Medium",
+          subTasks: [
+            {
+              subTask: "Tetastas",
+              status: false
+            },
+            {
+              subTask: "ANoasdad",
+              status: true
+            },
+            {
+              subTask: "asdkjakdk",
+              status: false
+            },
+          ],
           order: 3,
         },
         {
@@ -76,6 +174,20 @@ export default function Page() {
           title: "Popup Card to view card details",
           description: "Lorem ipsum description over here, to test it out",
           priority: "High",
+          subTasks: [
+            {
+              subTask: "Tetastas",
+              status: false
+            },
+            {
+              subTask: "ANoasdad",
+              status: true
+            },
+            {
+              subTask: "asdkjakdk",
+              status: false
+            },
+          ],
           order: 4,
         },
       ],
@@ -89,6 +201,20 @@ export default function Page() {
           title: "Re-structure work-space routes",
           description: "Lorem ipsum description over here, to test it out",
           priority: "High",
+          subTasks: [
+            {
+              subTask: "Tetastas",
+              status: false
+            },
+            {
+              subTask: "ANoasdad",
+              status: true
+            },
+            {
+              subTask: "asdkjakdk",
+              status: false
+            },
+          ],
           order: 0,
         },
         {
@@ -96,6 +222,20 @@ export default function Page() {
           title: "Cooking Breakfast",
           description: "Lorem ipsum description over here, to test it out",
           priority: "Medium",
+          subTasks: [
+            {
+              subTask: "Tetastas",
+              status: false
+            },
+            {
+              subTask: "ANoasdad",
+              status: true
+            },
+            {
+              subTask: "asdkjakdk",
+              status: false
+            },
+          ],
           order: 1,
         },
         {
@@ -103,6 +243,20 @@ export default function Page() {
           title: "Chopping Onions",
           description: "Lorem ipsum description over here, to test it out",
           priority: "Low",
+          subTasks: [
+            {
+              subTask: "Tetastas",
+              status: false
+            },
+            {
+              subTask: "ANoasdad",
+              status: true
+            },
+            {
+              subTask: "asdkjakdk",
+              status: false
+            },
+          ],
           order: 2,
         },
       ],

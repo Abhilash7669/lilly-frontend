@@ -22,10 +22,13 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Ellipsis, Plus } from "lucide-react";
+import { CalendarDays, Ellipsis, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Priority, TodoStatus, TodoData } from "@/lib/types/work-space";
+import { BsThreeDots } from "react-icons/bs";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
 
 type Props = {
   containers: TodoData[];
@@ -37,11 +40,18 @@ function SortableItem({
   status,
   title,
   description,
+  subTasks,
+  priority
 }: {
   id: string;
   status: TodoStatus;
   title: string;
   description?: string;
+  priority: Priority;
+  subTasks: Array<{
+    status: boolean;
+    subTask: string;
+  }>;
 }) {
   const {
     attributes,
@@ -57,42 +67,69 @@ function SortableItem({
     transition,
   };
 
+  const truncatedDesc = description ? `${description.slice(0, 60)}...` : null;
+
+  const completedSubTasks = subTasks.filter((item) => item.status).length;
+  const totalSubTasks = subTasks.length;
+
+  const progress = ((completedSubTasks / totalSubTasks) * 100).toFixed(1);
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
-      className={`w-full border flex flex-col gap-2 px-2 py-4 bg-secondary items-center justify-center cursor-grab text-center rounded-xl ${
-        isDragging && "opacity-55 scale-110 cursor-grabbing"
+      className={`bg-card rounded-xl px-6 py-5 rotate-0 shadow border cursor-grab ${
+        isDragging && "cursor-grabbing rotate-2 opacity-80" 
       }`}
     >
-      <div className="">
+      <div className="w-full flex items-center justify-end">
+        <p className="hidden">
+          {status}
+        </p>
+        <BsThreeDots className="text-xl cursor-pointer transition-all hover:opacity-65" />
+      </div>
+      <div className="space-y-6">
         <div>
-          <h2>{title}</h2>
-          {description && <p>{description}</p>}
+          <h2 className="text-2xl w-full">{title}</h2>
+          {truncatedDesc && (
+            <p className="text-muted-foreground">{truncatedDesc}</p>
+          )}
+        </div>
+        <div className="space-y-2">
+          <div className="flex items-end gap-2">
+            <CalendarDays size={20} />
+            <p className="text-sm">June 25th</p>
+          </div>
+          <div className="w-full flex items-center justify-between">
+            <Progress
+              className="bg-muted [&>div]:bg-gradient-to-r [&>div]:from-cyan-400 [&>div]:via-sky-500 [&>div]:to-indigo-500 [&>div]:rounded-l-full w-5/6"
+              value={parseInt(progress) || 40}
+            />
+            <p className="text-sm text-muted-foreground">{progress}%</p>
+          </div>
         </div>
       </div>
-      <div>
-        <div className="flex items-center gap-3 flex-wrap">
-          {status === "inProgress" && (
+      <Separator className="w-full mt-2" />
+      <div className="mt-4 flex items-center gap-2">
+         {priority === "Medium" && (
             <Badge className="bg-amber-600/10 dark:bg-amber-600/20 hover:bg-amber-600/10 text-amber-500 border-amber-600/60 shadow-none rounded-full">
-              <div className="h-1.5 w-1.5 rounded-full bg-amber-500 mr-2" /> In
-              Progress
+              <div className="h-1.5 w-1.5 rounded-full bg-amber-500 mr-2" />
+              {priority} Priority
             </Badge>
           )}
-          {status === "done" && (
+          {priority === "Low" && (
             <Badge className="bg-emerald-600/10 dark:bg-emerald-600/20 hover:bg-emerald-600/10 text-emerald-500 border-emerald-600/60 shadow-none rounded-full">
               <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-2" />{" "}
-              Done
+              {priority} Priority
             </Badge>
           )}
-          {status === "todo" && (
-            <Badge className="bg-primary/10 dark:bg-primary/20 hover:bg-primary/10 text-primary border-primary/60 shadow-none rounded-full">
-              <div className="h-1.5 w-1.5 rounded-full bg-primary mr-2" /> To Do
+          {priority === "High" && (
+            <Badge className="bg-red-600/10 dark:bg-red-600/20 hover:bg-red-600/10 border-red-600/60 shadow-none rounded-full">
+              <div className="h-1.5 w-1.5 rounded-full bg-red-500 mr-1" /> {priority} Priority
             </Badge>
           )}
-        </div>
       </div>
     </div>
   );
@@ -110,6 +147,10 @@ function Droppable({
     title: string;
     description?: string;
     tags?: Array<string>;
+    subTasks: Array<{
+      status: boolean;
+      subTask: string;
+    }>;
     priority: Priority;
   }[];
 }) {
@@ -159,8 +200,10 @@ function Droppable({
                     status={id}
                     key={task.id}
                     id={task.id}
+                    subTasks={task.subTasks}
                     title={task.title}
                     description={task?.description}
+                    priority={task.priority}
                   />
                 ))}
               </div>
@@ -398,14 +441,17 @@ export default function TodoBoard({ containers, setContainers }: Props) {
       onDragEnd={handleDragEnd}
     >
       <div className="grid grid-cols-3 gap-12">
-        {containers.map((item) => (
-          <Droppable
-            key={item.id}
-            id={item.id as TodoStatus}
-            title={item.title}
-            items={item.items}
-          />
-        ))}
+        {containers.map((item) => {
+          if (item.items.length === 0) return null;
+          return (
+            <Droppable
+              key={item.id}
+              id={item.id as TodoStatus}
+              title={item.title}
+              items={item.items}
+            />
+          );
+        })}
       </div>
       {/* <DragOverlay
               dropAnimation={{
