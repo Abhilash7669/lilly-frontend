@@ -20,7 +20,6 @@ import {
   Search,
   Settings,
   PawPrint,
-  Target,
 } from "lucide-react";
 import Link from "next/link";
 import { JSX } from "react";
@@ -38,11 +37,6 @@ const data = {
       icon: BriefcaseBusiness,
       isActive: true,
       items: [
-        {
-          title: "Overview",
-          url: "/dashboard/workspace",
-          icon: Target,
-        },
         {
           title: "To-do",
           url: "/dashboard/workspace/todo",

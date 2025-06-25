@@ -297,7 +297,7 @@ export default function Page() {
                 key={tab.value}
                 value={tab.value}
               >
-                {tab.label}
+                <tab.icon />{tab.label}
               </TabsTrigger>
             ))}
           </TabsList>
@@ -323,7 +323,15 @@ export default function Page() {
                 </TabsContent>
               );
               break;
-
+            case "table" : 
+              content = (
+                <TabsContent key={tabValue} value={tabValue}>
+                  <p>
+                    Table
+                  </p>
+                </TabsContent>
+              )
+              break;
             default:
               content = "temp default";
               break;

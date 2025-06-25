@@ -19,4 +19,4 @@ export type TodoData = {
 
 export type TodoStatus = "todo" | "inProgress" | "done";
 
-export type TodoTabList = "over-view" | "board";
+export type TodoTabList = "over-view" | "board" | "table";

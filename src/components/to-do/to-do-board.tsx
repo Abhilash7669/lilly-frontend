@@ -29,6 +29,7 @@ import { Priority, TodoStatus, TodoData } from "@/lib/types/work-space";
 import { BsThreeDots } from "react-icons/bs";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 type Props = {
   containers: TodoData[];
@@ -67,7 +68,7 @@ function SortableItem({
     transition,
   };
 
-  const truncatedDesc = description ? `${description.slice(0, 60)}...` : null;
+  const truncatedDesc = description ? `${description.slice(0, 60)}.....` : null;
 
   const completedSubTasks = subTasks.filter((item) => item.status).length;
   const totalSubTasks = subTasks.length;
@@ -88,13 +89,25 @@ function SortableItem({
         <p className="hidden">
           {status}
         </p>
-        <BsThreeDots className="text-xl cursor-pointer transition-all hover:opacity-65" />
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <BsThreeDots className="text-xl cursor-pointer transition-all hover:opacity-65" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="p-2 space-y-1">
+            <DropdownMenuItem className="cursor-pointer">
+              View
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer bg-destructive transition-all focus:bg-destructive/70">
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl w-full">{title}</h2>
+          <h2 className="text-xl w-full">{title}</h2>
           {truncatedDesc && (
-            <p className="text-muted-foreground">{truncatedDesc}</p>
+            <p className="text-muted-foreground text-sm">{truncatedDesc}</p>
           )}
         </div>
         <div className="space-y-2">
@@ -126,7 +139,7 @@ function SortableItem({
             </Badge>
           )}
           {priority === "High" && (
-            <Badge className="bg-red-600/10 dark:bg-red-600/20 hover:bg-red-600/10 border-red-600/60 shadow-none rounded-full">
+            <Badge className="bg-red-600/10 dark:bg-red-600/20 hover:bg-red-600/10 border-red-600/60 text-red-500 shadow-none rounded-full">
               <div className="h-1.5 w-1.5 rounded-full bg-red-500 mr-1" /> {priority} Priority
             </Badge>
           )}
