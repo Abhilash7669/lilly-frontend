@@ -7,7 +7,7 @@ export type TodoData = {
     id: string;
     title: string;
     description?: string;
-    tags?: Array<string>;
+    tags: Array<string>;
     priority: Priority;
     order: number;
     subTasks: Array<{

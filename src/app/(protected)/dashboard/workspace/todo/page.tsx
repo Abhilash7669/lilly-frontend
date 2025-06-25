@@ -35,6 +35,7 @@ export default function Page() {
               status: false
             },
           ],
+          tags: ["Dev", "Research"],
           order: 0,
         },
         {
@@ -56,6 +57,7 @@ export default function Page() {
               status: false
             },
           ],
+          tags: [],
           order: 1,
         },
         {
@@ -77,6 +79,7 @@ export default function Page() {
               status: false
             },
           ],
+          tags: [],
           order: 2,
         },
       ],
@@ -104,6 +107,7 @@ export default function Page() {
               status: false
             },
           ],
+          tags: [],
           order: 0,
         },
         {
@@ -125,6 +129,7 @@ export default function Page() {
               status: false
             },
           ],
+          tags: [],
           order: 1,
         },
         {
@@ -146,6 +151,7 @@ export default function Page() {
               status: false
             },
           ],
+          tags: [],
           order: 2,
         },
         {
@@ -167,6 +173,7 @@ export default function Page() {
               status: false
             },
           ],
+          tags: [],
           order: 3,
         },
         {
@@ -188,6 +195,7 @@ export default function Page() {
               status: false
             },
           ],
+          tags: [],
           order: 4,
         },
       ],
@@ -215,6 +223,7 @@ export default function Page() {
               status: false
             },
           ],
+          tags: [],
           order: 0,
         },
         {
@@ -236,6 +245,7 @@ export default function Page() {
               status: false
             },
           ],
+          tags: [],
           order: 1,
         },
         {
@@ -257,6 +267,7 @@ export default function Page() {
               status: false
             },
           ],
+          tags: [],
           order: 2,
         },
       ],
