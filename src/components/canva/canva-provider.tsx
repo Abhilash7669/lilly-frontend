@@ -136,7 +136,7 @@ export default function CanvaProvider({ children }: Props) {
                 };
 
                 const circleArray: Circle[] = [];
-                const numberOfCircles = 120;
+                const numberOfCircles = 60;
                 const radius = 2;
                 const mxr = 40;
                 
@@ -144,8 +144,8 @@ export default function CanvaProvider({ children }: Props) {
                     
                     const x = Math.random() * (innerWidth - radius * 2) + radius;
                     const y = Math.random() * (innerHeight - radius * 2) + radius;
-                    const dx = (Math.random() - 0.5) * 1;
-                    const dy = (Math.random() - 0.5) * 1;
+                    const dx = (Math.random() - 0.5) * 0.66;
+                    const dy = (Math.random() - 0.5) * 0.66;
 
 
                     circleArray[i] = new Circle(x, y, dy, dx, radius, mxr);
