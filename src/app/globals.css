@@ -44,6 +44,7 @@
   --radius-xl: calc(var(--radius) + 4px);
   --color-todo-container: var(--todo-container);
   --color-todo-card: var(--todo-card);
+  --color-canva-circle: var(--canva-circle);
 }
 
 :root {
@@ -86,6 +87,8 @@
   --custom-toast-text: oklch(0.1913 0 0);
   --todo-container: oklch(0.8699 0 0);
   --todo-card: oklch(0.9491 0 0);
+
+  --canva-circle: oklch(0.3161 0.0146 17.95 / 0.8);
 }
 
 .dark {
@@ -123,6 +126,8 @@
   --custom-toast-text: oklch(0.9067 0 0);
   --todo-container: oklch(0.2891 0 0);
   --todo-card: oklch(0.252 0 0);
+
+  --canva-circle: oklch(0.8718 0.0111 17.37 / 0.8);
 }
 
 @layer base {
