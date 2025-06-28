@@ -1,6 +1,11 @@
 "use client";
 
-import React, { ChangeEvent, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   DndContext,
   DragCancelEvent,
@@ -50,6 +55,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import {
+  SubTaskMode,
   SubTasks,
   SubTaskState,
   TodoData,
@@ -94,6 +100,8 @@ export default function TodoBoard({ containers, setContainers }: Props) {
   void activeid;
 
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+  const addInputRef = useRef<HTMLInputElement | null>(null);
+  const editInputRef = useRef<HTMLInputElement | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -104,6 +112,16 @@ export default function TodoBoard({ containers, setContainers }: Props) {
     }),
     useSensor(KeyboardSensor)
   );
+
+  useEffect(() => { 
+
+    if(subTaskState.isEditing && !subTaskState.isAdding && editInputRef && editInputRef.current) editInputRef.current.focus();
+
+    if(subTaskState.isAdding && !subTaskState.isEditing && addInputRef && addInputRef.current) addInputRef.current.focus();
+
+
+  }, [subTaskState.isAdding, subTaskState.isEditing, editInputRef, addInputRef]);
+
 
   function findContainerId(
     itemId: UniqueIdentifier
@@ -311,9 +329,12 @@ export default function TodoBoard({ containers, setContainers }: Props) {
     setModal((prevState) => ({ ...prevState, [key]: { isOpen: e } }));
   }
 
-  function handleToggleIsAddingSubTask(e: boolean) {
-    setSubTaskState((prevState) => ({ ...prevState, isAdding: e }));
-    if (!e) setSubTaskInput(() => "");
+  function handleToggleSubTaskState(mode: SubTaskMode, e: boolean) {
+    setSubTaskState((prevState) => ({ ...prevState, [mode]: e }));
+    if (!e) {
+      setSubTaskInput(() => "");
+      setEditingSubTask(() => null);
+    }
   }
 
   function handleAddSubTask(): void {
@@ -345,6 +366,9 @@ export default function TodoBoard({ containers, setContainers }: Props) {
 
   function handleEditSubTask(i: number, data: string): void {
     setSubTasks((prevState) => {
+
+      if(!data || !i) return prevState;
+
       const hasSubTask = prevState.find((_, index) => index === i);
 
       if (!hasSubTask) {
@@ -365,6 +389,13 @@ export default function TodoBoard({ containers, setContainers }: Props) {
       if (!updatedData) return prevState;
 
       return updatedData;
+    });
+    setSubTaskState(prevState => ({ ...prevState, isEditing: false }));
+  }
+
+  function handleDeletSubTask(i: number) {
+    setSubTasks((prevState) => {
+      return prevState.filter((_, index) => index !== i);
     });
   }
 
@@ -473,11 +504,11 @@ export default function TodoBoard({ containers, setContainers }: Props) {
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs">Sub tasks</p>
               <Plus
-                onClick={() => handleToggleIsAddingSubTask(true)}
+                onClick={() => handleToggleSubTaskState("isAdding", true)}
                 className={`${iconSize.small} cursor-pointer hover:opacity-50`}
               />
             </div>
-            <div className="space-y-4">
+            <div className="space-y-1">
               {/* render subtasks */}
               {subTasks.length === 0 && !subTaskState.isAdding && (
                 <p className="text-muted-foreground text-xs w-full sm:w-[90%]">
@@ -485,26 +516,32 @@ export default function TodoBoard({ containers, setContainers }: Props) {
                 </p>
               )}
               {subTasks.length > 0 && (
-                // render here
+                // render subtasks here
                 <ul>
                   {subTasks.map((item, i) => {
                     if (editingSubTask === i)
                       return (
                         <div key={i} className="relative">
                           <Input
+                            ref={editInputRef}
                             defaultValue={subTasks[i].subTask}
-                            onChange={
-                              e => debounceAddSubTask(e, setSubTaskInput, 300)
+                            onChange={(e) =>
+                              debounceAddSubTask(e, setSubTaskInput, 300)
                             }
                           />
                           <div className="absolute top-2/4 -translate-y-2/4 right-2 w-fit z-10 flex items-center gap-2">
                             <X
-                              onClick={() => handleToggleIsAddingSubTask(false)}
+                              onClick={() =>
+                                handleToggleSubTaskState("isEditing", false)
+                              }
                               className={`${iconSize.medium} opacity-50 hover:opacity-100 cursor-pointer`}
                             />
                             <Check
                               onClick={() => {
-                                setSubTaskState(prevState => ({ ...prevState, isEditing: false }));
+                                setSubTaskState((prevState) => ({
+                                  ...prevState,
+                                  isEditing: false,
+                                }));
                                 setEditingSubTask(() => null);
                                 handleEditSubTask(i, subTaskInput);
                               }}
@@ -529,13 +566,19 @@ export default function TodoBoard({ containers, setContainers }: Props) {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
                             <DropdownMenuItem
-                              onClick={() => setEditingSubTask(() => i)}
+                              onClick={() => {
+                                setEditingSubTask(() => i);
+                                setSubTaskState(prevState => ({ ...prevState, isEditing: true }));
+                              }}
                               className="flex items-center cursor-pointer p-1"
                             >
                               <Pencil className={`${iconSize.small}`} />
                               <p className="text-xs">Edit...</p>
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="flex items-center cursor-pointer p-1 focus:bg-destructive">
+                            <DropdownMenuItem
+                              onClick={() => handleDeletSubTask(i)}
+                              className="flex items-center cursor-pointer p-1 focus:bg-destructive"
+                            >
                               <Trash2 className={`${iconSize.small}`} />
                               <p className="text-xs">Delete</p>
                             </DropdownMenuItem>
@@ -552,10 +595,13 @@ export default function TodoBoard({ containers, setContainers }: Props) {
                     onChange={(e) =>
                       debounceAddSubTask(e, setSubTaskInput, 300)
                     }
+                    ref={addInputRef}
                   />
                   <div className="absolute top-2/4 -translate-y-2/4 right-2 w-fit z-10 flex items-center gap-2">
                     <X
-                      onClick={() => handleToggleIsAddingSubTask(false)}
+                      onClick={() =>
+                        handleToggleSubTaskState("isAdding", false)
+                      }
                       className={`${iconSize.medium} opacity-50 hover:opacity-100 cursor-pointer`}
                     />
                     <Check

@@ -47,3 +47,5 @@ export type SubTaskState = {
     isAdding: boolean;
     isEditing: boolean;
 }
+
+export type SubTaskMode = "isAdding" | "isEditing";
