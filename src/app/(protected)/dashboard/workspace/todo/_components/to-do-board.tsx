@@ -367,7 +367,7 @@ export default function TodoBoard({ containers, setContainers }: Props) {
   function handleEditSubTask(i: number, data: string): void {
     setSubTasks((prevState) => {
 
-      if(!data || !i) return prevState;
+      if(data.trim() === "") return prevState;
 
       const hasSubTask = prevState.find((_, index) => index === i);
 
