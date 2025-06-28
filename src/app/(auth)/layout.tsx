@@ -1,4 +1,4 @@
-import CanvaProvider from '@/components/canva/canva-provider';
+import CanvaProvider from '@/lib/provider/canva-provider';
 import React from 'react'
 
 type Props = {

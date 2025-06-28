@@ -40,7 +40,7 @@ export default function RootLayout({
           enableSystem
         >
           {children}
-          <Toaster richColors position="bottom-right" />
+          <Toaster richColors position="top-center" />
         </ThemeProvider>
       </body>
     </html>

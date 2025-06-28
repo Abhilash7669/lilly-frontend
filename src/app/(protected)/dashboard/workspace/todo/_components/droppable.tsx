@@ -3,10 +3,10 @@
 import { Ellipsis, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Priority, TodoStatus } from "@/lib/types/work-space";
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import SortableItem from "@/app/(protected)/dashboard/workspace/todo/_components/sortable-item";
+import { Priority, SubTasks, TodoStatus } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 
 type Props = {
   id: TodoStatus;
@@ -16,10 +16,7 @@ type Props = {
     title: string;
     description?: string;
     tags: Array<string>;
-    subTasks: Array<{
-      status: boolean;
-      subTask: string;
-    }>;
+    subTasks: Array<SubTasks>;
     priority: Priority;
   }[];
 };
@@ -33,13 +30,16 @@ export default function Droppable({
   const { setNodeRef } = useDroppable({ id });
   const totalItems = items && items.length > 0 ? items.length : 0;
 
+          //   ${id === "inProgress" && "bg-purple-600/20"}
+          // ${id === "todo" && "bg-cyan-600/20"}
+          // ${id === "done" && "bg-emerald-600/20"}
+
+          // backdrop-blur-lg backdrop-filter
+
   return (
     <div className="py-4 h-fit">
       <div
-        className={`py-4 rounded-xl backdrop-blur-lg backdrop-filter 
-          ${id === "inProgress" && "bg-purple-600/20"}
-          ${id === "todo" && "bg-cyan-600/20"}
-          ${id === "done" && "bg-emerald-600/20"}
+        className={`py-4 rounded-xl bg-muted
         `}
         ref={setNodeRef}
       >
@@ -60,7 +60,9 @@ export default function Droppable({
             </Badge>
           </div>
           <div className="flex items-center gap-2">
-            <Plus className="cursor-pointer" size={16} />
+            {id !== "done" && (
+              <Plus className="cursor-pointer" size={16} />
+            )}
             <Ellipsis className="cursor-pointer" size={16} />
           </div>
         </div>

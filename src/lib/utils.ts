@@ -4,3 +4,10 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
+
+export const iconSize = {
+  xsmall: "h-2 w-2",
+  small: "h-3 w-3",
+  medium: "h-4 w-4"
+}

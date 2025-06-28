@@ -1,6 +1,5 @@
 "use client";
 
-import { Priority, TodoStatus } from "@/lib/types/work-space";
 import { useSortable } from "@dnd-kit/sortable";
 import { BsThreeDots } from "react-icons/bs";
 import { Progress } from "@/components/ui/progress";
@@ -14,6 +13,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays } from "lucide-react";
+import { Priority, TodoStatus } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 
 
 
@@ -68,7 +68,7 @@ export default function SortableItem({
       style={style}
       {...attributes}
       {...listeners}
-      className={`bg-card rounded-xl px-6 py-5 rotate-0 shadow border cursor-grab ${
+      className={`bg-card rounded-xl px-6 py-5 rotate-0 shadow cursor-grab ${
         isDragging && "cursor-grabbing rotate-2 opacity-80"
       }`}
     >

@@ -1,5 +1,6 @@
 "use client";
 
+import ActiveIndicator from "@/components/common/indicator/active-indicator";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Moon, Sun } from "lucide-react";
@@ -7,7 +8,7 @@ import { useTheme } from "next-themes";
 
 export default function ThemeSwitcher() {
 
-    const { setTheme } = useTheme();
+    const { setTheme, theme } = useTheme();
 
   return (
     <DropdownMenu>
@@ -20,15 +21,18 @@ export default function ThemeSwitcher() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("light")}>
-          Light
+          Light {theme === "light" && (<ActiveIndicator />)}
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("dark")}>
-          Dark
+          Dark {theme === "dark" && (<ActiveIndicator />)}
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("system")}>
-          System
+          System {theme === "system" && (<ActiveIndicator />)}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+};
+
+
+
