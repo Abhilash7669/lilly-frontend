@@ -1,11 +1,6 @@
 "use client";
 
-import React, {
-  ChangeEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import {
   DndContext,
   DragCancelEvent,
@@ -58,11 +53,11 @@ import {
   SubTaskMode,
   SubTasks,
   SubTaskState,
+  TaskDTO,
+  TaskDTOKey,
   TodoData,
-  TodoModalStates,
-  TodoStatus,
 } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
-import { iconSize } from "@/lib/utils";
+import { ICON_SIZE } from "@/lib/utils";
 import { errorToast } from "@/lib/toast/toast-function";
 import {
   DropdownMenu,
@@ -70,32 +65,54 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { DateRange } from "react-day-picker";
+import { LILLY_DATE } from "@/lib/lilly-utils/lilly-utils";
+import { format } from "date-fns";
+import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
+import { useTodoContext } from "@/app/(protected)/dashboard/workspace/todo/_context/todo-context";
 
 type Props = {
   containers: TodoData[];
   setContainers: React.Dispatch<React.SetStateAction<TodoData[]>>;
 };
 
-type modalKeys = "add";
-
 export default function TodoBoard({ containers, setContainers }: Props) {
-  const [subTasks, setSubTasks] = useState<SubTasks[]>([]);
-  void setSubTasks;
+
+  const { handleTodoModalStates, modal } = useTodoContext();
+
+  const [subTasks, setSubTasks] = useState<SubTasks[]>([]); // to set sub task at creation
 
   const [subTaskState, setSubTaskState] = useState<SubTaskState>({
+    // detect subtask mode
     isAdding: false,
     isEditing: false,
   });
-
   const [editingSubTask, setEditingSubTask] = useState<number | null>(null);
+  const [subTaskInput, setSubTaskInput] = useState<string>(""); // capture subtask input
 
-  const [subTaskInput, setSubTaskInput] = useState<string>("");
+  const [selectedDateRange, setSelectedDateRange] = useState<
+    DateRange | undefined
+  >({
+    from: LILLY_DATE.startOfTodayUTC(),
+    to: LILLY_DATE.endOfTodayUTC(),
+  }); // covers date
 
-  const [modal, setModal] = useState<TodoModalStates>({
-    add: {
-      isOpen: false,
+  const [taskDTO, setTaskDTO] = useState<TaskDTO>({
+    name: "",
+    summary: "",
+    order: 0,
+    priority: "medium",
+    subTasks: [],
+    tags: [],
+    status: "todo",
+    date: {
+      startDate: LILLY_DATE.toISOString(selectedDateRange?.from) || "",
+      dueDate: LILLY_DATE.toISOString(selectedDateRange?.to) || "",
     },
   });
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const [activeid, setActiveId] = useState<UniqueIdentifier | null>(null);
   void activeid;
 
@@ -113,25 +130,38 @@ export default function TodoBoard({ containers, setContainers }: Props) {
     useSensor(KeyboardSensor)
   );
 
-  useEffect(() => { 
+  useEffect(() => {
+    if (
+      subTaskState.isEditing &&
+      !subTaskState.isAdding &&
+      editInputRef &&
+      editInputRef.current
+    )
+      editInputRef.current.focus();
 
-    if(subTaskState.isEditing && !subTaskState.isAdding && editInputRef && editInputRef.current) editInputRef.current.focus();
-
-    if(subTaskState.isAdding && !subTaskState.isEditing && addInputRef && addInputRef.current) addInputRef.current.focus();
-
-
-  }, [subTaskState.isAdding, subTaskState.isEditing, editInputRef, addInputRef]);
-
+    if (
+      subTaskState.isAdding &&
+      !subTaskState.isEditing &&
+      addInputRef &&
+      addInputRef.current
+    )
+      addInputRef.current.focus();
+  }, [
+    subTaskState.isAdding,
+    subTaskState.isEditing,
+    editInputRef,
+    addInputRef,
+  ]);
 
   function findContainerId(
     itemId: UniqueIdentifier
   ): UniqueIdentifier | undefined {
     // return the container id;
-    if (containers.some((container) => container.id === itemId)) return itemId;
+    if (containers.some((container) => container.status === itemId)) return itemId;
 
     return containers.find((container) =>
-      container.items.some((item) => item.id === itemId)
-    )?.id;
+      container.items.some((item) => item._id === itemId)
+    )?.status;
   }
 
   function handleDragStart(e: DragStartEvent): void {
@@ -172,26 +202,26 @@ export default function TodoBoard({ containers, setContainers }: Props) {
 
     setContainers((prevState) => {
       const originalContainer = prevState.find(
-        (c) => c.id === activeContainerId
+        (c) => c.status === activeContainerId
       );
 
       if (!originalContainer) return prevState;
 
       const originalItem = originalContainer.items.find(
-        (item) => item.id === activeId
+        (item) => item._id === activeId
       );
 
       if (!originalItem) return prevState;
 
       const newContainers = prevState.map((container) => {
-        if (container.id === activeContainerId) {
+        if (container.status === activeContainerId) {
           return {
             ...container,
-            items: container.items.filter((item) => item.id !== activeId),
+            items: container.items.filter((item) => item._id !== activeId),
           };
         }
 
-        if (container.id === overContainerId) {
+        if (container.status === overContainerId) {
           return {
             ...container,
             items: [...container.items, originalItem],
@@ -199,7 +229,7 @@ export default function TodoBoard({ containers, setContainers }: Props) {
         }
 
         const overIndex = container.items.findIndex(
-          (item) => item.id === overId
+          (item) => item._id === overId
         );
 
         if (overIndex !== -1) {
@@ -242,7 +272,7 @@ export default function TodoBoard({ containers, setContainers }: Props) {
 
     if (activeContainerId === overContainerId && activeId !== overId) {
       const containerIndex = containers.findIndex(
-        (container) => container.id === overContainerId
+        (container) => container.status === overContainerId
       );
 
       if (containerIndex === -1) {
@@ -253,10 +283,10 @@ export default function TodoBoard({ containers, setContainers }: Props) {
       const targetContainer = containers[containerIndex];
 
       const activeIndex = targetContainer.items.findIndex(
-        (item) => item.id === activeId
+        (item) => item._id === activeId
       );
       const overIndex = targetContainer.items.findIndex(
-        (item) => item.id === overId
+        (item) => item._id === overId
       );
 
       if (activeIndex !== -1 && overIndex !== -1) {
@@ -325,10 +355,6 @@ export default function TodoBoard({ containers, setContainers }: Props) {
     }
   }
 
-  function handleModalStates(key: modalKeys, e: boolean): void {
-    setModal((prevState) => ({ ...prevState, [key]: { isOpen: e } }));
-  }
-
   function handleToggleSubTaskState(mode: SubTaskMode, e: boolean) {
     setSubTaskState((prevState) => ({ ...prevState, [mode]: e }));
     if (!e) {
@@ -366,8 +392,7 @@ export default function TodoBoard({ containers, setContainers }: Props) {
 
   function handleEditSubTask(i: number, data: string): void {
     setSubTasks((prevState) => {
-
-      if(data.trim() === "") return prevState;
+      if (data.trim() === "") return prevState;
 
       const hasSubTask = prevState.find((_, index) => index === i);
 
@@ -390,13 +415,40 @@ export default function TodoBoard({ containers, setContainers }: Props) {
 
       return updatedData;
     });
-    setSubTaskState(prevState => ({ ...prevState, isEditing: false }));
+    setSubTaskState((prevState) => ({ ...prevState, isEditing: false }));
   }
 
   function handleDeletSubTask(i: number) {
     setSubTasks((prevState) => {
       return prevState.filter((_, index) => index !== i);
     });
+  }
+
+  function handleTaskDTO(
+    key: TaskDTOKey,
+    value:
+      | string
+      | []
+      | "high"
+      | "medium"
+      | "low"
+      | Array<string>
+      | number
+      | { startDate: string | undefined; dueDate: string | undefined }
+  ) {
+    setTaskDTO((prevState) => ({ ...prevState, [key]: value }));
+  }
+
+  async function handleSendData() {
+    setIsLoading(() => true);
+    const response = await AXIOS_CLIENT.post("/tasks/add", {
+      task: taskDTO,
+    });
+
+    setIsLoading(() => false);
+    handleTodoModalStates("add", false);
+
+    console.log(response, "RESPONSE");
   }
 
   return (
@@ -412,7 +464,7 @@ export default function TodoBoard({ containers, setContainers }: Props) {
         <div className="h-full w-full">
           {containers.length === 0 && (
             <div className="w-full h-full flex items-center justify-center">
-              <Button onClick={() => handleModalStates("add", true)}>
+              <Button onClick={() => handleTodoModalStates("add", true)}>
                 Add Task
               </Button>
             </div>
@@ -423,10 +475,8 @@ export default function TodoBoard({ containers, setContainers }: Props) {
                 if (item.items.length === 0) return null;
                 return (
                   <Droppable
-                    key={item.id}
-                    id={item.id as TodoStatus}
-                    title={item.title}
-                    items={item.items}
+                    key={item.status}
+                    data={item}
                   />
                 );
               })}
@@ -437,7 +487,7 @@ export default function TodoBoard({ containers, setContainers }: Props) {
       <SidePanel
         open={modal.add.isOpen}
         setOpen={(e) => {
-          handleModalStates("add", e as boolean);
+          handleTodoModalStates("add", e as boolean);
           setSubTaskInput(() => "");
           setSubTaskState((prevState) => ({ ...prevState, isAdding: false }));
         }}
@@ -445,13 +495,23 @@ export default function TodoBoard({ containers, setContainers }: Props) {
           title: ADD_TASK_HEADER.title,
           description: ADD_TASK_HEADER.description,
         }}
+        onConfirm={handleSendData}
+        isLoading={isLoading}
       >
         <div className="space-y-4">
           <InputGroup label="Name">
-            <Input />
+            <Input
+              name="name"
+              onChange={(e) => handleTaskDTO("name", e.target.value)}
+              className="!text-xs"
+            />
           </InputGroup>
-          <InputGroup label="Description">
-            <Textarea />
+          <InputGroup label="Summary">
+            <Textarea
+              name="summary"
+              onChange={(e) => handleTaskDTO("summary", e.target.value)}
+              className="!text-xs"
+            />
           </InputGroup>
           <InputGroup label="Duration">
             <Popover>
@@ -460,10 +520,25 @@ export default function TodoBoard({ containers, setContainers }: Props) {
                   variant={"outline"}
                   className={"w-full pl-3 text-left font-normal"}
                 >
-                  {/* {field.value ? ( */}
-                  {/* // format(field.value, "PPP")
-                      ) : ( */}
-                  <span>Pick a date</span>
+                  {selectedDateRange ? (
+                    <div className="flex items-center gap-1">
+                      <p className="text-xs">
+                        {format(
+                          LILLY_DATE.toISOString(selectedDateRange?.from) || "",
+                          "PPP"
+                        )}
+                      </p>
+                      -
+                      <p className="text-xs">
+                        {format(
+                          LILLY_DATE.toISOString(selectedDateRange?.to) || "",
+                          "PPP"
+                        )}
+                      </p>
+                    </div>
+                  ) : (
+                    <span>Pick a date</span>
+                  )}
                   {/* // )} */}
                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                 </Button>
@@ -477,20 +552,38 @@ export default function TodoBoard({ containers, setContainers }: Props) {
                   className="bg-card rounded-xl shadow-sm border"
                   mode="range"
                   numberOfMonths={2}
+                  onSelect={(e) => {
+                    setSelectedDateRange((prevState) => ({
+                      from: e?.from || prevState?.from,
+                      to: e?.to || prevState?.to,
+                    }));
+                    const startDate = e?.from
+                      ? LILLY_DATE.toUTC(e.from).toISOString()
+                      : selectedDateRange?.from?.toISOString();
+                    const dueDate = e?.to
+                      ? LILLY_DATE.toUTC(e.to).toISOString()
+                      : selectedDateRange?.to?.toISOString();
+                    handleTaskDTO("date", { startDate, dueDate });
+                  }}
+                  selected={selectedDateRange}
                 />
               </PopoverContent>
             </Popover>
           </InputGroup>
           <InputGroup label="Priority">
-            <Select>
-              <SelectTrigger className="cursor-pointer w-full">
-                <SelectValue placeholder="Select Priority" />
+            <Select onValueChange={(e) => handleTaskDTO("priority", e)}>
+              <SelectTrigger className="cursor-pointer w-full text-xs">
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Priority</SelectLabel>
                   {PRIORITY_SELECT_OPTIONS.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
+                    <SelectItem
+                      className="text-xs"
+                      key={item.value}
+                      value={item.value}
+                    >
                       {item.label}
                     </SelectItem>
                   ))}
@@ -505,7 +598,7 @@ export default function TodoBoard({ containers, setContainers }: Props) {
               <p className="text-xs">Sub tasks</p>
               <Plus
                 onClick={() => handleToggleSubTaskState("isAdding", true)}
-                className={`${iconSize.small} cursor-pointer hover:opacity-50`}
+                className={`${ICON_SIZE.small} cursor-pointer hover:opacity-50`}
               />
             </div>
             <div className="space-y-1">
@@ -534,7 +627,7 @@ export default function TodoBoard({ containers, setContainers }: Props) {
                               onClick={() =>
                                 handleToggleSubTaskState("isEditing", false)
                               }
-                              className={`${iconSize.medium} opacity-50 hover:opacity-100 cursor-pointer`}
+                              className={`${ICON_SIZE.medium} opacity-50 hover:opacity-100 cursor-pointer`}
                             />
                             <Check
                               onClick={() => {
@@ -545,7 +638,7 @@ export default function TodoBoard({ containers, setContainers }: Props) {
                                 setEditingSubTask(() => null);
                                 handleEditSubTask(i, subTaskInput);
                               }}
-                              className={`${iconSize.medium} opacity-50 hover:opacity-100 cursor-pointer`}
+                              className={`${ICON_SIZE.medium} opacity-50 hover:opacity-100 cursor-pointer`}
                             />
                           </div>
                         </div>
@@ -562,24 +655,27 @@ export default function TodoBoard({ containers, setContainers }: Props) {
                         </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Ellipsis className={`${iconSize.small}`} />
+                            <Ellipsis className={`${ICON_SIZE.small}`} />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
                             <DropdownMenuItem
                               onClick={() => {
                                 setEditingSubTask(() => i);
-                                setSubTaskState(prevState => ({ ...prevState, isEditing: true }));
+                                setSubTaskState((prevState) => ({
+                                  ...prevState,
+                                  isEditing: true,
+                                }));
                               }}
                               className="flex items-center cursor-pointer p-1"
                             >
-                              <Pencil className={`${iconSize.small}`} />
+                              <Pencil className={`${ICON_SIZE.small}`} />
                               <p className="text-xs">Edit...</p>
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => handleDeletSubTask(i)}
                               className="flex items-center cursor-pointer p-1 focus:bg-destructive"
                             >
-                              <Trash2 className={`${iconSize.small}`} />
+                              <Trash2 className={`${ICON_SIZE.small}`} />
                               <p className="text-xs">Delete</p>
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -602,11 +698,11 @@ export default function TodoBoard({ containers, setContainers }: Props) {
                       onClick={() =>
                         handleToggleSubTaskState("isAdding", false)
                       }
-                      className={`${iconSize.medium} opacity-50 hover:opacity-100 cursor-pointer`}
+                      className={`${ICON_SIZE.medium} opacity-50 hover:opacity-100 cursor-pointer`}
                     />
                     <Check
                       onClick={handleAddSubTask}
-                      className={`${iconSize.medium} opacity-50 hover:opacity-100 cursor-pointer`}
+                      className={`${ICON_SIZE.medium} opacity-50 hover:opacity-100 cursor-pointer`}
                     />
                   </div>
                 </div>

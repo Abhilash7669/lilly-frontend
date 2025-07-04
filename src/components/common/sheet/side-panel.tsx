@@ -13,6 +13,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { ICON_SIZE } from "@/lib/utils";
+import { LoaderCircle } from "lucide-react";
 import { SetStateAction } from "react";
 
 type Props = {
@@ -27,6 +29,7 @@ type Props = {
   onConfirm?: () => Promise<void>;
   open: boolean;
   setOpen: React.Dispatch<SetStateAction<boolean>>;
+  isLoading: boolean;
 };
 
 export default function SidePanel({
@@ -38,6 +41,7 @@ export default function SidePanel({
   onConfirm = async () => {},
   open = false,
   setOpen,
+  isLoading
 }: Props) {
   function handleCancel(): void {
     if (onCancel) onCancel();
@@ -68,7 +72,17 @@ export default function SidePanel({
               {cancelText}
             </Button>
           </SheetClose>
-          <Button onClick={handleConfirm}>{confirmText}</Button>
+          <Button 
+            disabled={isLoading}
+            onClick={handleConfirm}
+          >
+            {
+              isLoading ?
+              <LoaderCircle className={`${ICON_SIZE.small} animate-spin`} />
+              :
+              confirmText
+            }
+          </Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>

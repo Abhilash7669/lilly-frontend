@@ -1,33 +1,23 @@
 "use client";
 
 import { Ellipsis, Plus } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import SortableItem from "@/app/(protected)/dashboard/workspace/todo/_components/sortable-item";
-import { Priority, SubTasks, TodoStatus } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
+import { TodoData } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
+import { useTodoContext } from "@/app/(protected)/dashboard/workspace/todo/_context/todo-context";
 
 type Props = {
-  id: TodoStatus;
-  title: string;
-  items: {
-    id: string;
-    title: string;
-    description?: string;
-    tags: Array<string>;
-    subTasks: Array<SubTasks>;
-    priority: Priority;
-  }[];
+  data: TodoData
 };
 
 export default function Droppable({
-  id,
-  title,
-  items,
+  data: { status, items }
 }: Props) {
 
-  const { setNodeRef } = useDroppable({ id });
+  const { handleTodoModalStates } = useTodoContext();
+  const { setNodeRef } = useDroppable({ id: status });
   const totalItems = items && items.length > 0 ? items.length : 0;
 
           //   ${id === "inProgress" && "bg-purple-600/20"}
@@ -49,40 +39,42 @@ export default function Droppable({
           <div className="flex items-center gap-2">
             <span
               className={`h-2 w-2 rounded-full 
-            ${id === "todo" && "bg-amber-300"}
-            ${id === "inProgress" && "bg-primary"}
-            ${id === "done" && "bg-green-500"}
+            ${status === "todo" && "bg-amber-300"}
+            ${status === "inProgress" && "bg-primary"}
+            ${status === "done" && "bg-green-500"}
           `}
             ></span>
-            {title}
-            <Badge className="rounded-full border-none bg-gradient-to-r from-sky-500 to-indigo-600 text-white">
-              {totalItems}
-            </Badge>
+            {status === "todo" && (
+              <span>To-do</span>
+            )}
+            {status === "inProgress" && (
+              <span>In Progress</span>
+            )}
+            {status === "done" && (
+              <span>Done</span>
+            )}
+            {/* <Badge className="rounded-full border-none bg-gradient-to-r from-sky-500 to-indigo-600"> */}
+              <span className="text-sm">{totalItems}</span>
+            {/* </Badge> */}
           </div>
           <div className="flex items-center gap-2">
-            {id !== "done" && (
-              <Plus className="cursor-pointer" size={16} />
+            {status !== "done" && (
+              <Plus onClick={() => handleTodoModalStates("add", true)} className="cursor-pointer" size={16} />
             )}
             <Ellipsis className="cursor-pointer" size={16} />
           </div>
         </div>
         <div className="px-4">
           <SortableContext
-            items={items.map((item) => item.id)}
+            items={items.map((item) => item._id)}
             strategy={verticalListSortingStrategy}
           >
             <ScrollArea className="h-[calc(100dvh-20rem)] flex rounded-xl">
               <div className="space-y-6 h-full">
                 {items.map((task) => (
                   <SortableItem
-                    status={id}
-                    key={task.id}
-                    id={task.id}
-                    subTasks={task.subTasks}
-                    title={task.title}
-                    description={task?.description}
-                    priority={task.priority}
-                    tags={task.tags}
+                    key={task._id}
+                    data={task}
                   />
                 ))}
               </div>

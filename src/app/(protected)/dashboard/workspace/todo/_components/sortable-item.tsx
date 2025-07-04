@@ -13,31 +13,16 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays } from "lucide-react";
-import { Priority, TodoStatus } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
-
-
+import { TodoItems } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
+import PriorityBadge from "@/app/(protected)/dashboard/workspace/todo/_components/priority-badge";
+import { ICON_SIZE } from "@/lib/utils";
 
 type Props = {
-    id: string;
-    status: TodoStatus;
-    title: string;
-    description?: string;
-    priority: Priority;
-    tags: Array<string>;
-    subTasks: Array<{
-        status: boolean;
-        subTask: string;
-    }>;
-}
+  data: TodoItems;
+};
 
 export default function SortableItem({
-  id,
-  status,
-  title,
-  description,
-  subTasks,
-  priority,
-  tags
+  data: { _id, name, summary, subTasks, priority, tags },
 }: Props) {
   const {
     attributes,
@@ -46,15 +31,16 @@ export default function SortableItem({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id });
+  } = useSortable({ id: _id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
 
-  const truncatedDesc = description ? `${description.slice(0, 60)}.....` : null;
+  const truncatedDesc = summary ? `${summary.slice(0, 60)}.....` : null;
 
+  const hasSubTasks = subTasks && subTasks.length > 0;
   const completedSubTasks = subTasks.filter((item) => item.status).length;
   const totalSubTasks = subTasks.length;
 
@@ -73,30 +59,12 @@ export default function SortableItem({
       }`}
     >
       <div className="w-full flex items-center justify-between mb-2">
-        <p className="hidden">{status}</p>
         <div className="flex items-center justify-center">
-          {priority === "Medium" && (
-            <Badge className="bg-amber-600/10 dark:bg-amber-600/20 hover:bg-amber-600/10 text-amber-500 border-amber-600/60 shadow-none rounded-full">
-              <div className="h-1.5 w-1.5 rounded-full bg-amber-500 mr-2" />
-              {priority} Priority
-            </Badge>
-          )}
-          {priority === "Low" && (
-            <Badge className="bg-emerald-600/10 dark:bg-emerald-600/20 hover:bg-emerald-600/10 text-emerald-500 border-emerald-600/60 shadow-none rounded-full">
-              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-2" />{" "}
-              {priority} Priority
-            </Badge>
-          )}
-          {priority === "High" && (
-            <Badge className="bg-red-600/10 dark:bg-red-600/20 hover:bg-red-600/10 border-red-600/60 text-red-500 shadow-none rounded-full">
-              <div className="h-1.5 w-1.5 rounded-full bg-red-500 mr-1" />{" "}
-              {priority} Priority
-            </Badge>
-          )}
+          <PriorityBadge variant={priority} />
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <BsThreeDots className="text-xl cursor-pointer transition-all hover:opacity-65" />
+            <BsThreeDots className="text-sm cursor-pointer transition-all hover:opacity-65" />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="p-2 space-y-1">
             <DropdownMenuItem className="cursor-pointer">View</DropdownMenuItem>
@@ -108,33 +76,33 @@ export default function SortableItem({
       </div>
       <div className="space-y-6">
         <div>
-          <h2 className="text-xl w-full">{title}</h2>
+          <h2 className="text-lg w-full">{name}</h2>
           {truncatedDesc && (
-            <p className="text-muted-foreground text-sm">{truncatedDesc}</p>
+            <p className="text-muted-foreground text-xs">{truncatedDesc}</p>
           )}
         </div>
         <div className="space-y-2">
           <div className="flex items-end gap-2">
-            <CalendarDays size={20} />
-            <p className="text-sm">June 25th</p>
+            <CalendarDays className={ICON_SIZE.medium} />
+            <p className="text-xs">June 25th</p>
           </div>
-          <div className="w-full flex items-center justify-between">
-            <Progress
-              className="bg-muted [&>div]:bg-gradient-to-r [&>div]:from-cyan-400 [&>div]:via-sky-500 [&>div]:to-indigo-500 [&>div]:rounded-l-full w-5/6"
-              value={parseInt(progress) || 40}
-            />
-            <p className="text-sm text-muted-foreground">{progress}%</p>
-          </div>
+          {hasSubTasks && (
+            <div className="w-full flex items-center justify-between">
+              <Progress
+                className="bg-muted [&>div]:bg-gradient-to-r [&>div]:from-cyan-400 [&>div]:via-sky-500 [&>div]:to-indigo-500 [&>div]:rounded-l-full w-5/6"
+                value={parseInt(progress) || 40}
+              />
+              <p className="text-sm text-muted-foreground">{progress}%</p>
+            </div>
+          )}
         </div>
       </div>
       <Separator className="w-full mt-2" />
       {hasTags && (
         <ul className="flex items-center gap-2 mt-2">
-          {tags.map(tag => (
+          {tags.map((tag) => (
             <li key={tag}>
-              <Badge variant="outline">
-                {tag}
-              </Badge>
+              <Badge variant="outline">{tag}</Badge>
             </li>
           ))}
         </ul>

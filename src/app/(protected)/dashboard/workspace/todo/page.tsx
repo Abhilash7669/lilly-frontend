@@ -3,11 +3,12 @@
 import { TAB_LIST } from "@/app/(protected)/dashboard/workspace/todo/_data/data";
 import TodoBoard from "@/app/(protected)/dashboard/workspace/todo/_components/to-do-board";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
-import { BasicResponse } from "@/lib/types/api";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { TodoData, TodoTabList } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
+import {
+  TodoData,
+  TodoTabList,
+} from "@/app/(protected)/dashboard/workspace/todo/_types/type";
+import useAxiosFetch from "@/hooks/useAxiosFetch";
+import TodoProvider from "@/app/(protected)/dashboard/workspace/todo/_context/todo-context";
 
 export default function Page() {
   // const [containers, setContainers] = useState<TodoData[]>([
@@ -273,24 +274,9 @@ export default function Page() {
   //   },
   // ]);
 
-  const [containers, setContainers] = useState<TodoData[]>([]);
+  const { data, setData } = useAxiosFetch<TodoData[]>("/tasks/", [], "tasks");
 
-  const [onMount, setOnMount] = useState<boolean>(false);
-
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!onMount) return setOnMount(() => true);
-
-    (async function getTasks() {
-      const response = await AXIOS_CLIENT.get<BasicResponse>("/tasks/");
-
-      if (!response) return;
-
-      if (!response.success && response.status_code === 401)
-        router.push("/login");
-    })();
-  }, [onMount]);
+  console.log(data, "dATA");
 
   return (
     <div className="space-y-12 h-[calc(100dvh-7rem)]">
@@ -329,10 +315,11 @@ export default function Page() {
             case "board":
               content = (
                 <TabsContent className="h-full" key={tabValue} value={tabValue}>
-                  <TodoBoard
-                    containers={containers}
-                    setContainers={setContainers}
-                  />
+                  {data && (
+                    <TodoProvider>
+                      <TodoBoard containers={data} setContainers={setData} />
+                    </TodoProvider>
+                  )}
                 </TabsContent>
               );
               break;

@@ -1,12 +1,30 @@
+export type TaskPrioritySelectOptionsLabel = "High" | "Medium" | "Low";
+export type TaskDTOKey =
+  | "name"
+  | "summary"
+  | "tags"
+  | "priority"
+  | "order"
+  | "subTasks"
+  | "date";
 
-export type TaskPrioritySelectOptionsLabel = "High" | "Medium" | "Low"
+export type TodoStatus = "todo" | "inProgress" | "done";
+
+export type TodoTabList = "over-view" | "board" | "table";
+
+export type SubTaskState = {
+  isAdding: boolean;
+  isEditing: boolean;
+};
+
+export type SubTaskMode = "isAdding" | "isEditing";
 
 export type TaskPrioritySelectOptions = {
-  label: TaskPrioritySelectOptionsLabel,
-  value: TASK_PRIORITY
-}
+  label: TaskPrioritySelectOptionsLabel;
+  value: Priority;
+};
 
-export type Priority = "High" | "Low" | "Medium";
+export type Priority = "high" | "low" | "medium";
 
 export type SubTasks = {
   subTask: string;
@@ -16,36 +34,57 @@ export type SubTasks = {
 export enum TASK_PRIORITY {
   HIGH = "high",
   MEDIUM = "medium",
-  LOW = "low"
-};
+  LOW = "low",
+}
 
-export type TodoModalStates = {
-  add: {
-    isOpen: boolean;
-  };
+export type TodoItems = {
+  _id: string;
+  name: string;
+  summary?: string;
+  tags: Array<string>;
+  priority: Priority;
+  order: number;
+  subTasks: Array<SubTasks>;
 };
 
 export type TodoData = {
-  id: string;
-  title: string;
-  items: {
-    id: string;
-    title: string;
-    description?: string;
-    tags: Array<string>;
-    priority: Priority;
-    order: number;
-    subTasks: Array<SubTasks>;
-  }[];
+  status: TodoStatus;
+  items: TodoItems[];
 };
 
-export type TodoStatus = "todo" | "inProgress" | "done";
+// userId
+// 683af7054766364daaa40263
+// name
+// "Testing"
+// summary
+// "ANother summary"
+// order
+// 0
+// status
+// "todo"
+// priority
+// "medium"
 
-export type TodoTabList = "over-view" | "board" | "table";
+// tags
+// Array (empty)
 
-export type SubTaskState = {
-    isAdding: boolean;
-    isEditing: boolean;
-}
+// subTasks
+// Array (empty)
+// startDate
+// 2025-07-02T00:00:00.000+00:00
+// dueDate
+// 2025-07-02T23:59:59.999+00:00
 
-export type SubTaskMode = "isAdding" | "isEditing";
+export type TaskDTO = {
+  name: string;
+  summary: string;
+  tags: Array<string>;
+  priority: "high" | "medium" | "low";
+  order: number;
+  subTasks: Array<SubTasks> | [];
+  status: TodoStatus;
+  date: {
+    startDate: string;
+    dueDate: string;
+  };
+};

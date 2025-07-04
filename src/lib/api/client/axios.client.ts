@@ -87,12 +87,14 @@ export const AXIOS_CLIENT = {
         ...config,
       });
 
+      const isSuccess = m_data.data.success;
+
       toast(m_data.data.title || "Success", {
         description: m_data.data.message || "Welcome",
         duration: 3400,
         style: {
-          background: "var(--custom-success)",
-          border: "1px var(--custom-success-border) solid",
+          background: isSuccess ? "var(--custom-success)" : "var(--custom-error)",
+          border: isSuccess ? "1px var(--custom-success-border) solid" : "1px var(--custom-error-border) solid",
           color: "var(--custom-toast-text)"
         },
       });
