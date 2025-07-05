@@ -279,7 +279,7 @@ export default function Page() {
   console.log(data, "dATA");
 
   return (
-    <div className="space-y-12 h-[calc(100dvh-7rem)]">
+    <div className="space-y-12 h-full lg:h-[calc(100dvh-7rem)]">
       <Tabs className="h-full" defaultValue={TAB_LIST[0].value || "over-view"}>
         <div className="space-y-4 border-b">
           <div>
