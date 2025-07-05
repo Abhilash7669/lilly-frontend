@@ -74,8 +74,8 @@ export default function Droppable({
             items={items.map((item) => item._id)}
             strategy={verticalListSortingStrategy}
           >
-            <ScrollArea className="h-[calc(100dvh-20rem)] flex rounded-xl">
-              <div className="space-y-6 h-full">
+            <ScrollArea className="h-[22rem] lg:h-[calc(100dvh-20rem)] flex rounded-xl">
+              <div className="space-y-4 lg:space-y-6 h-full">
                 {items.map((task) => (
                   <SortableItem
                     key={task._id}

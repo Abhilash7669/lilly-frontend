@@ -276,8 +276,6 @@ export default function Page() {
 
   const { data, setData } = useAxiosFetch<TodoData[]>("/tasks/", [], "tasks");
 
-  console.log(data, "dATA");
-
   return (
     <div className="space-y-12 h-full lg:h-[calc(100dvh-7rem)]">
       <Tabs className="h-full" defaultValue={TAB_LIST[0].value || "over-view"}>
