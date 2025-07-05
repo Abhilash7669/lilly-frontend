@@ -16,7 +16,7 @@ export default function Droppable({
   data: { status, items }
 }: Props) {
 
-  const { handleTodoModalStates } = useTodoContext();
+  const { handleTodoModalStates, setDroppableId } = useTodoContext();
   const { setNodeRef } = useDroppable({ id: status });
   const totalItems = items && items.length > 0 ? items.length : 0;
 
@@ -26,10 +26,15 @@ export default function Droppable({
 
           // backdrop-blur-lg backdrop-filter
 
+  function handleOpenSheet() {
+    handleTodoModalStates("add", true);
+    setDroppableId(() => status as "todo" | "inProgress");
+  }
+
   return (
     <div className="py-4 h-fit">
       <div
-        className={`py-4 rounded-xl bg-muted
+        className={`py-4 rounded-xl bg-card-foreground/5
         `}
         ref={setNodeRef}
       >
@@ -59,7 +64,7 @@ export default function Droppable({
           </div>
           <div className="flex items-center gap-2">
             {status !== "done" && (
-              <Plus onClick={() => handleTodoModalStates("add", true)} className="cursor-pointer" size={16} />
+              <Plus onClick={handleOpenSheet} className="cursor-pointer active:scale-75 hover:opacity-60 transition-all" size={16} />
             )}
             <Ellipsis className="cursor-pointer" size={16} />
           </div>

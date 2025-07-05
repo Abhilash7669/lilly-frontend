@@ -30,6 +30,7 @@ type Props = {
   open: boolean;
   setOpen: React.Dispatch<SetStateAction<boolean>>;
   isLoading: boolean;
+  side?: "top" | "right" | "bottom" | "left";
 };
 
 export default function SidePanel({
@@ -41,7 +42,8 @@ export default function SidePanel({
   onConfirm = async () => {},
   open = false,
   setOpen,
-  isLoading
+  isLoading,
+  side="right"
 }: Props) {
   function handleCancel(): void {
     if (onCancel) onCancel();
@@ -55,7 +57,9 @@ export default function SidePanel({
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>Open</SheetTrigger>
-      <SheetContent>
+      <SheetContent
+        side={side}
+      >
         <ScrollArea className="h-[calc(100dvh-5rem)]">
           {header && (
             <SheetHeader>

@@ -16,13 +16,14 @@ import { CalendarDays } from "lucide-react";
 import { TodoItems } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 import PriorityBadge from "@/app/(protected)/dashboard/workspace/todo/_components/priority-badge";
 import { ICON_SIZE } from "@/lib/utils";
+import { format } from "date-fns";
 
 type Props = {
   data: TodoItems;
 };
 
 export default function SortableItem({
-  data: { _id, name, summary, subTasks, priority, tags },
+  data: { _id, name, summary, subTasks, priority, tags, dueDate, startDate },
 }: Props) {
   const {
     attributes,
@@ -48,13 +49,16 @@ export default function SortableItem({
 
   const hasTags = tags.length > 0;
 
+  const m_startDate = startDate ? format(startDate, "dd MMM yy") : "No start date";
+  const m_dueDate = dueDate ? format(dueDate, "dd MMM yy") : "No due date";
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
-      className={`bg-card rounded-xl px-6 py-5 rotate-0 shadow cursor-grab ${
+      className={`bg-card rounded-xl px-6 py-5 rotate-0 shadow-md cursor-grab ${
         isDragging && "cursor-grabbing rotate-2 opacity-80"
       }`}
     >
@@ -84,7 +88,7 @@ export default function SortableItem({
         <div className="space-y-2">
           <div className="flex items-end gap-2">
             <CalendarDays className={ICON_SIZE.medium} />
-            <p className="text-xs">June 25th</p>
+            <p className="text-xs">{m_startDate} - {m_dueDate}</p>
           </div>
           {hasSubTasks && (
             <div className="w-full flex items-center justify-between">

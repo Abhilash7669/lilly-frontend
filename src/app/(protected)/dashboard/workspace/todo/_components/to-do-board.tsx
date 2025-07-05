@@ -21,8 +21,9 @@ import {
   ADD_TASK_HEADER,
   EMPTY_SUB_TASK_TEXT,
   PRIORITY_SELECT_OPTIONS,
+  STATUS_SELECT_OPTIONS,
 } from "@/app/(protected)/dashboard/workspace/todo/_data/data";
-import InputGroup from "@/components/common/input/input-group";
+import InputGroup from "@/components/common/input-elements/input-group";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
@@ -39,22 +40,15 @@ import {
 } from "lucide-react";
 import { PopoverContent } from "@radix-ui/react-popover";
 import SidePanel from "@/components/common/sheet/side-panel";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import {
   SubTaskMode,
   SubTasks,
   SubTaskState,
+  TaskAddResponse,
   TaskDTO,
   TaskDTOKey,
+  TaskPayload,
   TodoData,
 } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 import { ICON_SIZE } from "@/lib/utils";
@@ -70,6 +64,7 @@ import { LILLY_DATE } from "@/lib/lilly-utils/lilly-utils";
 import { format } from "date-fns";
 import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
 import { useTodoContext } from "@/app/(protected)/dashboard/workspace/todo/_context/todo-context";
+import AppSelect from "@/components/common/input-elements/app-select";
 
 type Props = {
   containers: TodoData[];
@@ -77,8 +72,7 @@ type Props = {
 };
 
 export default function TodoBoard({ containers, setContainers }: Props) {
-
-  const { handleTodoModalStates, modal } = useTodoContext();
+  const { handleTodoModalStates, modal, droppableId } = useTodoContext();
 
   const [subTasks, setSubTasks] = useState<SubTasks[]>([]); // to set sub task at creation
 
@@ -157,7 +151,8 @@ export default function TodoBoard({ containers, setContainers }: Props) {
     itemId: UniqueIdentifier
   ): UniqueIdentifier | undefined {
     // return the container id;
-    if (containers.some((container) => container.status === itemId)) return itemId;
+    if (containers.some((container) => container.status === itemId))
+      return itemId;
 
     return containers.find((container) =>
       container.items.some((item) => item._id === itemId)
@@ -390,6 +385,37 @@ export default function TodoBoard({ containers, setContainers }: Props) {
     }, time);
   }
 
+  function debounceTaskData(
+    callBack: (
+      key: TaskDTOKey,
+      value:
+        | string
+        | []
+        | "high"
+        | "medium"
+        | "low"
+        | Array<string>
+        | number
+        | { startDate: string | undefined; dueDate: string | undefined }
+    ) => void,
+    time: number,
+    key: TaskDTOKey,
+    value:
+      | string
+      | []
+      | "high"
+      | "medium"
+      | "low"
+      | Array<string>
+      | number
+      | { startDate: string | undefined; dueDate: string | undefined }
+  ) {
+    if (debounceTimer && debounceTimer.current) clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => {
+      callBack(key, value);
+    }, time);
+  }
+
   function handleEditSubTask(i: number, data: string): void {
     setSubTasks((prevState) => {
       if (data.trim() === "") return prevState;
@@ -440,16 +466,75 @@ export default function TodoBoard({ containers, setContainers }: Props) {
   }
 
   async function handleSendData() {
-    setIsLoading(() => true);
-    const response = await AXIOS_CLIENT.post("/tasks/add", {
-      task: taskDTO,
+    // todo: re-work this to update order of the new task
+
+    /* 
+      - check the status
+        based on the status, check it's order
+        update order accordingly
+    */
+
+    // find if that droppable has any item;
+
+    const containerIndex = containers.findIndex(
+      (item) => item.status === droppableId
+    );
+
+    if (containerIndex === -1) {
+      console.log("No container found");
+      return;
+    }
+
+    const order = containers[containerIndex].items.sort(function (a, b) {
+      return b.order - a.order;
     });
+
+    const currentOrder = order[0].order;
+
+    setIsLoading(() => true);
+    const payload = {
+      ...taskDTO,
+      subTasks: subTasks,
+      order: currentOrder + 1,
+      status: droppableId
+    };
+
+    const response = await AXIOS_CLIENT.post<TaskPayload, TaskAddResponse>("/tasks/add", {
+      task: payload,
+    });
+
+    if(!response) return;
+    const data = response?.data.task.taskItem; 
 
     setIsLoading(() => false);
     handleTodoModalStates("add", false);
 
-    console.log(response, "RESPONSE");
+    setContainers(prevState => {
+    
+      return prevState.map(
+        item => {
+
+          if(item.status === data?.status) {
+            return {
+              status: item.status,
+              items: [
+                ...item.items,
+                data
+              ]
+            }
+          };
+
+          return item;
+
+        }
+      )
+
+    });
+
+    // console.log(response, "RESPONSE");
   }
+
+  console.log(droppableId, "DROPPABLE ID");
 
   return (
     <>
@@ -472,13 +557,8 @@ export default function TodoBoard({ containers, setContainers }: Props) {
           {containers.length > 0 && (
             <div className="grid grid-cols-3 gap-12 h-full">
               {containers.map((item) => {
-                if (item.items.length === 0) return null;
-                return (
-                  <Droppable
-                    key={item.status}
-                    data={item}
-                  />
-                );
+                // if (item.items.length === 0) return null;
+                return <Droppable key={item.status} data={item} />;
               })}
             </div>
           )}
@@ -497,19 +577,24 @@ export default function TodoBoard({ containers, setContainers }: Props) {
         }}
         onConfirm={handleSendData}
         isLoading={isLoading}
+        side="bottom"
       >
-        <div className="space-y-4">
+        <div className="space-y-4 lg:w-2/4">
           <InputGroup label="Name">
             <Input
               name="name"
-              onChange={(e) => handleTaskDTO("name", e.target.value)}
+              onChange={(e) =>
+                debounceTaskData(handleTaskDTO, 300, "name", e.target.value)
+              }
               className="!text-xs"
             />
           </InputGroup>
           <InputGroup label="Summary">
             <Textarea
               name="summary"
-              onChange={(e) => handleTaskDTO("summary", e.target.value)}
+              onChange={(e) =>
+                debounceTaskData(handleTaskDTO, 300, "summary", e.target.value)
+              }
               className="!text-xs"
             />
           </InputGroup>
@@ -563,34 +648,36 @@ export default function TodoBoard({ containers, setContainers }: Props) {
                     const dueDate = e?.to
                       ? LILLY_DATE.toUTC(e.to).toISOString()
                       : selectedDateRange?.to?.toISOString();
-                    handleTaskDTO("date", { startDate, dueDate });
+                    debounceTaskData(handleTaskDTO, 300, "date", {
+                      startDate,
+                      dueDate,
+                    });
                   }}
                   selected={selectedDateRange}
                 />
               </PopoverContent>
             </Popover>
           </InputGroup>
-          <InputGroup label="Priority">
-            <Select onValueChange={(e) => handleTaskDTO("priority", e)}>
-              <SelectTrigger className="cursor-pointer w-full text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Priority</SelectLabel>
-                  {PRIORITY_SELECT_OPTIONS.map((item) => (
-                    <SelectItem
-                      className="text-xs"
-                      key={item.value}
-                      value={item.value}
-                    >
-                      {item.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </InputGroup>
+          <div className="flex items-center gap-2">
+            <InputGroup className="w-2/4" label="Priority">
+              <AppSelect<TaskDTO, "priority">
+                onValueChange={handleTaskDTO}
+                name="priority"
+                value={taskDTO.priority}
+                selectData={PRIORITY_SELECT_OPTIONS}
+                selectLabel="Priority"
+              />
+            </InputGroup>
+            <InputGroup className="w-2/4" label="Status">
+              <AppSelect<TaskDTO, "status">
+                name="status"
+                onValueChange={handleTaskDTO}
+                value={taskDTO.status}
+                selectLabel="Status"
+                selectData={STATUS_SELECT_OPTIONS}
+              />
+            </InputGroup>
+          </div>
           <Separator />
           {/* Sub tasks */}
           <div className="space-y-4">
@@ -621,13 +708,14 @@ export default function TodoBoard({ containers, setContainers }: Props) {
                             onChange={(e) =>
                               debounceAddSubTask(e, setSubTaskInput, 300)
                             }
+                            className="!text-xs"
                           />
                           <div className="absolute top-2/4 -translate-y-2/4 right-2 w-fit z-10 flex items-center gap-2">
                             <X
                               onClick={() =>
                                 handleToggleSubTaskState("isEditing", false)
                               }
-                              className={`${ICON_SIZE.medium} opacity-50 hover:opacity-100 cursor-pointer`}
+                              className={`${ICON_SIZE.small} opacity-50 hover:opacity-100 cursor-pointer`}
                             />
                             <Check
                               onClick={() => {
@@ -638,7 +726,7 @@ export default function TodoBoard({ containers, setContainers }: Props) {
                                 setEditingSubTask(() => null);
                                 handleEditSubTask(i, subTaskInput);
                               }}
-                              className={`${ICON_SIZE.medium} opacity-50 hover:opacity-100 cursor-pointer`}
+                              className={`${ICON_SIZE.small} opacity-50 hover:opacity-100 cursor-pointer`}
                             />
                           </div>
                         </div>
@@ -691,6 +779,7 @@ export default function TodoBoard({ containers, setContainers }: Props) {
                     onChange={(e) =>
                       debounceAddSubTask(e, setSubTaskInput, 300)
                     }
+                    className="!text-xs"
                     ref={addInputRef}
                   />
                   <div className="absolute top-2/4 -translate-y-2/4 right-2 w-fit z-10 flex items-center gap-2">
@@ -698,11 +787,11 @@ export default function TodoBoard({ containers, setContainers }: Props) {
                       onClick={() =>
                         handleToggleSubTaskState("isAdding", false)
                       }
-                      className={`${ICON_SIZE.medium} opacity-50 hover:opacity-100 cursor-pointer`}
+                      className={`${ICON_SIZE.small} opacity-50 hover:opacity-100 cursor-pointer`}
                     />
                     <Check
                       onClick={handleAddSubTask}
-                      className={`${ICON_SIZE.medium} opacity-50 hover:opacity-100 cursor-pointer`}
+                      className={`${ICON_SIZE.small} opacity-50 hover:opacity-100 cursor-pointer`}
                     />
                   </div>
                 </div>

@@ -6,9 +6,11 @@ export type TaskDTOKey =
   | "priority"
   | "order"
   | "subTasks"
-  | "date";
+  | "date"
+  | "status";
 
-export type TodoStatus = "todo" | "inProgress" | "done";
+export type StatusValue = "todo" | "inProgress" | "done";
+export type StatusLabel = "Todo" | "In Progress" | "Done";
 
 export type TodoTabList = "over-view" | "board" | "table";
 
@@ -22,6 +24,11 @@ export type SubTaskMode = "isAdding" | "isEditing";
 export type TaskPrioritySelectOptions = {
   label: TaskPrioritySelectOptionsLabel;
   value: Priority;
+};
+
+export type TaskStatusSelectOptions = {
+  label: StatusLabel;
+  value: StatusValue;
 };
 
 export type Priority = "high" | "low" | "medium";
@@ -45,10 +52,12 @@ export type TodoItems = {
   priority: Priority;
   order: number;
   subTasks: Array<SubTasks>;
+  startDate: string;
+  dueDate: string;
 };
 
 export type TodoData = {
-  status: TodoStatus;
+  status: StatusValue;
   items: TodoItems[];
 };
 
@@ -82,9 +91,33 @@ export type TaskDTO = {
   priority: "high" | "medium" | "low";
   order: number;
   subTasks: Array<SubTasks> | [];
-  status: TodoStatus;
+  status: StatusValue;
   date: {
     startDate: string;
     dueDate: string;
+  };
+};
+
+export type TaskPayload = {
+  task: TaskDTO;
+};
+
+export type TaskAddResponse = {
+  data: {
+    task: {
+      taskItem: {
+        _id: string;
+        // userId: string;
+        name: string;
+        summary: string;
+        order: number;
+        status: StatusValue;
+        priority: Priority;
+        tags: Array<string>;
+        subTasks: Array<SubTasks>;
+        startDate: string;
+        dueDate: string;
+      };
+    };
   };
 };

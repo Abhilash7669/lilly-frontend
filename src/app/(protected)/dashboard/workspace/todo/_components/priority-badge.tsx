@@ -57,7 +57,7 @@ export default function PriorityBadge({
           BASE_DOT_CLASS.variant[variant as "low" | "high" | "medium"]
         }`}
       />
-      <p className="text-xs">{content}</p>
+      <p className="text-[0.6rem]">{content}</p>
     </Badge>
   );
 }

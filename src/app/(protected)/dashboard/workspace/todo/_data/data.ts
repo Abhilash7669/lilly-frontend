@@ -1,4 +1,4 @@
-import { TASK_PRIORITY, TaskPrioritySelectOptions } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
+import { TASK_PRIORITY, TaskPrioritySelectOptions, TaskStatusSelectOptions } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 import { LucideProps, SquareKanban, Table, Target } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
@@ -29,6 +29,17 @@ export const PRIORITY_SELECT_OPTIONS: TaskPrioritySelectOptions[] = [
     value: TASK_PRIORITY.LOW
   }
 ]
+
+export const STATUS_SELECT_OPTIONS: TaskStatusSelectOptions[] = [
+  {
+    label: "Todo",
+    value: "todo"
+  },
+  {
+    label: "In Progress",
+    value: "inProgress"
+  }
+];
 
 export const ADD_TASK_HEADER: { title: string; description: string } = {
   title: "Create Task",

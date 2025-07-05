@@ -2,8 +2,7 @@
 
 import AuthFormLayout from "@/app/(auth)/_components/auth-form-layout";
 import { loginSchema } from "@/app/(auth)/login/_schema/login-schema";
-import PasswordInput from "@/components/common/input/password-input";
-import Spinner from "@/components/common/spinner/spinner";
+import PasswordInput from "@/components/common/input-elements/password-input";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -20,9 +19,10 @@ import { useRouter } from "next/navigation";
 import { JSX, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { FaCheck } from "react-icons/fa";
 import Link from "next/link";
 import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
+import { Check, LoaderCircle } from "lucide-react";
+import { ICON_SIZE } from "@/lib/utils";
 
 type Data = {
   email: string;
@@ -137,10 +137,13 @@ export default function LoginForm(): JSX.Element {
               type="submit"
               className={`w-full ${isSubmitting && "animate-pulse"}`}
             >
-              {isSubmitting && !submitted && !success && <Spinner />}
+              {isSubmitting && !submitted && !success && (
+                <LoaderCircle className={`${ICON_SIZE.medium} animate-spin`} />
+              )}
               {!isSubmitting && !submitted && "Login"}
-              {!isSubmitting && submitted && success && <FaCheck />}
-              {!isSubmitting && submitted && !success && "Error"}
+              {!isSubmitting && submitted && success && (
+                <Check className={ICON_SIZE.medium} />
+              )}
               {/* todo: need to re-work the login handling */}
             </Button>
           </div>

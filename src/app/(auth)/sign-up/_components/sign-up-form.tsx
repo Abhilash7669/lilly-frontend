@@ -2,8 +2,8 @@
 
 import AuthFormLayout from "@/app/(auth)/_components/auth-form-layout";
 import { signUpSchema } from "@/app/(auth)/sign-up/_schema/sign-up-schema";
-import InputRow from "@/components/common/input/input-row";
-import PasswordInput from "@/components/common/input/password-input";
+import InputRow from "@/components/common/input-elements/input-row";
+import PasswordInput from "@/components/common/input-elements/password-input";
 import Spinner from "@/components/common/spinner/spinner";
 import { Button } from "@/components/ui/button";
 import {
@@ -62,13 +62,17 @@ export default function SignupForm(): JSX.Element {
       email: formData.email,
     };
 
-    const response = await AXIOS_CLIENT.post<Data, Response>("/auth/sign-up", m_data, {
-      headers: {
-        "Content-type": "application/json",
-      },
-    });
+    const response = await AXIOS_CLIENT.post<Data, Response>(
+      "/auth/sign-up",
+      m_data,
+      {
+        headers: {
+          "Content-type": "application/json",
+        },
+      }
+    );
 
-    if(!response) return;
+    if (!response) return;
 
     if (!response.success) {
       return;
