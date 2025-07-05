@@ -555,7 +555,7 @@ export default function TodoBoard({ containers, setContainers }: Props) {
             </div>
           )}
           {containers.length > 0 && (
-            <div className="grid grid-cols-3 gap-12 h-full">
+            <div className="grid lg:grid-cols-3 gap-12 h-full">
               {containers.map((item) => {
                 // if (item.items.length === 0) return null;
                 return <Droppable key={item.status} data={item} />;
