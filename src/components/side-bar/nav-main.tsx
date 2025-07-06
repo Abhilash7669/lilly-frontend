@@ -16,9 +16,12 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
+import { usePathname } from "next/navigation";
+import ActiveIndicator from "@/components/common/indicator/active-indicator";
 
 export function NavMain({
   items,
@@ -37,6 +40,9 @@ export function NavMain({
     }[];
   }[];
 }) {
+
+  const { isMobile, toggleSidebar } = useSidebar();
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platforms</SidebarGroupLabel>
@@ -62,7 +68,10 @@ export function NavMain({
                   </CollapsibleTrigger>
                 ) : (
                   <Link href={item.url}>
-                    <SidebarMenuButton className="cursor-pointer" tooltip={item.title}>
+                    <SidebarMenuButton
+                      className="cursor-pointer"
+                      tooltip={item.title}
+                    >
                       {item.icon && <item.icon />}
                       <span>{item.title}</span>
                     </SidebarMenuButton>
@@ -70,16 +79,22 @@ export function NavMain({
                 )}
                 <CollapsibleContent>
                   <SidebarMenuSub>
-                    {item.items?.map((subItem) => (
-                      <SidebarMenuSubItem key={subItem.title}>
-                        <SidebarMenuSubButton asChild>
-                          <Link className="cursor-pointer" href={subItem.url}>
-                            {subItem.icon && <subItem.icon />}
-                            <span>{subItem.title}</span>
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
+                    {item.items?.map((subItem) => {
+                      const isPathActive = DetectActivePath(subItem.url);
+                      return (
+                        <SidebarMenuSubItem key={subItem.title}>
+                          <SidebarMenuSubButton asChild>
+                            <Link onClick={() => isMobile && toggleSidebar} className={`cursor-pointer transition-all flex items-center`} href={subItem.url}>
+                              {subItem.icon && <subItem.icon />}
+                              <span>{subItem.title}</span>
+                              {isPathActive && (
+                                <ActiveIndicator className="bg-cyan-500" />
+                              )}
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      );
+                    })}
                   </SidebarMenuSub>
                 </CollapsibleContent>
               </SidebarMenuItem>
@@ -89,4 +104,16 @@ export function NavMain({
       </SidebarMenu>
     </SidebarGroup>
   );
+}
+
+function DetectActivePath(url: string): boolean {
+  const pathName = usePathname();
+
+  if (!url) return false;
+
+  const isPathActive = pathName.includes(url);
+
+  if (isPathActive) return true;
+
+  return false;
 }

@@ -147,6 +147,11 @@ export default function TodoBoard({ containers, setContainers }: Props) {
     addInputRef,
   ]);
 
+  useEffect(() => {
+    if (droppableId)
+      setTaskDTO((prevState) => ({ ...prevState, status: droppableId }));
+  }, [droppableId]);
+
   function findContainerId(
     itemId: UniqueIdentifier
   ): UniqueIdentifier | undefined {
@@ -410,7 +415,8 @@ export default function TodoBoard({ containers, setContainers }: Props) {
       | number
       | { startDate: string | undefined; dueDate: string | undefined }
   ) {
-    if (debounceTimer && debounceTimer.current) clearTimeout(debounceTimer.current);
+    if (debounceTimer && debounceTimer.current)
+      clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {
       callBack(key, value);
     }, time);
@@ -496,45 +502,36 @@ export default function TodoBoard({ containers, setContainers }: Props) {
       ...taskDTO,
       subTasks: subTasks,
       order: currentOrder + 1,
-      status: droppableId
     };
 
-    const response = await AXIOS_CLIENT.post<TaskPayload, TaskAddResponse>("/tasks/add", {
-      task: payload,
-    });
+    const response = await AXIOS_CLIENT.post<TaskPayload, TaskAddResponse>(
+      "/tasks/add",
+      {
+        task: payload,
+      }
+    );
 
-    if(!response) return;
-    const data = response?.data.task.taskItem; 
+    if (!response) return;
+    const data = response?.data.task.taskItem;
 
     setIsLoading(() => false);
     handleTodoModalStates("add", false);
 
-    setContainers(prevState => {
-    
-      return prevState.map(
-        item => {
-
-          if(item.status === data?.status) {
-            return {
-              status: item.status,
-              items: [
-                ...item.items,
-                data
-              ]
-            }
+    setContainers((prevState) => {
+      return prevState.map((item) => {
+        if (item.status === data?.status) {
+          return {
+            status: item.status,
+            items: [...item.items, data],
           };
-
-          return item;
-
         }
-      )
 
+        return item;
+      });
     });
 
     // console.log(response, "RESPONSE");
   }
-
-  console.log(droppableId, "DROPPABLE ID");
 
   return (
     <>
@@ -555,9 +552,8 @@ export default function TodoBoard({ containers, setContainers }: Props) {
             </div>
           )}
           {containers.length > 0 && (
-            <div className="grid lg:grid-cols-3 lg:gap-6 h-full">
+            <div className="grid sm:grid-cols-3 sm:gap-2 lg:gap-6 h-full">
               {containers.map((item) => {
-                // if (item.items.length === 0) return null;
                 return <Droppable key={item.status} data={item} />;
               })}
             </div>

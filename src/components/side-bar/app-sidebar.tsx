@@ -38,7 +38,7 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "To-do",
+          title: "Todo",
           url: "/dashboard/workspace/todo",
           icon: ListTodo,
         },
@@ -74,7 +74,7 @@ const data = {
 
 export default function AppSidebar(): JSX.Element {
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar  collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

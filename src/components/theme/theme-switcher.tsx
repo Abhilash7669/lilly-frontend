@@ -1,15 +1,19 @@
 "use client";
 
-import ActiveIndicator from "@/components/common/indicator/active-indicator";
+import ThemeSwitch from "@/components/theme/theme-switch";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ThemeValue } from "@/lib/types/theme";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 export default function ThemeSwitcher() {
-
-    const { setTheme, theme } = useTheme();
-
+  const { setTheme, theme } = useTheme();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -20,19 +24,37 @@ export default function ThemeSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("light")}>
-          Light {theme === "light" && (<ActiveIndicator />)}
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => setTheme("light")}
+        >
+          <ThemeSwitch
+            theme="light"
+            text="Light"
+            activeTheme={theme as ThemeValue}
+          />
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("dark")}>
-          Dark {theme === "dark" && (<ActiveIndicator />)}
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => setTheme("dark")}
+        >
+          <ThemeSwitch
+            theme="dark"
+            text="Dark"
+            activeTheme={theme as ThemeValue}
+          />
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("system")}>
-          System {theme === "system" && (<ActiveIndicator />)}
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => setTheme("system")}
+        >
+          <ThemeSwitch 
+            activeTheme={theme as ThemeValue}
+            theme="system"
+            text="System"
+          />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
-
-
-
+}

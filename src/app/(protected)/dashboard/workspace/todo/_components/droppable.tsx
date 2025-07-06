@@ -3,28 +3,28 @@
 import { Ellipsis, Plus } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDroppable } from "@dnd-kit/core";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import SortableItem from "@/app/(protected)/dashboard/workspace/todo/_components/sortable-item";
 import { TodoData } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 import { useTodoContext } from "@/app/(protected)/dashboard/workspace/todo/_context/todo-context";
 
 type Props = {
-  data: TodoData
+  data: TodoData;
 };
 
-export default function Droppable({
-  data: { status, items }
-}: Props) {
-
+export default function Droppable({ data: { status, items } }: Props) {
   const { handleTodoModalStates, setDroppableId } = useTodoContext();
   const { setNodeRef } = useDroppable({ id: status });
   const totalItems = items && items.length > 0 ? items.length : 0;
 
-          //   ${id === "inProgress" && "bg-purple-600/20"}
-          // ${id === "todo" && "bg-cyan-600/20"}
-          // ${id === "done" && "bg-emerald-600/20"}
+  //   ${id === "inProgress" && "bg-purple-600/20"}
+  // ${id === "todo" && "bg-cyan-600/20"}
+  // ${id === "done" && "bg-emerald-600/20"}
 
-          // backdrop-blur-lg backdrop-filter
+  // backdrop-blur-lg backdrop-filter
 
   function handleOpenSheet() {
     handleTodoModalStates("add", true);
@@ -49,22 +49,20 @@ export default function Droppable({
             ${status === "done" && "bg-green-500"}
           `}
             ></span>
-            {status === "todo" && (
-              <span>To-do</span>
-            )}
-            {status === "inProgress" && (
-              <span>In Progress</span>
-            )}
-            {status === "done" && (
-              <span>Done</span>
-            )}
+            {status === "todo" && <p className="text-xs">To-do</p>}
+            {status === "inProgress" && <p className="text-xs">In Progress</p>}
+            {status === "done" && <p className="text-xs">Done</p>}
             {/* <Badge className="rounded-full border-none bg-gradient-to-r from-sky-500 to-indigo-600"> */}
-              <span className="text-sm">{totalItems}</span>
+            <p className="text-xs">{totalItems}</p>
             {/* </Badge> */}
           </div>
           <div className="flex items-center gap-2">
             {status !== "done" && (
-              <Plus onClick={handleOpenSheet} className="cursor-pointer active:scale-75 hover:opacity-60 transition-all" size={16} />
+              <Plus
+                onClick={handleOpenSheet}
+                className="cursor-pointer active:scale-75 hover:opacity-60 transition-all"
+                size={16}
+              />
             )}
             <Ellipsis className="cursor-pointer" size={16} />
           </div>
@@ -77,10 +75,7 @@ export default function Droppable({
             <ScrollArea className="h-[22rem] lg:h-[calc(100dvh-20rem)] flex rounded-xl">
               <div className="space-y-4 lg:space-y-6 h-full">
                 {items.map((task) => (
-                  <SortableItem
-                    key={task._id}
-                    data={task}
-                  />
+                  <SortableItem key={task._id} data={task} />
                 ))}
               </div>
             </ScrollArea>

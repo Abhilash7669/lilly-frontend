@@ -72,7 +72,7 @@ export default function SortableItem({
           </DropdownMenuTrigger>
           <DropdownMenuContent className="p-2 space-y-1">
             <DropdownMenuItem className="cursor-pointer">View</DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer transition-all focus:bg-destructive/70">
+            <DropdownMenuItem onClick={() => console.log(_id, "AJSHDJKAHD")} className="cursor-pointer transition-all focus:bg-destructive/70">
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>

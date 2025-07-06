@@ -8,5 +8,6 @@ export function cn(...inputs: ClassValue[]) {
 export const ICON_SIZE = {
   xsmall: "h-2 w-2",
   small: "h-3 w-3",
-  medium: "h-4 w-4"
+  medium: "h-4 w-4",
+  large: "h-5 w-5"
 }
