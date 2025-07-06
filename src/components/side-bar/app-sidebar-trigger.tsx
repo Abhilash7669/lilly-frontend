@@ -1,7 +1,12 @@
 "use client";
 
 import { useSidebar } from "@/components/ui/sidebar";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ICON_SIZE } from "@/lib/utils";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { JSX } from "react";
@@ -13,19 +18,18 @@ export default function AppSidebarTrigger(): JSX.Element {
 
   return (
     <div className="flex items-center" onClick={toggleSidebar}>
-      <Tooltip>
-        <TooltipTrigger>
-          {open ? <PanelLeftClose className={BASE_CLASS} /> : <PanelLeftOpen className={BASE_CLASS} />}
-        </TooltipTrigger>
-        <TooltipContent>
-            {
-                open ?
-                "Close"
-                :
-                "Open"
-            }
-        </TooltipContent>
-      </Tooltip>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            {open ? (
+              <PanelLeftClose className={BASE_CLASS} />
+            ) : (
+              <PanelLeftOpen className={BASE_CLASS} />
+            )}
+          </TooltipTrigger>
+          <TooltipContent>{open ? "Close" : "Open"}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 }

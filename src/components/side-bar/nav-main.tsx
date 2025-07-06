@@ -16,7 +16,6 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
@@ -40,9 +39,6 @@ export function NavMain({
     }[];
   }[];
 }) {
-
-  const { isMobile, toggleSidebar } = useSidebar();
-
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platforms</SidebarGroupLabel>
@@ -84,12 +80,17 @@ export function NavMain({
                       return (
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton asChild>
-                            <Link onClick={() => isMobile && toggleSidebar} className={`cursor-pointer transition-all flex items-center`} href={subItem.url}>
+                            <Link
+                              className={`cursor-pointer transition-all flex items-center`}
+                              href={subItem.url}
+                            >
                               {subItem.icon && <subItem.icon />}
-                              <span>{subItem.title}</span>
-                              {isPathActive && (
-                                <ActiveIndicator className="bg-cyan-500" />
-                              )}
+                              <div className="flex items-center gap-2">
+                                <span>{subItem.title}</span>
+                                {isPathActive && (
+                                  <ActiveIndicator className="bg-cyan-500 mt-[0.1rem]" />
+                                )}
+                              </div>
                             </Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
