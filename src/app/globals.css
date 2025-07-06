@@ -127,7 +127,8 @@
   --todo-container: oklch(0.2891 0 0);
   --todo-card: oklch(0.252 0 0);
 
-  --canva-circle: oklch(0.8718 0.0111 17.37 / 0.8);
+  /* --canva-circle: oklch(0.8718 0.0111 17.37); */
+  --canva-circle: oklch(1 0 0);
 }
 
 @layer base {
