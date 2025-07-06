@@ -113,7 +113,6 @@ export default function CanvaProvider({ children }: Props) {
               this.alpha = 0.2;
               this.alphaDirection = 1;
             }
-            console.log(this.alpha, "ALPHA VALUE");
           }
 
           update() {
