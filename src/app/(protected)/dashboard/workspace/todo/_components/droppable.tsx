@@ -9,14 +9,19 @@ import {
 } from "@dnd-kit/sortable";
 import SortableItem from "@/app/(protected)/dashboard/workspace/todo/_components/sortable-item";
 import { TodoData } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
-import { useTodoContext } from "@/app/(protected)/dashboard/workspace/todo/_context/todo-context";
+import {
+  useSetActiveDroppable,
+  useSetAddSheetState,
+} from "@/store/workspace/to-do-controls";
 
 type Props = {
   data: TodoData;
 };
 
 export default function Droppable({ data: { status, items } }: Props) {
-  const { handleTodoModalStates, setDroppableId } = useTodoContext();
+  const setAddSheetState = useSetAddSheetState();
+  const activeDroppable = useSetActiveDroppable();
+
   const { setNodeRef } = useDroppable({ id: status });
   const totalItems = items && items.length > 0 ? items.length : 0;
 
@@ -27,8 +32,8 @@ export default function Droppable({ data: { status, items } }: Props) {
   // backdrop-blur-lg backdrop-filter
 
   function handleOpenSheet() {
-    handleTodoModalStates("add", true);
-    setDroppableId(() => status as "todo" | "inProgress");
+    setAddSheetState(true);
+    activeDroppable(status as "todo" | "inProgress");
   }
 
   return (

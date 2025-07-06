@@ -4,11 +4,8 @@ import { TAB_LIST } from "@/app/(protected)/dashboard/workspace/todo/_data/data"
 import TodoBoard from "@/app/(protected)/dashboard/workspace/todo/_components/to-do-board";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  TodoData,
   TodoTabList,
 } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
-import useAxiosFetch from "@/hooks/useAxiosFetch";
-import TodoProvider from "@/app/(protected)/dashboard/workspace/todo/_context/todo-context";
 
 export default function Page() {
   // const [containers, setContainers] = useState<TodoData[]>([
@@ -274,7 +271,7 @@ export default function Page() {
   //   },
   // ]);
 
-  const { data, setData } = useAxiosFetch<TodoData[]>("/tasks/", [], "tasks");
+  // const { data, setData } = useAxiosFetch<TodoData[]>("/tasks/", [], "tasks");
 
   return (
     <div className="space-y-12 h-full lg:h-[calc(100dvh-7rem)]">
@@ -313,11 +310,7 @@ export default function Page() {
             case "board":
               content = (
                 <TabsContent className="h-full" key={tabValue} value={tabValue}>
-                  {data && (
-                    <TodoProvider>
-                      <TodoBoard containers={data} setContainers={setData} />
-                    </TodoProvider>
-                  )}
+                  <TodoBoard />
                 </TabsContent>
               );
               break;

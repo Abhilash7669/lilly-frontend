@@ -49,7 +49,6 @@ import {
   TaskDTO,
   TaskDTOKey,
   TaskPayload,
-  TodoData,
 } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 import { ICON_SIZE } from "@/lib/utils";
 import { errorToast } from "@/lib/toast/toast-function";
@@ -63,16 +62,23 @@ import { DateRange } from "react-day-picker";
 import { LILLY_DATE } from "@/lib/lilly-utils/lilly-utils";
 import { format } from "date-fns";
 import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
-import { useTodoContext } from "@/app/(protected)/dashboard/workspace/todo/_context/todo-context";
 import AppSelect from "@/components/common/input-elements/app-select";
+import {
+  useActiveDroppable,
+  useIsAddSheetOpen,
+  useSetAddSheetState,
+} from "@/store/workspace/to-do-controls";
+import useInitTodoData from "@/hooks/useInitTodoData";
 
-type Props = {
-  containers: TodoData[];
-  setContainers: React.Dispatch<React.SetStateAction<TodoData[]>>;
-};
+export default function TodoBoard() {
 
-export default function TodoBoard({ containers, setContainers }: Props) {
-  const { handleTodoModalStates, modal, droppableId } = useTodoContext();
+
+  const { setTodoData: setContainers, todoData: containers } = useInitTodoData();
+
+  // zustand todocontrols states
+  const isAddSheetOpen = useIsAddSheetOpen();
+  const setAddSheetState = useSetAddSheetState();
+  const activeDroppable = useActiveDroppable();
 
   const [subTasks, setSubTasks] = useState<SubTasks[]>([]); // to set sub task at creation
 
@@ -148,9 +154,9 @@ export default function TodoBoard({ containers, setContainers }: Props) {
   ]);
 
   useEffect(() => {
-    if (droppableId)
-      setTaskDTO((prevState) => ({ ...prevState, status: droppableId }));
-  }, [droppableId]);
+    if (activeDroppable)
+      setTaskDTO((prevState) => ({ ...prevState, status: activeDroppable }));
+  }, [activeDroppable]);
 
   function findContainerId(
     itemId: UniqueIdentifier
@@ -483,7 +489,7 @@ export default function TodoBoard({ containers, setContainers }: Props) {
     // find if that droppable has any item;
 
     const containerIndex = containers.findIndex(
-      (item) => item.status === droppableId
+      (item) => item.status === activeDroppable
     );
 
     if (containerIndex === -1) {
@@ -515,7 +521,7 @@ export default function TodoBoard({ containers, setContainers }: Props) {
     const data = response?.data.task.taskItem;
 
     setIsLoading(() => false);
-    handleTodoModalStates("add", false);
+    setAddSheetState(false);
 
     setContainers((prevState) => {
       return prevState.map((item) => {
@@ -546,9 +552,7 @@ export default function TodoBoard({ containers, setContainers }: Props) {
         <div className="h-full w-full">
           {containers.length === 0 && (
             <div className="w-full h-full flex items-center justify-center">
-              <Button onClick={() => handleTodoModalStates("add", true)}>
-                Add Task
-              </Button>
+              <Button onClick={() => setAddSheetState(true)}>Add Task</Button>
             </div>
           )}
           {containers.length > 0 && (
@@ -561,9 +565,9 @@ export default function TodoBoard({ containers, setContainers }: Props) {
         </div>
       </DndContext>
       <SidePanel
-        open={modal.add.isOpen}
+        open={isAddSheetOpen}
         setOpen={(e) => {
-          handleTodoModalStates("add", e as boolean);
+          setAddSheetState(e as boolean);
           setSubTaskInput(() => "");
           setSubTaskState((prevState) => ({ ...prevState, isAdding: false }));
         }}

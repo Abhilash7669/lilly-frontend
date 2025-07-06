@@ -33,7 +33,7 @@ export default function SortableItem({
     transition,
     isDragging,
   } = useSortable({ id: _id });
-
+  
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -51,6 +51,7 @@ export default function SortableItem({
 
   const m_startDate = startDate ? format(startDate, "dd MMM yy") : "No start date";
   const m_dueDate = dueDate ? format(dueDate, "dd MMM yy") : "No due date";
+
 
   return (
     <div
