@@ -494,7 +494,14 @@ export default function TodoBoard() {
   }
 
   async function handleSendData() {
-    // todo: re-work this to update order of the new task
+    /* todo: 
+      
+        re-work this to update order of the new task - done
+        
+        re-work: initial-state
+        re-work: migrate to zustand 
+      
+    */
 
     /* 
       - check the status
@@ -844,6 +851,7 @@ export default function TodoBoard() {
         confirmVariant="destructive"
         open={isDeleteModalOpen}
         setOpen={(e) => setDeleteModal(e as boolean)}
+        onConfirm={async() => {}}
       >
         {activeItemId && (
           <p className="text-xs">

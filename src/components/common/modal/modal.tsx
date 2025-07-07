@@ -22,6 +22,7 @@ type Props = {
   cancelText?: string;
   confirmText?: string;
   confirmVariant?: "destructive" | "default";
+  onConfirm: () => Promise<void>;
   open: boolean;
   setOpen: React.Dispatch<SetStateAction<boolean>>;
 };
@@ -34,7 +35,8 @@ export const Modal = ({
   confirmText = "Confirm",
   open = false,
   setOpen,
-  confirmVariant = "default"
+  confirmVariant = "default",
+  onConfirm
 }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -54,7 +56,7 @@ export const Modal = ({
           <DialogClose asChild>
             <Button variant="outline">{cancelText}</Button>
           </DialogClose>
-          <Button variant={confirmVariant}>{confirmText}</Button>
+          <Button onClick={onConfirm} variant={confirmVariant}>{confirmText}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
