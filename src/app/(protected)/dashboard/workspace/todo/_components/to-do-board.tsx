@@ -65,11 +65,14 @@ import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
 import AppSelect from "@/components/common/input-elements/app-select";
 import {
   useActiveDroppable,
+  useDeleteModalState,
   useIsAddSheetOpen,
   useSetAddSheetState,
+  useSetDeleteModalState,
 } from "@/store/workspace/to-do-controls";
 import useInitTodoData from "@/hooks/useInitTodoData";
 import { useTodoData } from "@/store/workspace/to-do-data";
+import { Modal as DeleteModal } from "@/components/common/modal/modal";
 
 export default function TodoBoard() {
 
@@ -85,6 +88,8 @@ export default function TodoBoard() {
   const isAddSheetOpen = useIsAddSheetOpen();
   const setAddSheetState = useSetAddSheetState();
   const activeDroppable = useActiveDroppable();
+  const setDeleteModal = useSetDeleteModalState();
+  const isDeleteModalOpen = useDeleteModalState();
 
   const [subTasks, setSubTasks] = useState<SubTasks[]>([]); // to set sub task at creation
 
@@ -129,8 +134,6 @@ export default function TodoBoard() {
   const isInitialLoading = loading && containers.length === 0;
   const hasFetchedData = !loading && containers.length > 0;
   const isEmptyAfterFetch = !loading && containers.length === 0;
-
-  console.log(loading, "LOADING STATE");
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -594,6 +597,7 @@ export default function TodoBoard() {
           )}
         </div>
       </DndContext>
+      {/* modals & side-panel */}
       <SidePanel
         open={isAddSheetOpen}
         setOpen={(e) => {
@@ -830,6 +834,16 @@ export default function TodoBoard() {
           </div>
         </div>
       </SidePanel>
+      <DeleteModal
+        dialogHeader={{
+          title: "Delete Task",
+          description: "Are you sure you want to delete this task?"
+        }}
+        open={isDeleteModalOpen}
+        setOpen={(e) => setDeleteModal(e as boolean)}
+      >
+        {""}
+      </DeleteModal>
     </>
   );
 }

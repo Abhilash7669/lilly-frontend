@@ -17,6 +17,7 @@ import { TodoItems } from "@/app/(protected)/dashboard/workspace/todo/_types/typ
 import PriorityBadge from "@/app/(protected)/dashboard/workspace/todo/_components/priority-badge";
 import { ICON_SIZE } from "@/lib/utils";
 import { format } from "date-fns";
+import { useSetDeleteModalState } from "@/store/workspace/to-do-controls";
 
 type Props = {
   data: TodoItems;
@@ -34,6 +35,8 @@ export default function SortableItem({
     isDragging,
   } = useSortable({ id: _id });
   
+  const setDeleteModal = useSetDeleteModalState();
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -73,7 +76,7 @@ export default function SortableItem({
           </DropdownMenuTrigger>
           <DropdownMenuContent className="p-2 space-y-1">
             <DropdownMenuItem className="cursor-pointer">View</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => console.log(_id, "AJSHDJKAHD")} className="cursor-pointer transition-all focus:bg-destructive/70">
+            <DropdownMenuItem onClick={() => setDeleteModal(true)} className="cursor-pointer transition-all focus:bg-destructive/70">
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>

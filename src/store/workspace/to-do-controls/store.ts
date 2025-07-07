@@ -4,8 +4,10 @@ import { create } from "zustand";
 export const useTodoControls = create<TodoControlsStore>((set) => ({
   modal: {
     add: false,
+    delete: false
   },
-  setAddSheetState: (state: boolean) => set(() => ({ modal: { add: state } })),
+  setAddSheetState: (openState: boolean) => set(state => ({ modal: { add: openState, delete:  state.modal.delete } })),
+  setDeleteModal: (openState: boolean) => set(state => ({ modal: ({ add: state.modal.add, delete: openState })})),
   activeAddTarget: "todo",
   setActiveAddTarget: (target: "todo" | "inProgress") =>
     set(() => ({ activeAddTarget: target })),

@@ -5,5 +5,6 @@ import { create } from "zustand";
 export const useTodoDataStore = create<TodoDataStore>((set) => ({
     setTodoData: (data) => set((state) => ({ todoData: typeof data === "function" ? data(state.todoData) : data })),
     todoData: [],
-    itemId: null
+    itemId: null,
+    setActiveItemId: (id) => set(() => ({ itemId: id }))
 }));

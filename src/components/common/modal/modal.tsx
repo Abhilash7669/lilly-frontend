@@ -18,14 +18,14 @@ type Props = {
     title: string | number;
     description: string | number;
   };
-  children: React.ReactNode;
+  children?: React.ReactNode;
   cancelText?: string;
   confirmText?: string;
   open: boolean;
   setOpen: React.Dispatch<SetStateAction<boolean>>;
 };
 
-export default function Modal({
+export const Modal = ({
   dialogTrigger,
   dialogHeader = { title: "", description: "" },
   children,
@@ -33,9 +33,9 @@ export default function Modal({
   confirmText = "Confirm",
   open = false,
   setOpen,
-}: Props) {
+}: Props) => {
   return (
-    <Dialog  open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={setOpen}>
       {dialogTrigger && <DialogTrigger asChild>{dialogTrigger}</DialogTrigger>}
       <DialogContent>
         {dialogHeader && (
@@ -44,10 +44,10 @@ export default function Modal({
               <DialogTitle>{dialogHeader.title}&#x1F52E;</DialogTitle>
               <DialogDescription>{dialogHeader.description}</DialogDescription>
             </DialogHeader>
-            <Separator className="bg-muted-foreground" />
+            {children && <Separator className="bg-muted-foreground" />}
           </>
         )}
-        {children}
+        {children && children}
         <DialogFooter>
           <DialogClose asChild>
             <Button variant="outline">{cancelText}</Button>
@@ -57,4 +57,4 @@ export default function Modal({
       </DialogContent>
     </Dialog>
   );
-}
+};
