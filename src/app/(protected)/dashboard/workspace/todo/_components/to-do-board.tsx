@@ -69,11 +69,18 @@ import {
   useSetAddSheetState,
 } from "@/store/workspace/to-do-controls";
 import useInitTodoData from "@/hooks/useInitTodoData";
+import { useTodoData } from "@/store/workspace/to-do-data";
 
 export default function TodoBoard() {
 
+  const data = useTodoData();
+  const hasData = data.length > 0;
+  const {
+    setTodoData: setContainers,
+    todoData: containers,
+    loading,
+  } = useInitTodoData({ hasData });
 
-  const { setTodoData: setContainers, todoData: containers } = useInitTodoData();
 
   // zustand todocontrols states
   const isAddSheetOpen = useIsAddSheetOpen();
@@ -119,6 +126,10 @@ export default function TodoBoard() {
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
   const addInputRef = useRef<HTMLInputElement | null>(null);
   const editInputRef = useRef<HTMLInputElement | null>(null);
+
+  const isInitialLoading = loading && containers.length === 0;
+  const hasFetchedData = !loading && containers.length > 0;
+  const isEmptyAfterFetch = !loading && containers.length === 0;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -550,17 +561,35 @@ export default function TodoBoard() {
         onDragEnd={handleDragEnd}
       >
         <div className="h-full w-full">
-          {containers.length === 0 && (
-            <div className="w-full h-full flex items-center justify-center">
-              <Button onClick={() => setAddSheetState(true)}>Add Task</Button>
-            </div>
-          )}
-          {containers.length > 0 && (
+          {isInitialLoading ? (
             <div className="grid sm:grid-cols-3 sm:gap-2 lg:gap-6 h-full">
-              {containers.map((item) => {
-                return <Droppable key={item.status} data={item} />;
-              })}
+              {[0, 1, 2].map(
+                item => (
+                  <div className="py-4 rounded-xl bg-card-foreground/20 space-y-2 h-full" key={item}>
+                    {[0, 1, 2, 4, 5, 6].map(
+                      card => <div key={card} className="bg-card rounded-xl px-6 py-5 animate-pulse w-[98%] h-[12rem] mx-auto"></div>
+                    )}
+                  </div>
+                )
+              )}
             </div>
+          ) : (
+            <>
+              {isEmptyAfterFetch && (
+                <div className="w-full h-full flex items-center justify-center">
+                  <Button onClick={() => setAddSheetState(true)}>
+                    Add Task
+                  </Button>
+                </div>
+              )}
+              {hasFetchedData && (
+                <div className="grid sm:grid-cols-3 sm:gap-2 lg:gap-6 h-full">
+                  {containers.map((item) => {
+                    return <Droppable key={item.status} data={item} />;
+                  })}
+                </div>
+              )}
+            </>
           )}
         </div>
       </DndContext>
