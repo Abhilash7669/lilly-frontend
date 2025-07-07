@@ -55,7 +55,7 @@ export default function useAxiosFetch<T>(
     })();
 
     return () => {
-      setLoading(() => true);
+      setLoading(() => false);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

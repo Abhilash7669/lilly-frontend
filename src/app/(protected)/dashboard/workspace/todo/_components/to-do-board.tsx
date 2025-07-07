@@ -74,12 +74,11 @@ import { useTodoData } from "@/store/workspace/to-do-data";
 export default function TodoBoard() {
 
   const data = useTodoData();
-  const hasData = data.length > 0;
   const {
     setTodoData: setContainers,
     todoData: containers,
     loading,
-  } = useInitTodoData({ hasData });
+  } = useInitTodoData({ hasData: data.length > 0 });
 
 
   // zustand todocontrols states
@@ -130,6 +129,8 @@ export default function TodoBoard() {
   const isInitialLoading = loading && containers.length === 0;
   const hasFetchedData = !loading && containers.length > 0;
   const isEmptyAfterFetch = !loading && containers.length === 0;
+
+  console.log(loading, "LOADING STATE");
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
