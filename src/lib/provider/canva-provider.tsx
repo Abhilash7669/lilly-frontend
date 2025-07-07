@@ -104,7 +104,7 @@ export default function CanvaProvider({ children }: Props) {
           }
 
           pulse() {
-            this.alpha += 0.01 * this.alphaDirection;
+            this.alpha += 0.009 * this.alphaDirection;
 
             if (this.alpha > 1) {
               this.alpha = 1;
