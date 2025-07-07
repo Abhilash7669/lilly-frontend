@@ -28,7 +28,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverTrigger } from "@/components/ui/popover";
-// import { format } from "date-fns";
 import {
   CalendarIcon,
   Check,
@@ -71,12 +70,14 @@ import {
   useSetDeleteModalState,
 } from "@/store/workspace/to-do-controls";
 import useInitTodoData from "@/hooks/useInitTodoData";
-import { useTodoData } from "@/store/workspace/to-do-data";
+import { useActiveItemId, useTodoData } from "@/store/workspace/to-do-data";
 import { Modal as DeleteModal } from "@/components/common/modal/modal";
 
 export default function TodoBoard() {
 
+  // zustand data store
   const data = useTodoData();
+  const activeItemId = useActiveItemId();
   const {
     setTodoData: setContainers,
     todoData: containers,
@@ -842,7 +843,11 @@ export default function TodoBoard() {
         open={isDeleteModalOpen}
         setOpen={(e) => setDeleteModal(e as boolean)}
       >
-        {""}
+        {activeItemId && (
+          <p className="text-xs">
+            {activeItemId}
+          </p>
+        )}
       </DeleteModal>
     </>
   );
