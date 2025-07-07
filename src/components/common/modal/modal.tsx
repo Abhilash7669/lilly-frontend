@@ -21,6 +21,7 @@ type Props = {
   children?: React.ReactNode;
   cancelText?: string;
   confirmText?: string;
+  confirmVariant?: "destructive" | "default";
   open: boolean;
   setOpen: React.Dispatch<SetStateAction<boolean>>;
 };
@@ -33,6 +34,7 @@ export const Modal = ({
   confirmText = "Confirm",
   open = false,
   setOpen,
+  confirmVariant = "default"
 }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -52,7 +54,7 @@ export const Modal = ({
           <DialogClose asChild>
             <Button variant="outline">{cancelText}</Button>
           </DialogClose>
-          <Button>{confirmText}</Button>
+          <Button variant={confirmVariant}>{confirmText}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

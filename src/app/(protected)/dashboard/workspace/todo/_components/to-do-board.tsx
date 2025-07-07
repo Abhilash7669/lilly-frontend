@@ -572,7 +572,7 @@ export default function TodoBoard() {
                 item => (
                   <div className="py-4 rounded-xl bg-card-foreground/20 space-y-2 h-full" key={item}>
                     {[0, 1, 2, 4, 5, 6].map(
-                      card => <div key={card} className="bg-card rounded-xl px-6 py-5 animate-pulse w-[98%] h-[12rem] mx-auto"></div>
+                      card => <div key={card} className="bg-card rounded-xl px-6 py-5 animate-pulse w-[94%] h-[8rem] mx-auto"></div>
                     )}
                   </div>
                 )
@@ -840,12 +840,14 @@ export default function TodoBoard() {
           title: "Delete Task",
           description: "Are you sure you want to delete this task?"
         }}
+        confirmText="Delete"
+        confirmVariant="destructive"
         open={isDeleteModalOpen}
         setOpen={(e) => setDeleteModal(e as boolean)}
       >
         {activeItemId && (
           <p className="text-xs">
-            {activeItemId}
+            Delete task: {activeItemId}
           </p>
         )}
       </DeleteModal>
