@@ -560,6 +560,11 @@ export default function TodoBoard() {
     });
 
     // console.log(response, "RESPONSE");
+  };
+
+  async function handleTestDelete() {
+    const response = await AXIOS_CLIENT.delete(`/tasks/delete/${activeItemId}`);
+    console.log(response, "RESPONSE")
   }
 
   return (
@@ -851,7 +856,7 @@ export default function TodoBoard() {
         confirmVariant="destructive"
         open={isDeleteModalOpen}
         setOpen={(e) => setDeleteModal(e as boolean)}
-        onConfirm={async() => {}}
+        onConfirm={handleTestDelete}
       >
         {activeItemId && (
           <p className="text-xs">

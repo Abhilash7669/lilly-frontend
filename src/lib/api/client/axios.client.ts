@@ -25,14 +25,17 @@ export const AXIOS_CLIENT = {
     const token = await getCookie();
 
     try {
-      const m_data = await axios.get<T & CustomResponse>(`${ENV.BASEURL}${url}`, {
-        headers: {
-          Authorization: `Bearer ${token ? token : null}`,
-        },
-        params: m_urlParams ?? null,
-        signal: AbortSignal.timeout(5000),
-        timeoutErrorMessage: "Request Timed out",
-      });
+      const m_data = await axios.get<T & CustomResponse>(
+        `${ENV.BASEURL}${url}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token ? token : null}`,
+          },
+          params: m_urlParams ?? null,
+          signal: AbortSignal.timeout(5000),
+          timeoutErrorMessage: "Request Timed out",
+        }
+      );
 
       toast(m_data.data.title || "Success", {
         description: m_data.data.message || "Welcome",
@@ -40,7 +43,7 @@ export const AXIOS_CLIENT = {
         style: {
           background: "var(--custom-success)",
           border: "1px var(--custom-success-border) solid",
-          color: "var(--custom-toast-text)"
+          color: "var(--custom-toast-text)",
         },
       });
 
@@ -61,7 +64,6 @@ export const AXIOS_CLIENT = {
       });
 
       return null;
-
     }
   },
   post: async function <T, U>(
@@ -76,16 +78,20 @@ export const AXIOS_CLIENT = {
     if (config?.params) m_urlParams = qs.stringify(config.params);
 
     try {
-      const m_data = await axios.post<U & CustomResponse>(`${ENV.BASEURL}${url}`, data, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token ? token : null}`,
-        },
-        params: m_urlParams || null,
-        signal: AbortSignal.timeout(5000),
-        timeoutErrorMessage: "Request Timed out",
-        ...config,
-      });
+      const m_data = await axios.post<U & CustomResponse>(
+        `${ENV.BASEURL}${url}`,
+        data,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token ? token : null}`,
+          },
+          params: m_urlParams || null,
+          signal: AbortSignal.timeout(5000),
+          timeoutErrorMessage: "Request Timed out",
+          ...config,
+        }
+      );
 
       const isSuccess = m_data.data.success;
 
@@ -93,14 +99,17 @@ export const AXIOS_CLIENT = {
         description: m_data.data.message || "Welcome",
         duration: 3400,
         style: {
-          background: isSuccess ? "var(--custom-success)" : "var(--custom-error)",
-          border: isSuccess ? "1px var(--custom-success-border) solid" : "1px var(--custom-error-border) solid",
-          color: "var(--custom-toast-text)"
+          background: isSuccess
+            ? "var(--custom-success)"
+            : "var(--custom-error)",
+          border: isSuccess
+            ? "1px var(--custom-success-border) solid"
+            : "1px var(--custom-error-border) solid",
+          color: "var(--custom-toast-text)",
         },
       });
 
       return m_data.data;
-
     } catch (error) {
       const axiosError = error as AxiosError<CustomResponse>;
 
@@ -114,7 +123,48 @@ export const AXIOS_CLIENT = {
         style: {
           background: "var(--custom-error)",
           border: "1px var(--custom-error-border) solid",
-          color: "var(--custom-toast-text)"
+          color: "var(--custom-toast-text)",
+        },
+      });
+
+      return null;
+    }
+  },
+  delete: async function(url: string) {
+    const token = await getCookie();
+
+    try {
+      const m_data = await axios.delete(`${ENV.BASEURL}${url}`, {
+        headers: {
+          Authorization: `Bearer ${token ? token : null}`,
+        },
+        signal: AbortSignal.timeout(5000),
+        timeoutErrorMessage: "Request Timed out",
+      });
+
+      toast(m_data.data.title || "Success", {
+        description: m_data.data.message || "Welcome",
+        duration: 3400,
+        style: {
+          background: "var(--custom-success)",
+          border: "1px var(--custom-success-border) solid",
+          color: "var(--custom-toast-text)",
+        },
+      });
+
+      return m_data.data;
+    } catch (error) {
+      const axiosError = error as AxiosError<CustomResponse>;
+
+      if (!axiosError.response) {
+        console.error(error);
+        throw axiosError;
+      }
+
+      toast.error(axiosError.response.data.title || "Error", {
+        description: axiosError.response.data.message || "Something went wrong",
+        style: {
+          background: "oklch(--custom-error)",
         },
       });
 
