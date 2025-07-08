@@ -563,7 +563,11 @@ export default function TodoBoard() {
   };
 
   async function handleTestDelete() {
-    const response = await AXIOS_CLIENT.delete(`/tasks/delete/${activeItemId}`);
+    const response = await AXIOS_CLIENT.delete(`/tasks/delete/${activeItemId}`, { 
+      params: {
+        status: activeDroppable
+      }
+    });
     console.log(response, "RESPONSE")
   }
 

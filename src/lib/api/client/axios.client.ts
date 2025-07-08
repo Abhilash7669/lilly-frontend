@@ -130,16 +130,22 @@ export const AXIOS_CLIENT = {
       return null;
     }
   },
-  delete: async function(url: string) {
+  delete: async function(url: string, config?: AxiosRequestConfig) {
     const token = await getCookie();
+
+    let m_urlParams;
+
+    if (config?.params) m_urlParams = qs.stringify(config.params);
 
     try {
       const m_data = await axios.delete(`${ENV.BASEURL}${url}`, {
         headers: {
           Authorization: `Bearer ${token ? token : null}`,
         },
+        params: m_urlParams || null,
         signal: AbortSignal.timeout(5000),
         timeoutErrorMessage: "Request Timed out",
+        ...config
       });
 
       toast(m_data.data.title || "Success", {
