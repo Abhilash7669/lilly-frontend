@@ -115,6 +115,27 @@ export default function CanvaProvider({ children }: Props) {
             }
           }
 
+          line() {
+            // distance between two points = sqrt (x2 - x1)^2 - (y2 - y1)^2;
+
+            if(ctx && mouse.x && mouse.y) {
+
+              const distance = Math.sqrt((mouse.x - this.x) ** 2 + (mouse.y - this.y) **2);
+
+              if(distance < 100) {
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(mouse.x, mouse.y);
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = color;
+                ctx.stroke()
+              }
+
+            }
+
+
+           }
+
           update() {
             if (this.x - this.r > innerWidth || this.x - this.r < 0)
               this.dx = -this.dx;
@@ -139,11 +160,12 @@ export default function CanvaProvider({ children }: Props) {
             this.y += this.dy;
             this.draw();
             this.pulse();
+            this.line();
           }
         }
 
         const circleArray: Circle[] = [];
-        const numberOfCircles = 60;
+        const numberOfCircles = 72;
         const radius = 1;
         const mxr = 40;
 

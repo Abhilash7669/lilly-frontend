@@ -88,7 +88,8 @@
   --todo-container: oklch(0.8699 0 0);
   --todo-card: oklch(0.9491 0 0);
 
-  --canva-circle: oklch(0.3161 0.0146 17.95 / 0.8);
+  /* --canva-circle: oklch(0.3161 0.0146 17.95); */
+  --canva-circle: oklch(0 0 0 );
 }
 
 .dark {
