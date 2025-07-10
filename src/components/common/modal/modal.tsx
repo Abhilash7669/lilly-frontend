@@ -10,6 +10,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { ICON_SIZE } from "@/lib/utils";
+import { LoaderCircle } from "lucide-react";
 import { JSX, SetStateAction } from "react";
 
 type Props = {
@@ -25,6 +27,7 @@ type Props = {
   onConfirm: () => Promise<void>;
   open: boolean;
   setOpen: React.Dispatch<SetStateAction<boolean>>;
+  isLoading: boolean;
 };
 
 export const Modal = ({
@@ -36,7 +39,8 @@ export const Modal = ({
   open = false,
   setOpen,
   confirmVariant = "default",
-  onConfirm
+  onConfirm,
+  isLoading = false
 }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -56,7 +60,14 @@ export const Modal = ({
           <DialogClose asChild>
             <Button variant="outline">{cancelText}</Button>
           </DialogClose>
-          <Button onClick={onConfirm} variant={confirmVariant}>{confirmText}</Button>
+          <Button disabled={isLoading} onClick={onConfirm} variant={confirmVariant}>
+            {
+              isLoading ?
+              <LoaderCircle className={`${ICON_SIZE.small} animate-spin`} />
+              :
+              confirmText
+            }
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

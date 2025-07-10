@@ -130,7 +130,7 @@ export const AXIOS_CLIENT = {
       return null;
     }
   },
-  delete: async function(url: string, config?: AxiosRequestConfig) {
+  delete: async function<T>(url: string, config?: AxiosRequestConfig): Promise<T | null> {
     const token = await getCookie();
 
     let m_urlParams;

@@ -48,6 +48,7 @@ import {
   TaskDTO,
   TaskDTOKey,
   TaskPayload,
+  TodoData,
 } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 import { ICON_SIZE } from "@/lib/utils";
 import { errorToast } from "@/lib/toast/toast-function";
@@ -72,9 +73,9 @@ import {
 import useInitTodoData from "@/hooks/useInitTodoData";
 import { useActiveItemId, useTodoData } from "@/store/workspace/to-do-data";
 import { Modal as DeleteModal } from "@/components/common/modal/modal";
+import { BasicResponse } from "@/lib/types/api";
 
 export default function TodoBoard() {
-
   // zustand data store
   const data = useTodoData();
   const activeItemId = useActiveItemId();
@@ -83,8 +84,6 @@ export default function TodoBoard() {
     todoData: containers,
     loading,
   } = useInitTodoData({ hasData: data.length > 0 });
-
-  console.log(containers, "DATA");
 
   // zustand todocontrols states
   const isAddSheetOpen = useIsAddSheetOpen();
@@ -124,7 +123,7 @@ export default function TodoBoard() {
     },
   });
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false); // todo: later segregate loading to object for add sheet and delete modal
 
   const [activeid, setActiveId] = useState<UniqueIdentifier | null>(null);
   void activeid;
@@ -521,9 +520,13 @@ export default function TodoBoard() {
       return;
     }
 
-    const order = containers[containerIndex].items.sort(function (a, b) {
+    const copyOfContainer = [...containers];
+
+    const order = copyOfContainer[containerIndex].items.sort(function (a, b) {
       return b.order - a.order;
     });
+
+    console.log(order, "ORDER sorted in DESC");
 
     const currentOrder = order[0].order;
 
@@ -533,6 +536,8 @@ export default function TodoBoard() {
       subTasks: subTasks,
       order: currentOrder + 1,
     };
+
+    console.log(currentOrder, "CURRENT ORDER");
 
     const response = await AXIOS_CLIENT.post<TaskPayload, TaskAddResponse>(
       "/tasks/add",
@@ -561,15 +566,108 @@ export default function TodoBoard() {
     });
 
     // console.log(response, "RESPONSE");
-  };
+  }
 
   async function handleTestDelete() {
-    const response = await AXIOS_CLIENT.delete(`/tasks/delete/${activeItemId}`, { 
-      params: {
-        status: activeDroppable
+    setIsLoading(() => true);
+    // find container
+    const containerIndex = findUpdatedContainerIndex(
+      containers,
+      activeDroppable
+    );
+
+    if (containerIndex === -1) {
+      errorToast("Error", "Could not find container Index");
+      setIsLoading(() => false);
+      return;
+    }
+    
+    // find the order of the item
+    const deletedTask = containers[containerIndex].items.find(
+      (item) => item._id === activeItemId
+    );
+    
+    if (!deletedTask) {
+      errorToast("Error", "Could not find task");
+      setIsLoading(() => false);
+      return;
+    }
+    
+    const response = await AXIOS_CLIENT.delete<BasicResponse<unknown>>(
+      `/tasks/delete/${activeItemId}`,
+      {
+        params: {
+          status: activeDroppable,
+        },
       }
+    );
+    
+    if (!response) {
+      setIsLoading(() => false);
+      return;
+    };
+
+    // success - update the order
+    /* 
+      3 conditions
+        - item order is 0
+        - item order is highest
+        - item order is in between
+    */
+
+    setContainers((prevState) => {
+      let updatedContainers: TodoData[] = [];
+
+      // item order is 0 - CONDITION_A
+      if (deletedTask.order === 0) {
+        const updatedItemsArray = prevState[containerIndex].items
+          .filter((item) => item._id !== activeItemId)
+          .map((task) => {
+            if (task.order > 0) {
+              return {
+                ...task,
+                order: task.order - 1,
+              };
+            }
+
+            return task;
+          });
+
+        updatedContainers = prevState.map(
+          item => {
+            if(item.status === activeDroppable) {
+              return {
+                status: item.status,
+                items: updatedItemsArray
+              }
+            }
+            return item;
+          }
+        )
+
+        return updatedContainers;
+      }
+
+      return prevState;
     });
-    console.log(response, "RESPONSE")
+    setIsLoading(() => false);
+    setDeleteModal(false);
+
+  }
+
+  function findUpdatedContainerIndex(
+    containersArray: TodoData[],
+    status: string
+  ): number {
+    const containerIndex = containersArray.findIndex(
+      (item) => item.status === status
+    );
+
+    if (containerIndex === -1) {
+      return -1;
+    }
+
+    return containerIndex;
   }
 
   return (
@@ -585,15 +683,19 @@ export default function TodoBoard() {
         <div className="h-full w-full">
           {isInitialLoading ? (
             <div className="grid sm:grid-cols-3 sm:gap-2 lg:gap-6 h-full">
-              {[0, 1, 2].map(
-                item => (
-                  <div className="py-4 rounded-xl bg-card-foreground/20 space-y-2 h-full" key={item}>
-                    {[0, 1, 2, 4, 5, 6].map(
-                      card => <div key={card} className="bg-card rounded-xl px-6 py-5 animate-pulse w-[94%] h-[8rem] mx-auto"></div>
-                    )}
-                  </div>
-                )
-              )}
+              {[0, 1, 2].map((item) => (
+                <div
+                  className="py-4 rounded-xl bg-card-foreground/20 space-y-2 h-full"
+                  key={item}
+                >
+                  {[0, 1, 2, 4, 5, 6].map((card) => (
+                    <div
+                      key={card}
+                      className="bg-card rounded-xl px-6 py-5 animate-pulse w-[94%] h-[8rem] mx-auto"
+                    ></div>
+                  ))}
+                </div>
+              ))}
             </div>
           ) : (
             <>
@@ -853,9 +955,10 @@ export default function TodoBoard() {
         </div>
       </SidePanel>
       <DeleteModal
+        isLoading={isLoading}
         dialogHeader={{
           title: "Delete Task",
-          description: "Are you sure you want to delete this task?"
+          description: "Are you sure you want to delete this task?",
         }}
         confirmText="Delete"
         confirmVariant="destructive"
@@ -863,11 +966,7 @@ export default function TodoBoard() {
         setOpen={(e) => setDeleteModal(e as boolean)}
         onConfirm={handleTestDelete}
       >
-        {activeItemId && (
-          <p className="text-xs">
-            Delete task: {activeItemId}
-          </p>
-        )}
+        {activeItemId && <p className="text-xs">Delete task: {activeItemId}</p>}
       </DeleteModal>
     </>
   );
