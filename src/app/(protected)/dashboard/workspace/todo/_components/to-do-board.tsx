@@ -84,6 +84,7 @@ export default function TodoBoard() {
     loading,
   } = useInitTodoData({ hasData: data.length > 0 });
 
+  console.log(containers, "DATA");
 
   // zustand todocontrols states
   const isAddSheetOpen = useIsAddSheetOpen();

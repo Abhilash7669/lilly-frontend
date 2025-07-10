@@ -30,7 +30,6 @@ export default function Droppable({ data: { status, items } }: Props) {
   // ${id === "done" && "bg-emerald-600/20"}
 
   // backdrop-blur-lg backdrop-filter
-
   function handleOpenSheet() {
     setAddSheetState(true);
     activeDroppable(status as "todo" | "inProgress");

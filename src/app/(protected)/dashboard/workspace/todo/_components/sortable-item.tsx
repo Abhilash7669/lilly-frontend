@@ -17,7 +17,7 @@ import { TodoItems } from "@/app/(protected)/dashboard/workspace/todo/_types/typ
 import PriorityBadge from "@/app/(protected)/dashboard/workspace/todo/_components/priority-badge";
 import { ICON_SIZE } from "@/lib/utils";
 import { format } from "date-fns";
-import { useSetDeleteModalState } from "@/store/workspace/to-do-controls";
+import { useSetActiveDroppable, useSetDeleteModalState } from "@/store/workspace/to-do-controls";
 import { useSetActiveItemId } from "@/store/workspace/to-do-data";
 
 type Props = {
@@ -25,7 +25,7 @@ type Props = {
 };
 
 export default function SortableItem({
-  data: { _id, name, summary, subTasks, priority, tags, dueDate, startDate },
+  data: { _id, name, summary, subTasks, priority, tags, dueDate, startDate, status },
 }: Props) {
   const {
     attributes,
@@ -38,6 +38,8 @@ export default function SortableItem({
   
   const setDeleteModal = useSetDeleteModalState();
   const setActiveItem = useSetActiveItemId();
+  const setActiveDroppable = useSetActiveDroppable();
+
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -60,11 +62,13 @@ export default function SortableItem({
   function handleOpenDeleteModal() {
     setActiveItem(_id);
     setDeleteModal(true);
+    setActiveDroppable(status as "inProgress" | "todo");
   }
 
 
   return (
     <div
+      key={_id}
       ref={setNodeRef}
       style={style}
       {...attributes}

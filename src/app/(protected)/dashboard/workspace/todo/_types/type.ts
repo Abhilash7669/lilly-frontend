@@ -49,6 +49,7 @@ export type TodoItems = {
   name: string;
   summary?: string;
   tags: Array<string>;
+  status: StatusValue;
   priority: Priority;
   order: number;
   subTasks: Array<SubTasks>;
