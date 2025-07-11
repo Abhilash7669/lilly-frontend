@@ -494,8 +494,6 @@ export default function TodoBoard() {
   }
 
   async function handleSendData() {
-    console.log("HIT!");
-    const startTime = new Date().getTime();
     /* todo: 
       
         re-work this to update order of the new task - done
@@ -579,14 +577,11 @@ export default function TodoBoard() {
       });
     });
 
-    const endTime = new Date().getTime();
 
-    console.log(endTime - startTime);
   }
 
-  async function handleTestDelete() {
+  async function handleDelete() {
     setIsLoading(() => true);
-    const startTime = new Date().getTime();
     // find container
     const containerIndex = findUpdatedContainerIndex(
       containers,
@@ -599,20 +594,29 @@ export default function TodoBoard() {
       return;
     }
 
-    // find the order of the item
-    const deletedTask = containers[containerIndex].items.find(
-      (item) => item._id === activeItemId
-    );
+    const isContainerEmpty = containers[containerIndex].items.length === 0;
 
-    if (!deletedTask) {
-      errorToast("Error", "Could not find task");
-      setIsLoading(() => false);
+    if(isContainerEmpty) {
+      errorToast("Error", "Container is empty");
+      setDeleteModal(false);
       return;
     }
 
-    const highestTaskOrder = containers[containerIndex].items.sort(
-      (a, b) => b.order - a.order
-    )[0].order;
+    const containerDeepCopy = [...containers[containerIndex].items];
+
+    const deletedTask = containerDeepCopy.find(
+      item => item._id === activeItemId
+    );
+
+    // find the order of the item
+    if (!deletedTask) {
+      errorToast("Error", "Could not find task");
+      setIsLoading(() => false);
+      setDeleteModal(false);
+      return;
+    }
+
+    const highestTaskOrder = containerDeepCopy.sort((a, b) => b.order - a.order)[0].order;
 
     const response = await AXIOS_CLIENT.delete<BasicResponse<unknown>>(
       `/tasks/delete/${activeItemId}`,
@@ -625,6 +629,7 @@ export default function TodoBoard() {
 
     if (!response) {
       setIsLoading(() => false);
+      setDeleteModal(false);
       return;
     }
 
@@ -672,7 +677,7 @@ export default function TodoBoard() {
       if (deletedTask.order === highestTaskOrder) {
         // highest order
         const updatedItemsArray = filteredItemsArray.map((task) => {
-          if (task.order !== 0) {
+          if (task.order > 0) {
             return {
               ...task,
               order: task.order - 1,
@@ -707,8 +712,6 @@ export default function TodoBoard() {
           return task;
         });
 
-        console.log(updatedItemsArray, "UPDATED");
-
         updatedContainers = prevState.map((item) => {
           if (item.status === activeDroppable) {
             return {
@@ -727,8 +730,6 @@ export default function TodoBoard() {
     });
     setIsLoading(() => false);
     setDeleteModal(false);
-    const endTime = new Date().getTime();
-    console.log(endTime - startTime);
   }
 
   function findUpdatedContainerIndex(
@@ -1040,7 +1041,7 @@ export default function TodoBoard() {
         confirmVariant="destructive"
         open={isDeleteModalOpen}
         setOpen={(e) => setDeleteModal(e as boolean)}
-        onConfirm={handleTestDelete}
+        onConfirm={handleDelete}
       >
         {activeItemId && <p className="text-xs">Delete task: {activeItemId}</p>}
       </DeleteModal>
