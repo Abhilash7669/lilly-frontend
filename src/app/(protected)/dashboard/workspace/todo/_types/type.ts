@@ -12,7 +12,7 @@ export type TaskDTOKey =
 export type StatusValue = "todo" | "inProgress" | "done";
 export type StatusLabel = "Todo" | "In Progress" | "Done";
 
-export type TodoTabList = "over-view" | "board" | "table";
+export type TodoTabList = "over-view" | "tasks";
 
 export type SubTaskState = {
   isAdding: boolean;

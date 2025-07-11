@@ -1,11 +1,9 @@
 "use client";
 
 import { TAB_LIST } from "@/app/(protected)/dashboard/workspace/todo/_data/data";
-import TodoBoard from "@/app/(protected)/dashboard/workspace/todo/_components/to-do-board";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  TodoTabList,
-} from "@/app/(protected)/dashboard/workspace/todo/_types/type";
+import { TodoTabList } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
+import TodoContainer from "@/app/(protected)/dashboard/workspace/todo/_components/to-do-container";
 
 export default function Page() {
   // const [containers, setContainers] = useState<TodoData[]>([
@@ -276,17 +274,17 @@ export default function Page() {
   return (
     <div className="space-y-12 h-full lg:h-[calc(100dvh-7rem)]">
       <Tabs className="h-full" defaultValue={TAB_LIST[0].value || "over-view"}>
-        <div className="space-y-4 border-b">
-          <div>
+        <div className="border-b">
+          {/* <div>
             <h1 className="text-2xl">My Tasks</h1>
             <p className="text-sm text-muted-foreground">
               Keep track of your tasks
             </p>
-          </div>
+          </div> todo: some text */}
           <TabsList className="max-w-xs p-0 justify-start bg-transparent rounded-none gap-2">
             {TAB_LIST.map((tab) => (
               <TabsTrigger
-                className="rounded-none cursor-pointer bg-transparent h-full data-[state=active]:shadow-none border-b-2 border-t-0 border-r-0 border-l-0 border-transparent data-[state=active]:border-primary dark:data-[state=active]:border-primary"
+                className="rounded-none cursor-pointer bg-transparent h-full data-[state=active]:shadow-none data-[state=active]:!bg-transparent border-b-2 border-t-0 border-r-0 border-l-0 border-transparent data-[state=active]:border-primary dark:data-[state=active]:border-primary"
                 key={tab.value}
                 value={tab.value}
               >
@@ -307,17 +305,10 @@ export default function Page() {
                 </TabsContent>
               );
               break;
-            case "board":
+            case "tasks":
               content = (
                 <TabsContent className="h-full" key={tabValue} value={tabValue}>
-                  <TodoBoard />
-                </TabsContent>
-              );
-              break;
-            case "table":
-              content = (
-                <TabsContent key={tabValue} value={tabValue}>
-                  <p>Table</p>
+                  <TodoContainer />
                 </TabsContent>
               );
               break;

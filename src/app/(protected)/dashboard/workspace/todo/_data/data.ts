@@ -1,5 +1,5 @@
 import { TASK_PRIORITY, TaskPrioritySelectOptions, TaskStatusSelectOptions } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
-import { LucideProps, SquareKanban, Table, Target } from "lucide-react";
+import { ListChecks, LucideProps, Target } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
 export const TAB_LIST: {
@@ -10,8 +10,7 @@ export const TAB_LIST: {
   >;
 }[] = [
   { value: "over-view", label: "Overview", icon: Target },
-  { value: "board", label: "Board", icon: SquareKanban },
-  { value: "table", label: "Table", icon: Table },
+  { value: "tasks", label: "Tasks", icon: ListChecks },
 ];
 
 

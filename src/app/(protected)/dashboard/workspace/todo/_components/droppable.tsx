@@ -38,7 +38,7 @@ export default function Droppable({ data: { status, items } }: Props) {
   return (
     <div className="py-4 h-fit">
       <div
-        className={`py-4 rounded-xl bg-card-foreground/5
+        className={`py-4 rounded-xl border
         `}
         ref={setNodeRef}
       >
@@ -76,7 +76,7 @@ export default function Droppable({ data: { status, items } }: Props) {
             items={items.map((item) => item._id)}
             strategy={verticalListSortingStrategy}
           >
-            <ScrollArea className="h-[22rem] lg:h-[calc(100dvh-20rem)] flex rounded-xl">
+            <ScrollArea className="h-[22rem] lg:h-[calc(100dvh-17.2rem)] flex rounded-xl">
               <div className="space-y-4 lg:space-y-6 h-full">
                 {items.map((task) => (
                   <SortableItem key={task._id} data={task} />

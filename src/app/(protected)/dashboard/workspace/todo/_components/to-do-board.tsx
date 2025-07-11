@@ -69,20 +69,19 @@ import {
   useSetAddSheetState,
   useSetDeleteModalState,
 } from "@/store/workspace/to-do-ui";
-import useInitTodoData from "@/hooks/useInitTodoData";
-import { useActiveDroppable, useActiveItemId, useTodoData } from "@/store/workspace/to-do-data";
+import { useActiveDroppable, useActiveItemId } from "@/store/workspace/to-do-data";
 import { Modal as DeleteModal } from "@/components/common/modal/modal";
 import { BasicResponse } from "@/lib/types/api";
 
-export default function TodoBoard() {
+type Props = {
+  setContainers: React.Dispatch<React.SetStateAction<TodoData[]>>;
+  containers: TodoData[] | [];
+  loading: boolean;
+}
+
+export default function TodoBoard({ setContainers, containers, loading }: Props) {
   // zustand data store
-  const data = useTodoData();
   const activeItemId = useActiveItemId();
-  const {
-    setTodoData: setContainers,
-    todoData: containers,
-    loading,
-  } = useInitTodoData({ hasData: data.length > 0 });
 
   // zustand todocontrols states
   const isAddSheetOpen = useIsAddSheetOpen();
