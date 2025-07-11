@@ -10,7 +10,7 @@ type Props = {
 export default function useInitTodoData({ hasData }: Props) {
   const { data, loading } = useAxiosFetch<TodoData[]>(
     "/tasks/",
-    [{status: "todo", items: []}, { status: "inProgress", items: [] }, { status: "done", items: [] }],
+    [],
     "tasks",
     hasData
   );

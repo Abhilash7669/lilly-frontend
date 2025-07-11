@@ -525,7 +525,6 @@ export default function TodoBoard() {
     }
 
     // check if it is empty;
-
     const isContainerEmpty = containers[containerIndex].items.length === 0;
 
     let order: number;
