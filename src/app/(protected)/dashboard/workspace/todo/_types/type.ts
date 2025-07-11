@@ -62,29 +62,6 @@ export type TodoData = {
   items: TodoItems[];
 };
 
-// userId
-// 683af7054766364daaa40263
-// name
-// "Testing"
-// summary
-// "ANother summary"
-// order
-// 0
-// status
-// "todo"
-// priority
-// "medium"
-
-// tags
-// Array (empty)
-
-// subTasks
-// Array (empty)
-// startDate
-// 2025-07-02T00:00:00.000+00:00
-// dueDate
-// 2025-07-02T23:59:59.999+00:00
-
 export type TaskDTO = {
   name: string;
   summary: string;

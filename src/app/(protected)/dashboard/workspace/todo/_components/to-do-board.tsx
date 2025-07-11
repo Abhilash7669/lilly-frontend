@@ -64,14 +64,13 @@ import { format } from "date-fns";
 import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
 import AppSelect from "@/components/common/input-elements/app-select";
 import {
-  useActiveDroppable,
   useDeleteModalState,
   useIsAddSheetOpen,
   useSetAddSheetState,
   useSetDeleteModalState,
-} from "@/store/workspace/to-do-controls";
+} from "@/store/workspace/to-do-ui";
 import useInitTodoData from "@/hooks/useInitTodoData";
-import { useActiveItemId, useTodoData } from "@/store/workspace/to-do-data";
+import { useActiveDroppable, useActiveItemId, useTodoData } from "@/store/workspace/to-do-data";
 import { Modal as DeleteModal } from "@/components/common/modal/modal";
 import { BasicResponse } from "@/lib/types/api";
 
@@ -575,8 +574,6 @@ export default function TodoBoard() {
         return container;
       });
     });
-
-
   }
 
   async function handleDelete() {
@@ -595,7 +592,7 @@ export default function TodoBoard() {
 
     const isContainerEmpty = containers[containerIndex].items.length === 0;
 
-    if(isContainerEmpty) {
+    if (isContainerEmpty) {
       errorToast("Error", "Container is empty");
       setDeleteModal(false);
       return;
@@ -604,7 +601,7 @@ export default function TodoBoard() {
     const containerDeepCopy = [...containers[containerIndex].items];
 
     const deletedTask = containerDeepCopy.find(
-      item => item._id === activeItemId
+      (item) => item._id === activeItemId
     );
 
     // find the order of the item
@@ -615,7 +612,9 @@ export default function TodoBoard() {
       return;
     }
 
-    const highestTaskOrder = containerDeepCopy.sort((a, b) => b.order - a.order)[0].order;
+    const highestTaskOrder = containerDeepCopy.sort(
+      (a, b) => b.order - a.order
+    )[0].order;
 
     const response = await AXIOS_CLIENT.delete<BasicResponse<unknown>>(
       `/tasks/delete/${activeItemId}`,

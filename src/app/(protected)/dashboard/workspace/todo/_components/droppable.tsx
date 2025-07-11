@@ -8,11 +8,11 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import SortableItem from "@/app/(protected)/dashboard/workspace/todo/_components/sortable-item";
-import { TodoData } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
+import { StatusValue, TodoData } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 import {
-  useSetActiveDroppable,
   useSetAddSheetState,
-} from "@/store/workspace/to-do-controls";
+} from "@/store/workspace/to-do-ui";
+import { useSetActiveDroppable } from "@/store/workspace/to-do-data";
 
 type Props = {
   data: TodoData;
@@ -20,7 +20,7 @@ type Props = {
 
 export default function Droppable({ data: { status, items } }: Props) {
   const setAddSheetState = useSetAddSheetState();
-  const activeDroppable = useSetActiveDroppable();
+  const setActiveDroppable = useSetActiveDroppable();
 
   const { setNodeRef } = useDroppable({ id: status });
   const totalItems = items && items.length > 0 ? items.length : 0;
@@ -32,7 +32,7 @@ export default function Droppable({ data: { status, items } }: Props) {
   // backdrop-blur-lg backdrop-filter
   function handleOpenSheet() {
     setAddSheetState(true);
-    activeDroppable(status as "todo" | "inProgress");
+    setActiveDroppable(status as StatusValue | "");
   }
 
   return (

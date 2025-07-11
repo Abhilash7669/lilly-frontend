@@ -13,19 +13,31 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays } from "lucide-react";
-import { TodoItems } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
+import { StatusValue, TodoItems } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 import PriorityBadge from "@/app/(protected)/dashboard/workspace/todo/_components/priority-badge";
 import { ICON_SIZE } from "@/lib/utils";
 import { format } from "date-fns";
-import { useSetActiveDroppable, useSetDeleteModalState } from "@/store/workspace/to-do-controls";
-import { useSetActiveItemId } from "@/store/workspace/to-do-data";
+import {
+  useSetDeleteModalState,
+} from "@/store/workspace/to-do-ui";
+import { useSetActiveDroppable, useSetActiveItemId } from "@/store/workspace/to-do-data";
 
 type Props = {
   data: TodoItems;
 };
 
 export default function SortableItem({
-  data: { _id, name, summary, subTasks, priority, tags, dueDate, startDate, status },
+  data: {
+    _id,
+    name,
+    summary,
+    subTasks,
+    priority,
+    tags,
+    dueDate,
+    startDate,
+    status,
+  },
 }: Props) {
   const {
     attributes,
@@ -35,11 +47,10 @@ export default function SortableItem({
     transition,
     isDragging,
   } = useSortable({ id: _id });
-  
+
   const setDeleteModal = useSetDeleteModalState();
   const setActiveItem = useSetActiveItemId();
   const setActiveDroppable = useSetActiveDroppable();
-
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -56,15 +67,16 @@ export default function SortableItem({
 
   const hasTags = tags.length > 0;
 
-  const m_startDate = startDate ? format(startDate, "dd MMM yy") : "No start date";
+  const m_startDate = startDate
+    ? format(startDate, "dd MMM yy")
+    : "No start date";
   const m_dueDate = dueDate ? format(dueDate, "dd MMM yy") : "No due date";
 
   function handleOpenDeleteModal() {
     setActiveItem(_id);
     setDeleteModal(true);
-    setActiveDroppable(status as "inProgress" | "todo");
+    setActiveDroppable(status as StatusValue | "");
   }
-
 
   return (
     <div
@@ -87,7 +99,10 @@ export default function SortableItem({
           </DropdownMenuTrigger>
           <DropdownMenuContent className="p-2 space-y-1">
             <DropdownMenuItem className="cursor-pointer">View</DropdownMenuItem>
-            <DropdownMenuItem onClick={handleOpenDeleteModal} className="cursor-pointer transition-all focus:bg-destructive/70">
+            <DropdownMenuItem
+              onClick={handleOpenDeleteModal}
+              className="cursor-pointer transition-all focus:bg-destructive/70"
+            >
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -103,7 +118,9 @@ export default function SortableItem({
         <div className="space-y-2">
           <div className="flex items-end gap-2">
             <CalendarDays className={ICON_SIZE.medium} />
-            <p className="text-xs">{m_startDate} - {m_dueDate}</p>
+            <p className="text-xs">
+              {m_startDate} - {m_dueDate}
+            </p>
           </div>
           {hasSubTasks && (
             <div className="w-full flex items-center justify-between">
