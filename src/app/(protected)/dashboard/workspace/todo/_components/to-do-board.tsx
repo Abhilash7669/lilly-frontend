@@ -494,6 +494,8 @@ export default function TodoBoard() {
   }
 
   async function handleSendData() {
+    console.log("HIT!");
+    const startTime = new Date().getTime();
     /* todo: 
       
         re-work this to update order of the new task - done
@@ -510,66 +512,81 @@ export default function TodoBoard() {
     */
 
     // find if that droppable has any item;
+    setIsLoading(() => true);
 
-    const containerIndex = containers.findIndex(
-      (item) => item.status === activeDroppable
+    const containerIndex = findUpdatedContainerIndex(
+      containers,
+      activeDroppable
     );
 
     if (containerIndex === -1) {
-      console.log("No container found");
+      errorToast("Error", "Could not fidn item");
+      setIsLoading(() => false);
+      setAddSheetState(false);
       return;
     }
 
-    const copyOfContainer = [...containers];
+    // check if it is empty;
 
-    const order = copyOfContainer[containerIndex].items.sort(function (a, b) {
-      return b.order - a.order;
-    });
+    const isContainerEmpty = containers[containerIndex].items.length === 0;
 
-    console.log(order, "ORDER sorted in DESC");
+    let order: number;
 
-    const currentOrder = order[0].order;
+    const containerDeepCopy = [...containers[containerIndex].items];
 
-    setIsLoading(() => true);
+    if (isContainerEmpty) {
+      order = 0;
+    } else {
+      order = containerDeepCopy.sort((a, b) => b.order - a.order)[0].order + 1;
+    }
+
     const payload = {
       ...taskDTO,
       subTasks: subTasks,
-      order: currentOrder + 1,
+      order: order,
     };
-
-    console.log(currentOrder, "CURRENT ORDER");
 
     const response = await AXIOS_CLIENT.post<TaskPayload, TaskAddResponse>(
       "/tasks/add",
-      {
-        task: payload,
-      }
+      { task: payload }
     );
 
-    if (!response) return;
-    const data = response?.data.task.taskItem;
-
+    if (!response) {
+      setIsLoading(() => false);
+      setAddSheetState(false);
+      return;
+    }
     setIsLoading(() => false);
     setAddSheetState(false);
 
+    const data = response.data.task.taskItem;
     setContainers((prevState) => {
-      return prevState.map((item) => {
-        if (item.status === data?.status) {
+      // filter out old data
+
+      const updatedData = prevState[containerIndex].items.filter(
+        (item) => item._id !== activeItemId
+      );
+
+      return prevState.map((container) => {
+        if (container.status === activeDroppable) {
           return {
-            status: item.status,
-            items: [...item.items, data],
+            status: container.status,
+            items: [...updatedData, data],
           };
         }
 
-        return item;
+        return container;
       });
     });
 
-    // console.log(response, "RESPONSE");
+    const endTime = new Date().getTime();
+
+    console.log(endTime - startTime);
   }
 
   async function handleTestDelete() {
     setIsLoading(() => true);
+    const startTime = new Date().getTime();
     // find container
     const containerIndex = findUpdatedContainerIndex(
       containers,
@@ -581,18 +598,22 @@ export default function TodoBoard() {
       setIsLoading(() => false);
       return;
     }
-    
+
     // find the order of the item
     const deletedTask = containers[containerIndex].items.find(
       (item) => item._id === activeItemId
     );
-    
+
     if (!deletedTask) {
       errorToast("Error", "Could not find task");
       setIsLoading(() => false);
       return;
     }
-    
+
+    const highestTaskOrder = containers[containerIndex].items.sort(
+      (a, b) => b.order - a.order
+    )[0].order;
+
     const response = await AXIOS_CLIENT.delete<BasicResponse<unknown>>(
       `/tasks/delete/${activeItemId}`,
       {
@@ -601,11 +622,11 @@ export default function TodoBoard() {
         },
       }
     );
-    
+
     if (!response) {
       setIsLoading(() => false);
       return;
-    };
+    }
 
     // success - update the order
     /* 
@@ -618,32 +639,86 @@ export default function TodoBoard() {
     setContainers((prevState) => {
       let updatedContainers: TodoData[] = [];
 
+      const filteredItemsArray = prevState[containerIndex].items.filter(
+        (item) => item._id !== activeItemId
+      );
+
       // item order is 0 - CONDITION_A
       if (deletedTask.order === 0) {
-        const updatedItemsArray = prevState[containerIndex].items
-          .filter((item) => item._id !== activeItemId)
-          .map((task) => {
-            if (task.order > 0) {
-              return {
-                ...task,
-                order: task.order - 1,
-              };
-            }
-
-            return task;
-          });
-
-        updatedContainers = prevState.map(
-          item => {
-            if(item.status === activeDroppable) {
-              return {
-                status: item.status,
-                items: updatedItemsArray
-              }
-            }
-            return item;
+        const updatedItemsArray = filteredItemsArray.map((task) => {
+          if (task.order > 0) {
+            return {
+              ...task,
+              order: task.order - 1,
+            };
           }
-        )
+
+          return task;
+        });
+
+        updatedContainers = prevState.map((item) => {
+          if (item.status === activeDroppable) {
+            return {
+              status: item.status,
+              items: updatedItemsArray,
+            };
+          }
+          return item;
+        });
+
+        return updatedContainers;
+      }
+
+      if (deletedTask.order === highestTaskOrder) {
+        // highest order
+        const updatedItemsArray = filteredItemsArray.map((task) => {
+          if (task.order !== 0) {
+            return {
+              ...task,
+              order: task.order - 1,
+            };
+          }
+          return task;
+        });
+
+        updatedContainers = prevState.map((item) => {
+          if (item.status === activeDroppable) {
+            return {
+              status: item.status,
+              items: updatedItemsArray,
+            };
+          }
+
+          return item;
+        });
+
+        return updatedContainers;
+      }
+
+      if (deletedTask.order > 0 && deletedTask.order < highestTaskOrder) {
+        const updatedItemsArray = filteredItemsArray.map((task) => {
+          if (task.order > deletedTask.order) {
+            return {
+              ...task,
+              order: task.order - 1,
+            };
+          }
+
+          return task;
+        });
+
+        console.log(updatedItemsArray, "UPDATED");
+
+        updatedContainers = prevState.map((item) => {
+          if (item.status === activeDroppable) {
+            return {
+              status: item.status,
+              items: updatedItemsArray,
+            };
+          }
+
+          return item;
+        });
 
         return updatedContainers;
       }
@@ -652,7 +727,8 @@ export default function TodoBoard() {
     });
     setIsLoading(() => false);
     setDeleteModal(false);
-
+    const endTime = new Date().getTime();
+    console.log(endTime - startTime);
   }
 
   function findUpdatedContainerIndex(
@@ -802,7 +878,7 @@ export default function TodoBoard() {
                     const dueDate = e?.to
                       ? LILLY_DATE.toUTC(e.to).toISOString()
                       : selectedDateRange?.to?.toISOString();
-                    debounceTaskData(handleTaskDTO, 300, "date", {
+                    debounceTaskData(handleTaskDTO, 100, "date", {
                       startDate,
                       dueDate,
                     });
