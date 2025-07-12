@@ -13,3 +13,4 @@ export const useIsDeleteTodoLoading = () => useTodoControls(state => state.loadi
 export const useSetAddTodoLoading = () => useTodoControls(state => state.setAddTodoLoading);
 export const useSetDeleteTodoLoading = () => useTodoControls(state => state.setDeleteTodoLoading);
 export const useAddTask = () => useTodoControls(state => state.addTask);
+export const useDeleteTask = () => useTodoControls(state => state.deleteTask);

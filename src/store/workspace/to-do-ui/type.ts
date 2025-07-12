@@ -14,4 +14,5 @@ export type TodoControlsStore = {
     setAddTodoLoading: (state: boolean) => void;
     setDeleteTodoLoading: (state: boolean) => void;
     addTask: ({ taskDTO, activeDroppable }: { taskDTO: TaskDTO, activeDroppable: StatusValue }) => Promise<void>;
+    deleteTask: ({ activeDroppable, activeItemId }: { activeDroppable: StatusValue, activeItemId: string | null }) => Promise<void>;
 }

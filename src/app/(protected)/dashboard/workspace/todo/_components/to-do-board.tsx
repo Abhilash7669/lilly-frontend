@@ -59,11 +59,11 @@ import {
 import { DateRange } from "react-day-picker";
 import { LILLY_DATE } from "@/lib/lilly-utils/lilly-utils";
 import { format } from "date-fns";
-import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
 import AppSelect from "@/components/common/input-elements/app-select";
 import {
   useAddTask,
   useDeleteModalState,
+  useDeleteTask,
   useIsAddSheetOpen,
   useIsAddTodoLoading,
   useIsDeleteTodoLoading,
@@ -75,7 +75,6 @@ import {
   useActiveItemId,
 } from "@/store/workspace/to-do-data";
 import { Modal as DeleteModal } from "@/components/common/modal/modal";
-import { BasicResponse } from "@/lib/types/api";
 
 type Props = {
   setContainers: React.Dispatch<React.SetStateAction<TodoData[]>>;
@@ -101,10 +100,10 @@ export default function TodoBoard({
   // zustand loading states
   const isAddTodoLoading = useIsAddTodoLoading();
   const isDeleteTodoLoading = useIsDeleteTodoLoading();
-  const setIsDeleteTodoLoading = useSetDeleteModalState();
 
   // async zustand
   const addTask = useAddTask();
+  const deleteTask = useDeleteTask();
 
   const [subTasks, setSubTasks] = useState<SubTasks[]>([]); // to set sub task at creation
 
@@ -518,173 +517,7 @@ export default function TodoBoard({
   }
 
   async function handleDelete() {
-    setIsDeleteTodoLoading(true);
-    // find container
-    const containerIndex = findUpdatedContainerIndex(
-      containers,
-      activeDroppable
-    );
-
-    if (containerIndex === -1) {
-      errorToast("Error", "Could not find container Index");
-      setIsDeleteTodoLoading(false);
-      return;
-    }
-
-    const isContainerEmpty = containers[containerIndex].items.length === 0;
-
-    if (isContainerEmpty) {
-      errorToast("Error", "Container is empty");
-      setIsDeleteModalOpen(false);
-      setIsDeleteTodoLoading(false);
-      return;
-    }
-
-    const containerDeepCopy = [...containers[containerIndex].items];
-
-    const deletedTask = containerDeepCopy.find(
-      (item) => item._id === activeItemId
-    );
-
-    // find the order of the item
-    if (!deletedTask) {
-      errorToast("Error", "Could not find task");
-      setIsDeleteTodoLoading(false);
-      setIsDeleteModalOpen(false);
-      return;
-    }
-
-    const highestTaskOrder = containerDeepCopy.sort(
-      (a, b) => b.order - a.order
-    )[0].order;
-
-    const response = await AXIOS_CLIENT.delete<BasicResponse<unknown>>(
-      `/tasks/delete/${activeItemId}`,
-      {
-        params: {
-          status: activeDroppable,
-        },
-      }
-    );
-
-    if (!response) {
-      setIsDeleteTodoLoading(false);
-      setIsDeleteModalOpen(false);
-      return;
-    }
-
-    // success - update the order
-    /* 
-      3 conditions
-        - item order is 0
-        - item order is highest
-        - item order is in between
-    */
-
-    setContainers((prevState) => {
-      let updatedContainers: TodoData[] = [];
-
-      const filteredItemsArray = prevState[containerIndex].items.filter(
-        (item) => item._id !== activeItemId
-      );
-
-      // item order is 0 - CONDITION_A
-      if (deletedTask.order === 0) {
-        const updatedItemsArray = filteredItemsArray.map((task) => {
-          if (task.order > 0) {
-            return {
-              ...task,
-              order: task.order - 1,
-            };
-          }
-
-          return task;
-        });
-
-        updatedContainers = prevState.map((item) => {
-          if (item.status === activeDroppable) {
-            return {
-              status: item.status,
-              items: updatedItemsArray,
-            };
-          }
-          return item;
-        });
-
-        return updatedContainers;
-      }
-
-      if (deletedTask.order === highestTaskOrder) {
-        // highest order
-        const updatedItemsArray = filteredItemsArray.map((task) => {
-          if (task.order > 0) {
-            return {
-              ...task,
-              order: task.order - 1,
-            };
-          }
-          return task;
-        });
-
-        updatedContainers = prevState.map((item) => {
-          if (item.status === activeDroppable) {
-            return {
-              status: item.status,
-              items: updatedItemsArray,
-            };
-          }
-
-          return item;
-        });
-
-        return updatedContainers;
-      }
-
-      if (deletedTask.order > 0 && deletedTask.order < highestTaskOrder) {
-        const updatedItemsArray = filteredItemsArray.map((task) => {
-          if (task.order > deletedTask.order) {
-            return {
-              ...task,
-              order: task.order - 1,
-            };
-          }
-
-          return task;
-        });
-
-        updatedContainers = prevState.map((item) => {
-          if (item.status === activeDroppable) {
-            return {
-              status: item.status,
-              items: updatedItemsArray,
-            };
-          }
-
-          return item;
-        });
-
-        return updatedContainers;
-      }
-
-      return prevState;
-    });
-    setIsDeleteTodoLoading(false);
-    setIsDeleteModalOpen(false);
-  }
-
-  function findUpdatedContainerIndex(
-    containersArray: TodoData[],
-    status: string
-  ): number {
-    const containerIndex = containersArray.findIndex(
-      (item) => item.status === status
-    );
-
-    if (containerIndex === -1) {
-      return -1;
-    }
-
-    return containerIndex;
+    await deleteTask({ activeDroppable, activeItemId });
   }
 
   return (
