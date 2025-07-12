@@ -66,10 +66,16 @@ import AppSelect from "@/components/common/input-elements/app-select";
 import {
   useDeleteModalState,
   useIsAddSheetOpen,
+  useIsAddTodoLoading,
+  useIsDeleteTodoLoading,
   useSetAddSheetState,
+  useSetAddTodoLoading,
   useSetDeleteModalState,
 } from "@/store/workspace/to-do-ui";
-import { useActiveDroppable, useActiveItemId } from "@/store/workspace/to-do-data";
+import {
+  useActiveDroppable,
+  useActiveItemId,
+} from "@/store/workspace/to-do-data";
 import { Modal as DeleteModal } from "@/components/common/modal/modal";
 import { BasicResponse } from "@/lib/types/api";
 
@@ -77,9 +83,13 @@ type Props = {
   setContainers: React.Dispatch<React.SetStateAction<TodoData[]>>;
   containers: TodoData[] | [];
   loading: boolean;
-}
+};
 
-export default function TodoBoard({ setContainers, containers, loading }: Props) {
+export default function TodoBoard({
+  setContainers,
+  containers,
+  loading,
+}: Props) {
   // zustand data store
   const activeItemId = useActiveItemId();
 
@@ -87,8 +97,14 @@ export default function TodoBoard({ setContainers, containers, loading }: Props)
   const isAddSheetOpen = useIsAddSheetOpen();
   const setAddSheetState = useSetAddSheetState();
   const activeDroppable = useActiveDroppable();
-  const setDeleteModal = useSetDeleteModalState();
+  const setIsDeleteModalOpen = useSetDeleteModalState();
   const isDeleteModalOpen = useDeleteModalState();
+
+  // zustand loading states
+  const isAddTodoLoading = useIsAddTodoLoading();
+  const isDeleteTodoLoading = useIsDeleteTodoLoading();
+  const setIsDeleteTodoLoading = useSetDeleteModalState();
+  const setIsAddTodoLoading = useSetAddTodoLoading();
 
   const [subTasks, setSubTasks] = useState<SubTasks[]>([]); // to set sub task at creation
 
@@ -120,8 +136,6 @@ export default function TodoBoard({ setContainers, containers, loading }: Props)
       dueDate: LILLY_DATE.toISOString(selectedDateRange?.to) || "",
     },
   });
-
-  const [isLoading, setIsLoading] = useState<boolean>(false); // todo: later segregate loading to object for add sheet and delete modal
 
   const [activeid, setActiveId] = useState<UniqueIdentifier | null>(null);
   void activeid;
@@ -508,7 +522,7 @@ export default function TodoBoard({ setContainers, containers, loading }: Props)
     */
 
     // find if that droppable has any item;
-    setIsLoading(() => true);
+    setIsAddTodoLoading(true);
 
     const containerIndex = findUpdatedContainerIndex(
       containers,
@@ -516,9 +530,8 @@ export default function TodoBoard({ setContainers, containers, loading }: Props)
     );
 
     if (containerIndex === -1) {
-      errorToast("Error", "Could not fidn item");
-      setIsLoading(() => false);
-      setAddSheetState(false);
+      errorToast("Error", "Could not find item");
+      setIsAddTodoLoading(false);
       return;
     }
 
@@ -547,12 +560,9 @@ export default function TodoBoard({ setContainers, containers, loading }: Props)
     );
 
     if (!response) {
-      setIsLoading(() => false);
-      setAddSheetState(false);
+      setIsAddTodoLoading(false);
       return;
     }
-    setIsLoading(() => false);
-    setAddSheetState(false);
 
     const data = response.data.task.taskItem;
     setContainers((prevState) => {
@@ -573,10 +583,13 @@ export default function TodoBoard({ setContainers, containers, loading }: Props)
         return container;
       });
     });
+
+    setIsAddTodoLoading(false);
+    setAddSheetState(false);
   }
 
   async function handleDelete() {
-    setIsLoading(() => true);
+    setIsDeleteTodoLoading(true);
     // find container
     const containerIndex = findUpdatedContainerIndex(
       containers,
@@ -585,7 +598,7 @@ export default function TodoBoard({ setContainers, containers, loading }: Props)
 
     if (containerIndex === -1) {
       errorToast("Error", "Could not find container Index");
-      setIsLoading(() => false);
+      setIsDeleteTodoLoading(false);
       return;
     }
 
@@ -593,7 +606,8 @@ export default function TodoBoard({ setContainers, containers, loading }: Props)
 
     if (isContainerEmpty) {
       errorToast("Error", "Container is empty");
-      setDeleteModal(false);
+      setIsDeleteModalOpen(false);
+      setIsDeleteTodoLoading(false);
       return;
     }
 
@@ -606,8 +620,8 @@ export default function TodoBoard({ setContainers, containers, loading }: Props)
     // find the order of the item
     if (!deletedTask) {
       errorToast("Error", "Could not find task");
-      setIsLoading(() => false);
-      setDeleteModal(false);
+      setIsDeleteTodoLoading(false);
+      setIsDeleteModalOpen(false);
       return;
     }
 
@@ -625,8 +639,8 @@ export default function TodoBoard({ setContainers, containers, loading }: Props)
     );
 
     if (!response) {
-      setIsLoading(() => false);
-      setDeleteModal(false);
+      setIsDeleteTodoLoading(false);
+      setIsDeleteModalOpen(false);
       return;
     }
 
@@ -725,8 +739,8 @@ export default function TodoBoard({ setContainers, containers, loading }: Props)
 
       return prevState;
     });
-    setIsLoading(() => false);
-    setDeleteModal(false);
+    setIsDeleteTodoLoading(false);
+    setIsDeleteModalOpen(false);
   }
 
   function findUpdatedContainerIndex(
@@ -804,7 +818,7 @@ export default function TodoBoard({ setContainers, containers, loading }: Props)
           description: ADD_TASK_HEADER.description,
         }}
         onConfirm={handleSendData}
-        isLoading={isLoading}
+        isLoading={isAddTodoLoading}
         side="bottom"
       >
         <div className="space-y-4 lg:w-2/4">
@@ -1029,7 +1043,7 @@ export default function TodoBoard({ setContainers, containers, loading }: Props)
         </div>
       </SidePanel>
       <DeleteModal
-        isLoading={isLoading}
+        isLoading={isDeleteTodoLoading}
         dialogHeader={{
           title: "Delete Task",
           description: "Are you sure you want to delete this task?",
@@ -1037,7 +1051,7 @@ export default function TodoBoard({ setContainers, containers, loading }: Props)
         confirmText="Delete"
         confirmVariant="destructive"
         open={isDeleteModalOpen}
-        setOpen={(e) => setDeleteModal(e as boolean)}
+        setOpen={(e) => setIsDeleteModalOpen(e as boolean)}
         onConfirm={handleDelete}
       >
         {activeItemId && <p className="text-xs">Delete task: {activeItemId}</p>}

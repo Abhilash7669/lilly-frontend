@@ -13,8 +13,7 @@ import { useTodoData } from "@/store/workspace/to-do-data";
 import { useState } from "react";
 
 export default function TodoContainer() {
-
-    const [tabValue, setTabValue] = useState<"board" | "table">("board");
+  const [tabValue, setTabValue] = useState<"board" | "table">("board");
   const data = useTodoData();
   const {
     setTodoData: setContainers,
@@ -32,12 +31,25 @@ export default function TodoContainer() {
         <DropdownMenu>
           <DropdownMenuTrigger className="place-self-end">
             <p className="text-xs cursor-pointer border rounded-sm p-2 hover:opacity-60 transition-all">
-                View: <span className="text-muted-foreground capitalize">{tabValue}</span>
+              View:{" "}
+              <span className="text-muted-foreground capitalize">
+                {tabValue}
+              </span>
             </p>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem className="cursor-pointer" onClick={() => handleTabSwitch("board")}>Board</DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer" onClick={() => handleTabSwitch("table")}>Table</DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => handleTabSwitch("board")}
+            >
+              Board
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => handleTabSwitch("table")}
+            >
+              Table
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <TabsContent value="board">
