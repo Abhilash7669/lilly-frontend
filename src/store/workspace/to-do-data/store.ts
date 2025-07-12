@@ -11,6 +11,6 @@ export const useTodoDataStore = create<TodoDataStore>((set) => ({
   itemId: null,
   setActiveItemId: (id) => set(() => ({ itemId: id })),
   activeDroppable: "todo",
-  setActiveDroppable: (target: StatusValue) =>
-    set(() => ({ activeDroppable: target })),
+  setActiveDroppable: (target: StatusValue | "") =>
+    set(() => ({ activeDroppable: target as StatusValue })),
 }));

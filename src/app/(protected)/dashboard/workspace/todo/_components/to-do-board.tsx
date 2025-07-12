@@ -122,7 +122,7 @@ export default function TodoBoard({
     to: LILLY_DATE.endOfTodayUTC(),
   }); // covers date
 
-  const [taskDTO, setTaskDTO] = useState<TaskDTO>({
+  const INITIAL_TASK_DTO = {
     name: "",
     summary: "",
     order: 0,
@@ -134,7 +134,9 @@ export default function TodoBoard({
       startDate: LILLY_DATE.toISOString(selectedDateRange?.from) || "",
       dueDate: LILLY_DATE.toISOString(selectedDateRange?.to) || "",
     },
-  });
+  } satisfies TaskDTO;
+
+  const [taskDTO, setTaskDTO] = useState<TaskDTO>(INITIAL_TASK_DTO);
 
   const [activeid, setActiveId] = useState<UniqueIdentifier | null>(null);
   void activeid;
@@ -502,18 +504,19 @@ export default function TodoBoard({
       | { startDate: string | undefined; dueDate: string | undefined }
   ) {
     setTaskDTO((prevState) => ({ ...prevState, [key]: value }));
-  };
+  }
 
   async function handleSendData() {
     const data = {
       taskDTO: {
         ...taskDTO,
-        subTasks: subTasks
+        subTasks: subTasks,
       },
       activeDroppable,
-      activeItemId
-    }
+      activeItemId,
+    };
     await addTask(data);
+    setTaskDTO(INITIAL_TASK_DTO);
   }
 
   async function handleDelete() {

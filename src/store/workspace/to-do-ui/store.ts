@@ -121,6 +121,7 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
 
     const containers = useTodoDataStore.getState().todoData;
     const setContainers = useTodoDataStore.getState().setTodoData;
+    const setActiveItemId = useTodoDataStore.getState().setActiveItemId;
 
     // find container
     const containerIndex = LILLY_TODO.findUpdatedContainerIndex(
@@ -140,6 +141,7 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
       errorToast("Error", "Container is empty");
       toggleDeleteLoading(false);
       toggleDeleteModal(false);
+      setActiveItemId(null);
       return;
     }
 
@@ -154,6 +156,7 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
       errorToast("Error", "Could not find task");
       toggleDeleteLoading(false);
       toggleDeleteModal(false);
+      setActiveItemId(null);
       return;
     }
 
@@ -173,6 +176,7 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
     if (!response) {
       toggleDeleteLoading(false);
       toggleDeleteModal(false);
+      setActiveItemId(null);
       return;
     }
 
@@ -273,5 +277,6 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
     });
     toggleDeleteLoading(false);
     toggleDeleteModal(false);
+    setActiveItemId(null);
   },
 }));
