@@ -1,3 +1,4 @@
+import { StatusValue, TaskDTO } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 
 export type TodoControlsStore = {
     modal: {
@@ -12,4 +13,5 @@ export type TodoControlsStore = {
     setDeleteModal: (state: boolean) => void;
     setAddTodoLoading: (state: boolean) => void;
     setDeleteTodoLoading: (state: boolean) => void;
+    addTask: ({ taskDTO, activeDroppable }: { taskDTO: TaskDTO, activeDroppable: StatusValue }) => Promise<void>;
 }

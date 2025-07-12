@@ -44,10 +44,8 @@ import {
   SubTaskMode,
   SubTasks,
   SubTaskState,
-  TaskAddResponse,
   TaskDTO,
   TaskDTOKey,
-  TaskPayload,
   TodoData,
 } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 import { ICON_SIZE } from "@/lib/utils";
@@ -64,12 +62,12 @@ import { format } from "date-fns";
 import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
 import AppSelect from "@/components/common/input-elements/app-select";
 import {
+  useAddTask,
   useDeleteModalState,
   useIsAddSheetOpen,
   useIsAddTodoLoading,
   useIsDeleteTodoLoading,
   useSetAddSheetState,
-  useSetAddTodoLoading,
   useSetDeleteModalState,
 } from "@/store/workspace/to-do-ui";
 import {
@@ -104,7 +102,9 @@ export default function TodoBoard({
   const isAddTodoLoading = useIsAddTodoLoading();
   const isDeleteTodoLoading = useIsDeleteTodoLoading();
   const setIsDeleteTodoLoading = useSetDeleteModalState();
-  const setIsAddTodoLoading = useSetAddTodoLoading();
+
+  // async zustand
+  const addTask = useAddTask();
 
   const [subTasks, setSubTasks] = useState<SubTasks[]>([]); // to set sub task at creation
 
@@ -503,89 +503,18 @@ export default function TodoBoard({
       | { startDate: string | undefined; dueDate: string | undefined }
   ) {
     setTaskDTO((prevState) => ({ ...prevState, [key]: value }));
-  }
+  };
 
   async function handleSendData() {
-    /* todo: 
-      
-        re-work this to update order of the new task - done
-        
-        re-work: initial-state
-        re-work: migrate to zustand 
-      
-    */
-
-    /* 
-      - check the status
-        based on the status, check it's order
-        update order accordingly
-    */
-
-    // find if that droppable has any item;
-    setIsAddTodoLoading(true);
-
-    const containerIndex = findUpdatedContainerIndex(
-      containers,
-      activeDroppable
-    );
-
-    if (containerIndex === -1) {
-      errorToast("Error", "Could not find item");
-      setIsAddTodoLoading(false);
-      return;
+    const data = {
+      taskDTO: {
+        ...taskDTO,
+        subTasks: subTasks
+      },
+      activeDroppable,
+      activeItemId
     }
-
-    // check if it is empty;
-    const isContainerEmpty = containers[containerIndex].items.length === 0;
-
-    let order: number;
-
-    const containerDeepCopy = [...containers[containerIndex].items];
-
-    if (isContainerEmpty) {
-      order = 0;
-    } else {
-      order = containerDeepCopy.sort((a, b) => b.order - a.order)[0].order + 1;
-    }
-
-    const payload = {
-      ...taskDTO,
-      subTasks: subTasks,
-      order: order,
-    };
-
-    const response = await AXIOS_CLIENT.post<TaskPayload, TaskAddResponse>(
-      "/tasks/add",
-      { task: payload }
-    );
-
-    if (!response) {
-      setIsAddTodoLoading(false);
-      return;
-    }
-
-    const data = response.data.task.taskItem;
-    setContainers((prevState) => {
-      // filter out old data
-
-      const updatedData = prevState[containerIndex].items.filter(
-        (item) => item._id !== activeItemId
-      );
-
-      return prevState.map((container) => {
-        if (container.status === activeDroppable) {
-          return {
-            status: container.status,
-            items: [...updatedData, data],
-          };
-        }
-
-        return container;
-      });
-    });
-
-    setIsAddTodoLoading(false);
-    setAddSheetState(false);
+    await addTask(data);
   }
 
   async function handleDelete() {

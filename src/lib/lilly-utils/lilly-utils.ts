@@ -1,3 +1,4 @@
+import { StatusValue, TodoData } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 
 
 export class LILLY_DATE {
@@ -33,6 +34,20 @@ export class LILLY_DATE {
 
         const toISOString = date.toISOString();
         return toISOString;
+    }
+
+}
+
+export class LILLY_TODO {
+
+    static findUpdatedContainerIndex(containersArray: TodoData[], status: StatusValue) {
+        const containerIndex = containersArray.findIndex(
+            item => item.status === status
+        );
+
+        if(containerIndex === -1) return -1;
+
+        return containerIndex;
     }
 
 }

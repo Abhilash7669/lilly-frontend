@@ -32,7 +32,7 @@ export default function Droppable({ data: { status, items } }: Props) {
   // backdrop-blur-lg backdrop-filter
   function handleOpenSheet() {
     setAddSheetState(true);
-    setActiveDroppable(status as StatusValue | "");
+    setActiveDroppable(status as StatusValue);
   }
 
   return (

@@ -8,6 +8,6 @@ export type TodoDataStore = {
   todoData: TodoData[];
   setActiveItemId: (id: string) => void;
   itemId: string | null;
-  activeDroppable: StatusValue | "";
-  setActiveDroppable: (target: StatusValue | "") => void;
+  activeDroppable: StatusValue;
+  setActiveDroppable: (target: StatusValue) => void;
 };

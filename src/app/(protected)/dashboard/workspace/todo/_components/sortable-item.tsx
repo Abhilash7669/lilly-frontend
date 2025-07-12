@@ -75,7 +75,7 @@ export default function SortableItem({
   function handleOpenDeleteModal() {
     setActiveItem(_id);
     setDeleteModal(true);
-    setActiveDroppable(status as StatusValue | "");
+    setActiveDroppable(status as StatusValue);
   }
 
   return (
