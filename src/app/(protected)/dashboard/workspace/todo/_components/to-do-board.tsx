@@ -208,6 +208,7 @@ export default function TodoBoard({
   function handleDragStart(e: DragStartEvent): void {
     // store id and item order;
     setActiveId(e.active.id);
+    debounceTimer.current = null;
 
     const findContainer = containers.filter((item) =>
       item.items.find((item) => item._id === e.active.id)
@@ -291,7 +292,6 @@ export default function TodoBoard({
           (item) => item._id === overId
         );
 
-
         if (overIndex !== -1) {
           return {
             ...container,
@@ -365,17 +365,16 @@ export default function TodoBoard({
         );
 
         setContainers((prevState) => {
-          return prevState.map((c, index) => {
+          const updatedData = prevState.map((c, index) => {
             // if same droppable
             if (index === containerIndex) {
               const m_newArray = newArray.map((item, i) => {
-                
-                if(item.order !== i) {
+                if (item.order !== i) {
                   return {
                     ...item,
-                    order: i
-                  }
-                };
+                    order: i,
+                  };
+                }
 
                 return item;
               });
@@ -405,25 +404,21 @@ export default function TodoBoard({
 
             return c;
 
-            // reset
-            // const m_resetArray = c.items.map((item, i) => {
-            //   if (i === 0) {
-            //     return {
-            //       ...item,
-            //     };
-            //   }
-
-            //   return {
-            //     ...item,
-            //     order: i,
-            //   };
-            // });
-
-            // return {
-            //   ...c,
-            //   items: m_resetArray,
-            // };
           });
+
+          const payload = updatedData.flatMap(
+            item => item.items.map(
+              c => ({
+                id: c._id,
+                status: c.status,
+                order: c.order
+              })
+            )
+          )
+
+          console.log(payload, "PAYLOAD");
+
+          return updatedData;
         });
       }
 
@@ -435,7 +430,6 @@ export default function TodoBoard({
       activeId === overId &&
       containers[containerIndex].items.length > 1
     ) {
-
       const itemIndex = containers[containerIndex].items.findIndex(
         (item) => item._id === overId
       );
@@ -444,8 +438,9 @@ export default function TodoBoard({
 
       if (itemIndex !== -1) {
         setContainers((prevState) => {
-          return prevState.map((c) => {
-            if (c.status === previousContainer?.containerId) { // sorts the previous column that the item was taken from
+          const updatedData = prevState.map((c) => {
+            if (c.status === previousContainer?.containerId) {
+              // sorts the previous column that the item was taken from
               // need to find the changed items order
               // const highestOrder = c.items.length - 1;
 
@@ -485,6 +480,20 @@ export default function TodoBoard({
 
             return c;
           });
+
+          const m_payload = updatedData.flatMap((item) =>
+            item.items.map((c) => {
+              return {
+                status: c.status,
+                order: c.order,
+                id: c._id,
+              };
+            })
+          );
+
+          console.log(m_payload, "PAYLOAD");
+
+          return updatedData;
         });
       }
     }
@@ -494,9 +503,8 @@ export default function TodoBoard({
       activeId === overId &&
       containers[containerIndex].items.length === 1
     ) {
-
       setContainers((prevState) => {
-        return prevState.map((c) => {
+        const updatedData = prevState.map((c) => {
           if (c.items.length === 1) {
             const newItemsArray = c.items.map((item) => ({
               ...item,
@@ -510,7 +518,6 @@ export default function TodoBoard({
           }
 
           if (c.status === previousContainer?.containerId) {
-
             const m_newArray = c.items.map((item) => {
               if (item.order > previousContainer.order) {
                 return {
@@ -529,6 +536,18 @@ export default function TodoBoard({
 
           return c;
         });
+
+        const payload = updatedData.flatMap((item) =>
+          item.items.map((c) => ({
+            id: c._id,
+            status: c.status,
+            order: c.order,
+          }))
+        );
+
+        console.log(payload, "PAYLOAD");
+
+        return updatedData;
       });
       return;
     }
