@@ -339,7 +339,6 @@ export default function TodoBoard({
     */
 
     if (activeContainerId === overContainerId && activeId !== overId) {
-      console.log("A");
       const containerIndex = containers.findIndex(
         (container) => container.status === overContainerId
       );
@@ -365,16 +364,10 @@ export default function TodoBoard({
           overIndex
         );
 
-        console.log(activeIndex, "aCTTICE INDEX");
-        console.log(overIndex, "OVER INDEX");
-
         setContainers((prevState) => {
           return prevState.map((c, index) => {
             // if same droppable
             if (index === containerIndex) {
-              // const newArrayLength = newArray.length - 1;
-              // console.log(newArray, "NEW DROPPED ARRAY");
-              console.log(previousContainer!.order, "ORDER!!!!");
               const m_newArray = newArray.map((item, i) => {
                 
                 if(item.order !== i) {
@@ -383,46 +376,6 @@ export default function TodoBoard({
                     order: i
                   }
                 };
-
-                // if (newArrayLength === 0) {
-                //   return {
-                //     ...item,
-                //     order: 0,
-                //   };
-                // }
-
-                // if (i === overIndex) {
-                //   // same position
-                //   console.log("AHA", i);
-                //   console.log("overIndex", overIndex);
-                //   return {
-                //     ...item,
-                //     order: i,
-                //   };
-                // }
-
-                // if (i > overIndex) {
-                //   // increase
-                //   return {
-                //     ...item,
-                //     order: item.order,
-                //   };
-                // }
-
-                // if(i === 0) {
-                //   return {
-                //     ...item,
-                //     order: 0
-                //   }
-                // }
-
-                // if (i <= overIndex && i !== 0) {
-                //   // decrease
-                //   return {
-                //     ...item,
-                //     order: item.order - 1,
-                //   };
-                // }
 
                 return item;
               });
@@ -436,7 +389,6 @@ export default function TodoBoard({
             if (c.status === previousContainer?.containerId) {
               const m_newArray = c.items.map((item) => {
                 if (item.order > previousContainer.order) {
-                  console.log(previousContainer.order, "PRDER");
                   return {
                     ...item,
                     order: item.order - 1,
@@ -445,7 +397,6 @@ export default function TodoBoard({
 
                 return item;
               });
-              console.log(m_newArray, "NEW ARRAY");
               return {
                 ...c,
                 items: m_newArray,
@@ -484,7 +435,6 @@ export default function TodoBoard({
       activeId === overId &&
       containers[containerIndex].items.length > 1
     ) {
-      console.log("WOAH");
 
       const itemIndex = containers[containerIndex].items.findIndex(
         (item) => item._id === overId
@@ -496,16 +446,11 @@ export default function TodoBoard({
         setContainers((prevState) => {
           return prevState.map((c) => {
             if (c.status === previousContainer?.containerId) { // sorts the previous column that the item was taken from
-              // console.log(c.status, "TARGET COLUMN");
               // need to find the changed items order
               // const highestOrder = c.items.length - 1;
-              // console.log(previousContainer.order, "OPRDERR");
-              // console.log(c.items, "NEW ITEMS");
 
               const m_newArray = c.items.map((item) => {
-                console.log(previousContainer.order, "PREV ORDER");
                 if (item.order > previousContainer.order) {
-                  // console.log(previousContainer.order, "PRDER");
                   return {
                     ...item,
                     order: item.order - 1,
@@ -514,7 +459,6 @@ export default function TodoBoard({
 
                 return item;
               });
-              // console.log(m_newArray, "NEW ARRAY");
               return {
                 ...c,
                 items: m_newArray,
@@ -550,8 +494,6 @@ export default function TodoBoard({
       activeId === overId &&
       containers[containerIndex].items.length === 1
     ) {
-      // console.log(containers, "NEW DATA");
-      console.log("C");
 
       setContainers((prevState) => {
         return prevState.map((c) => {
@@ -568,15 +510,9 @@ export default function TodoBoard({
           }
 
           if (c.status === previousContainer?.containerId) {
-            // console.log(c.status, "TARGET COLUMN");
-            // need to find the changed items order
-            // const highestOrder = c.items.length - 1;
-            // console.log(previousContainer.order, "OPRDERR");
-            // console.log(c.items, "NEW ITEMS");
 
             const m_newArray = c.items.map((item) => {
               if (item.order > previousContainer.order) {
-                // console.log(previousContainer.order, "PRDER");
                 return {
                   ...item,
                   order: item.order - 1,
@@ -585,7 +521,6 @@ export default function TodoBoard({
 
               return item;
             });
-            // console.log(m_newArray, "NEW ARRAY");
             return {
               ...c,
               items: m_newArray,
@@ -598,9 +533,6 @@ export default function TodoBoard({
       return;
     }
   }
-
-  console.log(containers, "CONTAINERS");
-  // console.log(previousContainer?.containerId, "PREVIOUSSSSS");
 
   function handleToggleSubTaskState(mode: SubTaskMode, e: boolean) {
     setSubTaskState((prevState) => ({ ...prevState, [mode]: e }));
