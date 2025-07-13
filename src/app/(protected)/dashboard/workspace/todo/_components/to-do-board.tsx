@@ -41,6 +41,8 @@ import { PopoverContent } from "@radix-ui/react-popover";
 import SidePanel from "@/components/common/sheet/side-panel";
 import { Separator } from "@/components/ui/separator";
 import {
+  StatusValue,
+  // StatusValue,
   SubTaskMode,
   SubTasks,
   SubTaskState,
@@ -57,7 +59,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DateRange } from "react-day-picker";
-import { LILLY_DATE } from "@/lib/lilly-utils/lilly-utils";
+import { LILLY_DATE, LILLY_TODO } from "@/lib/lilly-utils/lilly-utils";
 import { format } from "date-fns";
 import AppSelect from "@/components/common/input-elements/app-select";
 import {
@@ -137,9 +139,13 @@ export default function TodoBoard({
   } satisfies TaskDTO;
 
   const [taskDTO, setTaskDTO] = useState<TaskDTO>(INITIAL_TASK_DTO);
+  const [previousContainer, setPreviousContainer] = useState<{
+    containerId: UniqueIdentifier | undefined;
+    order: number;
+  } | null>(null);
 
-  const [activeid, setActiveId] = useState<UniqueIdentifier | null>(null);
-  void activeid;
+  const [m_activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+  void m_activeId;
 
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
   const addInputRef = useRef<HTMLInputElement | null>(null);
@@ -200,7 +206,25 @@ export default function TodoBoard({
   }
 
   function handleDragStart(e: DragStartEvent): void {
+    // store id and item order;
     setActiveId(e.active.id);
+
+    const findContainer = containers.filter((item) =>
+      item.items.find((item) => item._id === e.active.id)
+    );
+    const containerId = findContainer[0].status;
+    const findItem = findContainer[0].items.find(
+      (item) => item._id === e.active.id
+    );
+
+    if (findItem) {
+      const itemOrder = findItem.order;
+
+      setPreviousContainer(() => ({
+        containerId: containerId,
+        order: itemOrder,
+      }));
+    }
   }
 
   function handleDragOver(e: DragOverEvent): void {
@@ -267,6 +291,7 @@ export default function TodoBoard({
           (item) => item._id === overId
         );
 
+
         if (overIndex !== -1) {
           return {
             ...container,
@@ -287,13 +312,11 @@ export default function TodoBoard({
 
   function handleDragCancel(e: DragCancelEvent): void {
     void e;
-
     setActiveId(() => null);
   }
 
   function handleDragEnd(e: DragEndEvent): void {
     const { active, over } = e;
-
     if (!active || !over) {
       setActiveId(() => null);
       return;
@@ -305,7 +328,18 @@ export default function TodoBoard({
     const activeContainerId = findContainerId(activeId);
     const overContainerId = findContainerId(overId);
 
+    const containerIndex = LILLY_TODO.findUpdatedContainerIndex(
+      containers,
+      activeContainerId as StatusValue
+    );
+
+    // find if item is being dropped at the last position
+    /* 
+      - find the index of overId and check if it's the last
+    */
+
     if (activeContainerId === overContainerId && activeId !== overId) {
+      console.log("A");
       const containerIndex = containers.findIndex(
         (container) => container.status === overContainerId
       );
@@ -331,28 +365,168 @@ export default function TodoBoard({
           overIndex
         );
 
+        console.log(activeIndex, "aCTTICE INDEX");
+        console.log(overIndex, "OVER INDEX");
+
         setContainers((prevState) => {
           return prevState.map((c, index) => {
+            // if same droppable
             if (index === containerIndex) {
+              // const newArrayLength = newArray.length - 1;
+              // console.log(newArray, "NEW DROPPED ARRAY");
+              console.log(previousContainer!.order, "ORDER!!!!");
               const m_newArray = newArray.map((item, i) => {
-                if (i === overIndex) {
+                
+                if(item.order !== i) {
                   return {
                     ...item,
-                    order: i,
-                  };
-                }
+                    order: i
+                  }
+                };
 
-                if (i >= overIndex + 1) {
-                  return {
-                    ...item,
-                    order: item.order + 1,
-                  };
-                }
+                // if (newArrayLength === 0) {
+                //   return {
+                //     ...item,
+                //     order: 0,
+                //   };
+                // }
 
-                if (i <= overIndex - 1 && i !== 0) {
+                // if (i === overIndex) {
+                //   // same position
+                //   console.log("AHA", i);
+                //   console.log("overIndex", overIndex);
+                //   return {
+                //     ...item,
+                //     order: i,
+                //   };
+                // }
+
+                // if (i > overIndex) {
+                //   // increase
+                //   return {
+                //     ...item,
+                //     order: item.order,
+                //   };
+                // }
+
+                // if(i === 0) {
+                //   return {
+                //     ...item,
+                //     order: 0
+                //   }
+                // }
+
+                // if (i <= overIndex && i !== 0) {
+                //   // decrease
+                //   return {
+                //     ...item,
+                //     order: item.order - 1,
+                //   };
+                // }
+
+                return item;
+              });
+
+              return {
+                ...c,
+                items: m_newArray,
+              };
+            }
+
+            if (c.status === previousContainer?.containerId) {
+              const m_newArray = c.items.map((item) => {
+                if (item.order > previousContainer.order) {
+                  console.log(previousContainer.order, "PRDER");
                   return {
                     ...item,
                     order: item.order - 1,
+                  };
+                }
+
+                return item;
+              });
+              console.log(m_newArray, "NEW ARRAY");
+              return {
+                ...c,
+                items: m_newArray,
+              };
+            }
+
+            return c;
+
+            // reset
+            // const m_resetArray = c.items.map((item, i) => {
+            //   if (i === 0) {
+            //     return {
+            //       ...item,
+            //     };
+            //   }
+
+            //   return {
+            //     ...item,
+            //     order: i,
+            //   };
+            // });
+
+            // return {
+            //   ...c,
+            //   items: m_resetArray,
+            // };
+          });
+        });
+      }
+
+      return;
+    }
+
+    if (
+      activeContainerId === overContainerId &&
+      activeId === overId &&
+      containers[containerIndex].items.length > 1
+    ) {
+      console.log("WOAH");
+
+      const itemIndex = containers[containerIndex].items.findIndex(
+        (item) => item._id === overId
+      );
+      const isLastItem = containers[containerIndex].items.length - 1;
+      const containerId = containers[containerIndex].status;
+
+      if (itemIndex !== -1) {
+        setContainers((prevState) => {
+          return prevState.map((c) => {
+            if (c.status === previousContainer?.containerId) { // sorts the previous column that the item was taken from
+              // console.log(c.status, "TARGET COLUMN");
+              // need to find the changed items order
+              // const highestOrder = c.items.length - 1;
+              // console.log(previousContainer.order, "OPRDERR");
+              // console.log(c.items, "NEW ITEMS");
+
+              const m_newArray = c.items.map((item) => {
+                console.log(previousContainer.order, "PREV ORDER");
+                if (item.order > previousContainer.order) {
+                  // console.log(previousContainer.order, "PRDER");
+                  return {
+                    ...item,
+                    order: item.order - 1,
+                  };
+                }
+
+                return item;
+              });
+              // console.log(m_newArray, "NEW ARRAY");
+              return {
+                ...c,
+                items: m_newArray,
+              };
+            }
+
+            if (c.status === containerId) {
+              const m_newArray = c.items.map((item, i) => {
+                if (i === isLastItem) {
+                  return {
+                    ...item,
+                    order: i,
                   };
                 }
 
@@ -365,30 +539,68 @@ export default function TodoBoard({
               };
             }
 
-            // reset the order for the activeContainerId
-
-            const m_resetArray = c.items.map((item, i) => {
-              if (i === 0) {
-                return {
-                  ...item,
-                };
-              }
-
-              return {
-                ...item,
-                order: i,
-              };
-            });
-
-            return {
-              ...c,
-              items: m_resetArray,
-            };
+            return c;
           });
         });
       }
     }
+
+    if (
+      activeContainerId === overContainerId &&
+      activeId === overId &&
+      containers[containerIndex].items.length === 1
+    ) {
+      // console.log(containers, "NEW DATA");
+      console.log("C");
+
+      setContainers((prevState) => {
+        return prevState.map((c) => {
+          if (c.items.length === 1) {
+            const newItemsArray = c.items.map((item) => ({
+              ...item,
+              order: 0,
+            }));
+
+            return {
+              ...c,
+              items: newItemsArray,
+            };
+          }
+
+          if (c.status === previousContainer?.containerId) {
+            // console.log(c.status, "TARGET COLUMN");
+            // need to find the changed items order
+            // const highestOrder = c.items.length - 1;
+            // console.log(previousContainer.order, "OPRDERR");
+            // console.log(c.items, "NEW ITEMS");
+
+            const m_newArray = c.items.map((item) => {
+              if (item.order > previousContainer.order) {
+                // console.log(previousContainer.order, "PRDER");
+                return {
+                  ...item,
+                  order: item.order - 1,
+                };
+              }
+
+              return item;
+            });
+            // console.log(m_newArray, "NEW ARRAY");
+            return {
+              ...c,
+              items: m_newArray,
+            };
+          }
+
+          return c;
+        });
+      });
+      return;
+    }
   }
+
+  console.log(containers, "CONTAINERS");
+  // console.log(previousContainer?.containerId, "PREVIOUSSSSS");
 
   function handleToggleSubTaskState(mode: SubTaskMode, e: boolean) {
     setSubTaskState((prevState) => ({ ...prevState, [mode]: e }));

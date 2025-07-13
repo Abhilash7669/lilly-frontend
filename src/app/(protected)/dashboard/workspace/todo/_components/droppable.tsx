@@ -33,6 +33,7 @@ export default function Droppable({ data: { status, items } }: Props) {
   function handleOpenSheet() {
     setAddSheetState(true);
     setActiveDroppable(status as StatusValue);
+    console.log(status, "STATUS");
   }
 
   return (

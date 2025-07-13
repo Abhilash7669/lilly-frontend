@@ -13,14 +13,18 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays } from "lucide-react";
-import { StatusValue, TodoItems } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
+import {
+  StatusValue,
+  TodoItems,
+} from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 import PriorityBadge from "@/app/(protected)/dashboard/workspace/todo/_components/priority-badge";
 import { ICON_SIZE } from "@/lib/utils";
 import { format } from "date-fns";
+import { useSetDeleteModalState } from "@/store/workspace/to-do-ui";
 import {
-  useSetDeleteModalState,
-} from "@/store/workspace/to-do-ui";
-import { useSetActiveDroppable, useSetActiveItemId } from "@/store/workspace/to-do-data";
+  useSetActiveDroppable,
+  useSetActiveItemId,
+} from "@/store/workspace/to-do-data";
 
 type Props = {
   data: TodoItems;
