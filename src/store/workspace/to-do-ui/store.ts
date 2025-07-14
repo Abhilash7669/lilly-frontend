@@ -54,7 +54,7 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
     if (containerIndex === -1) {
       errorToast("Error", "Could not find item");
       toggleAddLoading(false);
-      return;
+      return false;
     }
 
     // check if it is empty;
@@ -80,9 +80,9 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
       { task: payload }
     );
 
-    if (!response) {
+    if (!response || !response.success) {
       toggleAddLoading(false);
-      return;
+      return false;
     }
 
     const data = response.data.task.taskItem;
@@ -101,6 +101,7 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
 
     toggleAddLoading(false);
     set((state) => ({ modal: { delete: state.modal.delete, add: false } }));
+    return true;
   },
   deleteTask: async function ({ activeDroppable, activeItemId, deletedAt }) {
     if (!activeItemId || !deletedAt) {

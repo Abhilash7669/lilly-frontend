@@ -85,6 +85,7 @@ export type TaskPayload = {
 };
 
 export type TaskAddResponse = {
+  success: boolean;
   data: {
     task: {
       taskItem: {

@@ -755,9 +755,11 @@ export default function TodoBoard({
       },
       activeDroppable,
       activeItemId,
+      completedAt: "",
+      deletedAt: ""
     };
-    await addTask(data);
-    setTaskDTO(INITIAL_TASK_DTO);
+    const isTaskAdded = await addTask(data);
+    if(isTaskAdded) setTaskDTO(INITIAL_TASK_DTO);
   }
 
   async function handleDelete() {
