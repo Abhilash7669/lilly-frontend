@@ -22,7 +22,7 @@ export const AXIOS_CLIENT = {
 
     if (urlParams) m_urlParams = qs.stringify(urlParams);
 
-    const token = await getCookie();
+    const token = await getCookie("lillyToken");
 
     try {
       const m_data = await axios.get<T & CustomResponse>(
@@ -73,7 +73,7 @@ export const AXIOS_CLIENT = {
     data: T,
     config?: AxiosRequestConfig
   ): Promise<U | null> {
-    const token = await getCookie();
+    const token = await getCookie("lillyToken");
 
     let m_urlParams;
 
@@ -141,7 +141,7 @@ export const AXIOS_CLIENT = {
     data: T,
     config?: AxiosRequestConfig
   ): Promise<U | null> {
-    const token = await getCookie();
+    const token = await getCookie("lillyToken");
 
     let m_urlParams;
 
@@ -207,7 +207,7 @@ export const AXIOS_CLIENT = {
     url: string,
     config?: AxiosRequestConfig
   ): Promise<T | null> {
-    const token = await getCookie();
+    const token = await getCookie("lillyToken");
 
     let m_urlParams;
 

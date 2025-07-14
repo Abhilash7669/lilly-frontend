@@ -34,6 +34,7 @@ type LoginResponse = {
   message: string;
   data: {
     token: string;
+    userId: string;
   };
 };
 
@@ -87,7 +88,12 @@ export default function LoginForm(): JSX.Element {
         value: response.data.token,
       });
 
-      if (isCookieSet) router.push("/dashboard/workspace");
+      const isUserIdSet = await setCookieValue({
+        key: "lillyUser",
+        value: response.data.userId
+      });
+
+      if (isCookieSet && isUserIdSet) router.push("/dashboard/workspace");
     }
   }
 

@@ -29,7 +29,9 @@ type Response = {
   message: string;
   data: {
     token: string;
-    user: Record<string, string | number | unknown>;
+    user: {
+      _id: string;
+    };
   };
 };
 
@@ -79,8 +81,8 @@ export default function SignupForm(): JSX.Element {
     }
 
     const storeCookie = await setCookie(response.data.token);
-
-    if (storeCookie) {
+    const storeUserId = await setCookie(response.data.user?._id);
+    if (storeCookie && storeUserId) {
       form.reset();
       setTimeout(() => router.push("/dashboard/workspace"), 3500);
     }

@@ -1,9 +1,11 @@
 import {
+  StatusValue,
   TaskAddResponse,
   TaskPayload,
   TodoData,
 } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
+import { getCookie } from "@/lib/cookies/cookie";
 import { LILLY_TODO } from "@/lib/lilly-utils/lilly-utils";
 import { errorToast } from "@/lib/toast/toast-function";
 import { BasicResponse } from "@/lib/types/api";
@@ -101,9 +103,13 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
     set((state) => ({ modal: { delete: state.modal.delete, add: false } }));
   },
   deleteTask: async function ({ activeDroppable, activeItemId, deletedAt }) {
-
-    if(!activeItemId || !deletedAt) {
-      errorToast("Error", `No ${!activeItemId && "activeItemId"} ${!deletedAt && "deletedAt"} detected`);
+    if (!activeItemId || !deletedAt) {
+      errorToast(
+        "Error",
+        `No ${!activeItemId && "activeItemId"} ${
+          !deletedAt && "deletedAt"
+        } detected`
+      );
       return;
     }
 
@@ -169,7 +175,7 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
       {
         params: {
           status: activeDroppable,
-          deletedAt: deletedAt
+          deletedAt: deletedAt,
         },
       }
     );
@@ -280,9 +286,26 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
     toggleDeleteModal(false);
     setActiveItemId(null);
   },
-  updateTask: async function (payload) {
+  updateTask: async function (
+    updatedTasks: {
+      id: string;
+      status: StatusValue;
+      order: number;
+      completedAt: string | undefined;
+    }[]
+  ) {
+    const userId = await getCookie("lillyUser");
 
-    console.log(payload, "INSIDE ZUSTAND");
-
-  }
+    await AXIOS_CLIENT.put<
+      {
+        updatedTasks: {
+          id: string;
+          status: StatusValue;
+          order: number;
+          completedAt: string | undefined;
+        }[];
+      },
+      null
+    >(`/tasks/update/${userId}`, { updatedTasks });
+  },
 }));
