@@ -100,10 +100,10 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
     toggleAddLoading(false);
     set((state) => ({ modal: { delete: state.modal.delete, add: false } }));
   },
-  deleteTask: async function ({ activeDroppable, activeItemId }) {
+  deleteTask: async function ({ activeDroppable, activeItemId, deletedAt }) {
 
-    if(!activeItemId) {
-      errorToast("Error", "No item detected");
+    if(!activeItemId || !deletedAt) {
+      errorToast("Error", `No ${!activeItemId && "activeItemId"} ${!deletedAt && "deletedAt"} detected`);
       return;
     }
 
@@ -169,6 +169,7 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
       {
         params: {
           status: activeDroppable,
+          deletedAt: deletedAt
         },
       }
     );

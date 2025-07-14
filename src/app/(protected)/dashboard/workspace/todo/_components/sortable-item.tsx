@@ -22,6 +22,7 @@ import { ICON_SIZE } from "@/lib/utils";
 import { format } from "date-fns";
 import { useSetDeleteModalState } from "@/store/workspace/to-do-ui";
 import {
+  useFindTaskCompletedAt,
   useSetActiveDroppable,
   useSetActiveItemId,
 } from "@/store/workspace/to-do-data";
@@ -55,6 +56,7 @@ export default function SortableItem({
   const setDeleteModal = useSetDeleteModalState();
   const setActiveItem = useSetActiveItemId();
   const setActiveDroppable = useSetActiveDroppable();
+  const findTaskCompletedAt = useFindTaskCompletedAt();
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -78,6 +80,7 @@ export default function SortableItem({
 
   function handleOpenDeleteModal() {
     setActiveItem(_id);
+    findTaskCompletedAt(_id, status as StatusValue);
     setDeleteModal(true);
     setActiveDroppable(status as StatusValue);
   }
@@ -90,7 +93,7 @@ export default function SortableItem({
       {...attributes}
       {...listeners}
       className={`bg-card rounded-xl px-6 py-5 rotate-0 shadow-md cursor-grab ${
-        isDragging && "cursor-grabbing rotate-2 opacity-80"
+        isDragging && "cursor-grabbing rotate-1 opacity-80"
       }`}
     >
       <div className="w-full flex items-center justify-between mb-2">

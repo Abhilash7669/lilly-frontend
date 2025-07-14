@@ -75,6 +75,7 @@ import {
 import {
   useActiveDroppable,
   useActiveItemId,
+  useTaskCompletedAt,
 } from "@/store/workspace/to-do-data";
 import { Modal as DeleteModal } from "@/components/common/modal/modal";
 
@@ -91,6 +92,7 @@ export default function TodoBoard({
 }: Props) {
   // zustand data store
   const activeItemId = useActiveItemId();
+  const activeItemCompletedAt = useTaskCompletedAt();
 
   // zustand todocontrols states
   const isAddSheetOpen = useIsAddSheetOpen();
@@ -136,6 +138,8 @@ export default function TodoBoard({
       startDate: LILLY_DATE.toISOString(selectedDateRange?.from) || "",
       dueDate: LILLY_DATE.toISOString(selectedDateRange?.to) || "",
     },
+    completedAt: "",
+    deletedAt: ""
   } satisfies TaskDTO;
 
   const [taskDTO, setTaskDTO] = useState<TaskDTO>(INITIAL_TASK_DTO);
@@ -208,7 +212,10 @@ export default function TodoBoard({
   function handleDragStart(e: DragStartEvent): void {
     // store id and item order;
     setActiveId(e.active.id);
-    debounceTimer.current = null;
+    if (debounceTimer && debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+      debounceTimer.current = null;
+    }
 
     const findContainer = containers.filter((item) =>
       item.items.find((item) => item._id === e.active.id)
@@ -403,20 +410,18 @@ export default function TodoBoard({
             }
 
             return c;
-
           });
 
-          const payload = updatedData.flatMap(
-            item => item.items.map(
-              c => ({
-                id: c._id,
-                status: c.status,
-                order: c.order
-              })
-            )
-          )
-
-          console.log(payload, "PAYLOAD");
+          const payload = updatedData.flatMap((item) =>
+            item.items.map((c) => ({
+              id: c._id,
+              status: c.status,
+              order: c.order,
+            }))
+          );
+          (async () => {
+            await debouncePUTTask(payload);
+          })();
 
           return updatedData;
         });
@@ -491,7 +496,10 @@ export default function TodoBoard({
             })
           );
 
-          console.log(m_payload, "PAYLOAD");
+          (async () => {
+            await debouncePUTTask(m_payload);
+          })();
+
 
           return updatedData;
         });
@@ -545,7 +553,10 @@ export default function TodoBoard({
           }))
         );
 
-        console.log(payload, "PAYLOAD");
+        (async () => {
+          await debouncePUTTask(payload);
+        })();
+
 
         return updatedData;
       });
@@ -586,6 +597,15 @@ export default function TodoBoard({
     debounceTimer.current = setTimeout(() => {
       callBack(e.target.value);
     }, time);
+  }
+
+  async function debouncePUTTask(data: {id: string, status: string, order: number}[]) {
+    if (debounceTimer && debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+    debounceTimer.current = setTimeout(() => {
+      console.log(data);
+    }, 1500);
   }
 
   function debounceTaskData(
@@ -683,7 +703,8 @@ export default function TodoBoard({
   }
 
   async function handleDelete() {
-    await deleteTask({ activeDroppable, activeItemId });
+    const deletedAt = LILLY_DATE.toISOString(LILLY_DATE.startOfTodayUTC());
+    await deleteTask({ activeDroppable, activeItemId, deletedAt, completedAt: activeItemCompletedAt });
   }
 
   return (
@@ -723,7 +744,7 @@ export default function TodoBoard({
                 </div>
               )}
               {hasFetchedData && (
-                <div className="grid sm:grid-cols-3 sm:gap-2 lg:gap-6 h-full">
+                <div className="grid sm:grid-cols-3 sm:gap-2 lg:gap-2 h-full">
                   {containers.map((item) => {
                     return <Droppable key={item.status} data={item} />;
                   })}

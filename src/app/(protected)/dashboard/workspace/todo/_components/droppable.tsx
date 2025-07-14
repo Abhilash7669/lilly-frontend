@@ -33,13 +33,12 @@ export default function Droppable({ data: { status, items } }: Props) {
   function handleOpenSheet() {
     setAddSheetState(true);
     setActiveDroppable(status as StatusValue);
-    console.log(status, "STATUS");
   }
 
   return (
-    <div className="py-4 h-fit">
+    <div className="pb-4 pt-2 h-fit">
       <div
-        className={`py-4 rounded-xl border
+        className={`py-4 rounded-xl border dark:hover:bg-black hover:bg-muted transition-all
         `}
         ref={setNodeRef}
       >
@@ -78,7 +77,7 @@ export default function Droppable({ data: { status, items } }: Props) {
             strategy={verticalListSortingStrategy}
           >
             <ScrollArea className="h-[22rem] lg:h-[calc(100dvh-17.2rem)] flex rounded-xl">
-              <div className="space-y-4 lg:space-y-6 h-full">
+              <div className="space-y-4 h-full">
                 {items.map((task) => (
                   <SortableItem key={task._id} data={task} />
                 ))}

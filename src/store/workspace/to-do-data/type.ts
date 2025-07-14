@@ -10,4 +10,6 @@ export type TodoDataStore = {
   itemId: string | null;
   activeDroppable: StatusValue;
   setActiveDroppable: (target: StatusValue) => void;
+  findTaskCompletedAt: (id: string, activeDroppable: StatusValue) => void;
+  taskCompletedAt: string | undefined;
 };

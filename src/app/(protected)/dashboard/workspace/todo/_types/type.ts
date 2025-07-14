@@ -55,6 +55,8 @@ export type TodoItems = {
   subTasks: Array<SubTasks>;
   startDate: string;
   dueDate: string;
+  completedAt: string;
+  deletedAt: string;
 };
 
 export type TodoData = {
@@ -74,6 +76,8 @@ export type TaskDTO = {
     startDate: string;
     dueDate: string;
   };
+  completedAt: string;
+  deletedAt: string;
 };
 
 export type TaskPayload = {
@@ -95,6 +99,8 @@ export type TaskAddResponse = {
         subTasks: Array<SubTasks>;
         startDate: string;
         dueDate: string;
+        completedAt: string;
+        deletedAt: string;
       };
     };
   };

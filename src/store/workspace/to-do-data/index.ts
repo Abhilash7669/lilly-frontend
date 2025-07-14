@@ -7,3 +7,5 @@ export const useActiveItemId = () => useTodoDataStore(state => state.itemId);
 export const useSetActiveItemId = () => useTodoDataStore(state => state.setActiveItemId);
 export const useSetActiveDroppable = () => useTodoDataStore((state) => state.setActiveDroppable);
 export const useActiveDroppable = () => useTodoDataStore((state) => state.activeDroppable);
+export const useFindTaskCompletedAt = () => useTodoDataStore(state => state.findTaskCompletedAt);
+export const useTaskCompletedAt = () => useTodoDataStore(state => state.taskCompletedAt);
