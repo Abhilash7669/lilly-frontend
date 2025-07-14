@@ -71,6 +71,7 @@ import {
   useIsDeleteTodoLoading,
   useSetAddSheetState,
   useSetDeleteModalState,
+  useUpdateTask,
 } from "@/store/workspace/to-do-ui";
 import {
   useActiveDroppable,
@@ -108,6 +109,7 @@ export default function TodoBoard({
   // async zustand
   const addTask = useAddTask();
   const deleteTask = useDeleteTask();
+  const updateTask = useUpdateTask();
 
   const [subTasks, setSubTasks] = useState<SubTasks[]>([]); // to set sub task at creation
 
@@ -366,6 +368,7 @@ export default function TodoBoard({
       );
 
       if (activeIndex !== -1 && overIndex !== -1) {
+        // HIT
         const newArray = arrayMove(
           targetContainer.items,
           activeIndex,
@@ -381,12 +384,21 @@ export default function TodoBoard({
                   return {
                     ...item,
                     order: i,
+                    status: c.status,
+                    completedAt:
+                      m_activeId === item._id && c.status === "done"
+                        ? completedAt
+                        : item.completedAt,
                   };
                 }
 
                 return {
                   ...item,
                   status: c.status,
+                  completedAt:
+                    m_activeId === item._id && c.status === "done"
+                      ? completedAt
+                      : item.completedAt,
                 };
               });
 
@@ -430,7 +442,7 @@ export default function TodoBoard({
             }))
           );
           (async () => {
-            await debouncePUTTask(payload);
+            await handleUpdateTaskState(payload);
           })();
 
           return updatedData;
@@ -487,7 +499,7 @@ export default function TodoBoard({
                     completedAt:
                       m_activeId === item._id && c.status === "done"
                         ? completedAt
-                        : "",
+                        : item.completedAt,
                   };
                 }
 
@@ -505,20 +517,19 @@ export default function TodoBoard({
 
             return c;
           });
-
           const m_payload = updatedData.flatMap((item) =>
             item.items.map((c) => {
               return {
                 status: c.status,
                 order: c.order,
                 id: c._id,
-                // completedAt: completedAt,
+                completedAt: c.completedAt,
               };
             })
           );
 
           (async () => {
-            await debouncePUTTask(m_payload);
+            await handleUpdateTaskState(m_payload);
           })();
 
           return updatedData;
@@ -531,6 +542,7 @@ export default function TodoBoard({
       activeId === overId &&
       containers[containerIndex].items.length === 1
     ) {
+      // HIT
       // if we drag into an empty droppable
       setContainers((prevState) => {
         const updatedData = prevState.map((c) => {
@@ -542,7 +554,7 @@ export default function TodoBoard({
               completedAt:
                 m_activeId === item._id && c.status === "done"
                   ? completedAt
-                  : "",
+                  : item.completedAt,
             }));
 
             return {
@@ -581,12 +593,12 @@ export default function TodoBoard({
             id: c._id,
             status: c.status,
             order: c.order,
-            // completedAt: completedAt,
+            completedAt: c.completedAt,
           }))
         );
 
         (async () => {
-          await debouncePUTTask(payload);
+          await handleUpdateTaskState(payload);
         })();
 
         return updatedData;
@@ -630,15 +642,15 @@ export default function TodoBoard({
     }, time);
   }
 
-  async function debouncePUTTask(
-    data: { id: string; status: string; order: number }[]
+  async function handleUpdateTaskState(
+    data: { id: string; status: StatusValue; order: number, completedAt: string | undefined }[]
   ) {
     if (debounceTimer && debounceTimer.current) {
       clearTimeout(debounceTimer.current);
     }
-    debounceTimer.current = setTimeout(() => {
-      console.log(data);
-    }, 1500);
+    debounceTimer.current = setTimeout(async() => {
+      await updateTask(data)
+    }, 500);
   }
 
   function debounceTaskData(
@@ -743,7 +755,7 @@ export default function TodoBoard({
       deletedAt,
       completedAt: activeItemCompletedAt,
     });
-  }
+  };
 
   return (
     <>

@@ -280,4 +280,9 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
     toggleDeleteModal(false);
     setActiveItemId(null);
   },
+  updateTask: async function (payload) {
+
+    console.log(payload, "INSIDE ZUSTAND");
+
+  }
 }));
