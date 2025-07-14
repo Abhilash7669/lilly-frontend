@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { ICON_SIZE } from "@/lib/utils";
 import { LoaderCircle } from "lucide-react";
@@ -55,7 +56,11 @@ export const Modal = ({
             {children && <Separator className="bg-muted-foreground" />}
           </>
         )}
-        {children && children}
+        {children && (
+          <ScrollArea className="max-h-[26rem] pb-2">
+            {children}
+          </ScrollArea>
+        )}
         <DialogFooter>
           <DialogClose asChild>
             <Button variant="outline">{cancelText}</Button>

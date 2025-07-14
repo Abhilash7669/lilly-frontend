@@ -38,7 +38,7 @@ import {
   X,
 } from "lucide-react";
 import { PopoverContent } from "@radix-ui/react-popover";
-import SidePanel from "@/components/common/sheet/side-panel";
+// import SidePanel from "@/components/common/sheet/side-panel";
 import { Separator } from "@/components/ui/separator";
 import {
   StatusValue,
@@ -76,9 +76,10 @@ import {
 import {
   useActiveDroppable,
   useActiveItemId,
+  useSetActiveDroppable,
   useTaskCompletedAt,
 } from "@/store/workspace/to-do-data";
-import { Modal as DeleteModal } from "@/components/common/modal/modal";
+import { Modal as DeleteModal, Modal as TaskModal } from "@/components/common/modal/modal";
 
 type Props = {
   setContainers: React.Dispatch<React.SetStateAction<TodoData[]>>;
@@ -99,6 +100,7 @@ export default function TodoBoard({
   const isAddSheetOpen = useIsAddSheetOpen();
   const setAddSheetState = useSetAddSheetState();
   const activeDroppable = useActiveDroppable();
+  const setActiveDroppable = useSetActiveDroppable();
   const setIsDeleteModalOpen = useSetDeleteModalState();
   const isDeleteModalOpen = useDeleteModalState();
 
@@ -745,6 +747,11 @@ export default function TodoBoard({
       | { startDate: string | undefined; dueDate: string | undefined }
   ) {
     setTaskDTO((prevState) => ({ ...prevState, [key]: value }));
+
+    if(key === "status") {
+      setActiveDroppable(value as StatusValue);
+    }
+
   }
 
   async function handleSendData() {
@@ -820,22 +827,22 @@ export default function TodoBoard({
         </div>
       </DndContext>
       {/* modals & side-panel */}
-      <SidePanel
+      <TaskModal
         open={isAddSheetOpen}
         setOpen={(e) => {
           setAddSheetState(e as boolean);
           setSubTaskInput(() => "");
           setSubTaskState((prevState) => ({ ...prevState, isAdding: false }));
         }}
-        header={{
+        dialogHeader={{
           title: ADD_TASK_HEADER.title,
           description: ADD_TASK_HEADER.description,
         }}
         onConfirm={handleSendData}
         isLoading={isAddTodoLoading}
-        side="bottom"
+        // side="bottom"
       >
-        <div className="space-y-4 lg:w-2/4">
+        <div className="space-y-4 w-full">
           <InputGroup label="Name">
             <Input
               name="name"
@@ -892,7 +899,7 @@ export default function TodoBoard({
                 <Calendar
                   className="bg-card rounded-xl shadow-sm border"
                   mode="range"
-                  numberOfMonths={2}
+                  numberOfMonths={1}
                   onSelect={(e) => {
                     setSelectedDateRange((prevState) => ({
                       from: e?.from || prevState?.from,
@@ -1055,7 +1062,7 @@ export default function TodoBoard({
             </div>
           </div>
         </div>
-      </SidePanel>
+      </TaskModal>
       <DeleteModal
         isLoading={isDeleteTodoLoading}
         dialogHeader={{

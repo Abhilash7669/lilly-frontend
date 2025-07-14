@@ -17,6 +17,7 @@ type Props<T, K extends keyof T> = {
   value?: T[K];
   selectData: OptionList;
   selectLabel: string;
+  disabled?: boolean;
   onValueChange: (key: K, value: T[K]) => void;
   className?: string;
 };
@@ -27,14 +28,15 @@ export default function AppSelect<T, K extends keyof T>({
   name,
   value,
   selectLabel = "Label",
-  className=""
+  className="",
+  disabled= false
 }: Props<T, K>) {
   // todo: create loaders
 
   if (!selectData) return "No data found";
 
   return (
-    <Select value={String(value ?? "")} onValueChange={(value) => onValueChange(name, value as T[K])}>
+    <Select disabled={disabled} value={String(value ?? "")} onValueChange={(value) => onValueChange(name, value as T[K])}>
       <SelectTrigger className={cn("cursor-pointer w-full text-xs", className)}>
         <SelectValue />
       </SelectTrigger>
