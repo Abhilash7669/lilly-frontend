@@ -44,6 +44,8 @@ export const AXIOS_CLIENT = {
           background: "var(--custom-success)",
           border: "1px var(--custom-success-border) solid",
           color: "var(--custom-toast-text)",
+          backdropFilter: "blur(120px)",
+          WebkitBackdropFilter: "blur(120px)",
         },
       });
 
@@ -106,6 +108,8 @@ export const AXIOS_CLIENT = {
             ? "1px var(--custom-success-border) solid"
             : "1px var(--custom-error-border) solid",
           color: "var(--custom-toast-text)",
+          backdropFilter: "blur(120px)",
+          WebkitBackdropFilter: "blur(120px)",
         },
       });
 
@@ -124,6 +128,8 @@ export const AXIOS_CLIENT = {
           background: "var(--custom-error)",
           border: "1px var(--custom-error-border) solid",
           color: "var(--custom-toast-text)",
+          backdropFilter: "blur(120px)",
+          WebkitBackdropFilter: "blur(120px)",
         },
       });
 
@@ -155,6 +161,8 @@ export const AXIOS_CLIENT = {
           background: "var(--custom-success)",
           border: "1px var(--custom-success-border) solid",
           color: "var(--custom-toast-text)",
+          backdropFilter: "blur(120px)",
+          WebkitBackdropFilter: "blur(120px)",
         },
       });
 
@@ -167,10 +175,12 @@ export const AXIOS_CLIENT = {
         throw axiosError;
       }
 
-      toast.error(axiosError.response.data.title || "Error", {
+      toast(axiosError.response.data.title || "Error", {
         description: axiosError.response.data.message || "Something went wrong",
         style: {
           background: "oklch(--custom-error)",
+          backdropFilter: "blur(120px)",
+          WebkitBackdropFilter: "blur(120px)",
         },
       });
 

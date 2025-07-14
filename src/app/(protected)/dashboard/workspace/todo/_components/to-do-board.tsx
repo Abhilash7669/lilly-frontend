@@ -139,7 +139,7 @@ export default function TodoBoard({
       dueDate: LILLY_DATE.toISOString(selectedDateRange?.to) || "",
     },
     completedAt: "",
-    deletedAt: ""
+    deletedAt: "",
   } satisfies TaskDTO;
 
   const [taskDTO, setTaskDTO] = useState<TaskDTO>(INITIAL_TASK_DTO);
@@ -149,7 +149,6 @@ export default function TodoBoard({
   } | null>(null);
 
   const [m_activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
-  void m_activeId;
 
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
   const addInputRef = useRef<HTMLInputElement | null>(null);
@@ -340,6 +339,8 @@ export default function TodoBoard({
       activeContainerId as StatusValue
     );
 
+    const completedAt = LILLY_DATE.toISOString(LILLY_DATE.startOfTodayUTC());
+
     // find if item is being dropped at the last position
     /* 
       - find the index of overId and check if it's the last
@@ -383,7 +384,10 @@ export default function TodoBoard({
                   };
                 }
 
-                return item;
+                return {
+                  ...item,
+                  status: c.status,
+                };
               });
 
               return {
@@ -393,15 +397,20 @@ export default function TodoBoard({
             }
 
             if (c.status === previousContainer?.containerId) {
+              // sorting the previous droppable the item was taken out from
               const m_newArray = c.items.map((item) => {
                 if (item.order > previousContainer.order) {
                   return {
                     ...item,
                     order: item.order - 1,
+                    status: c.status,
                   };
                 }
 
-                return item;
+                return {
+                  ...item,
+                  status: c.status,
+                };
               });
               return {
                 ...c,
@@ -417,6 +426,7 @@ export default function TodoBoard({
               id: c._id,
               status: c.status,
               order: c.order,
+              completedAt: c.completedAt,
             }))
           );
           (async () => {
@@ -435,6 +445,7 @@ export default function TodoBoard({
       activeId === overId &&
       containers[containerIndex].items.length > 1
     ) {
+      // if dragged from another droppable into the last pos of a new droppable
       const itemIndex = containers[containerIndex].items.findIndex(
         (item) => item._id === overId
       );
@@ -445,19 +456,20 @@ export default function TodoBoard({
         setContainers((prevState) => {
           const updatedData = prevState.map((c) => {
             if (c.status === previousContainer?.containerId) {
-              // sorts the previous column that the item was taken from
-              // need to find the changed items order
-              // const highestOrder = c.items.length - 1;
-
+              // sorting previous droppable
               const m_newArray = c.items.map((item) => {
                 if (item.order > previousContainer.order) {
                   return {
                     ...item,
                     order: item.order - 1,
+                    status: c.status,
                   };
                 }
 
-                return item;
+                return {
+                  ...item,
+                  status: c.status,
+                };
               });
               return {
                 ...c,
@@ -471,10 +483,18 @@ export default function TodoBoard({
                   return {
                     ...item,
                     order: i,
+                    status: c.status,
+                    completedAt:
+                      m_activeId === item._id && c.status === "done"
+                        ? completedAt
+                        : "",
                   };
                 }
 
-                return item;
+                return {
+                  ...item,
+                  status: c.status,
+                };
               });
 
               return {
@@ -492,6 +512,7 @@ export default function TodoBoard({
                 status: c.status,
                 order: c.order,
                 id: c._id,
+                // completedAt: completedAt,
               };
             })
           );
@@ -499,7 +520,6 @@ export default function TodoBoard({
           (async () => {
             await debouncePUTTask(m_payload);
           })();
-
 
           return updatedData;
         });
@@ -511,12 +531,18 @@ export default function TodoBoard({
       activeId === overId &&
       containers[containerIndex].items.length === 1
     ) {
+      // if we drag into an empty droppable
       setContainers((prevState) => {
         const updatedData = prevState.map((c) => {
           if (c.items.length === 1) {
             const newItemsArray = c.items.map((item) => ({
               ...item,
               order: 0,
+              status: c.status,
+              completedAt:
+                m_activeId === item._id && c.status === "done"
+                  ? completedAt
+                  : "",
             }));
 
             return {
@@ -526,15 +552,20 @@ export default function TodoBoard({
           }
 
           if (c.status === previousContainer?.containerId) {
+            // sort previous droppable
             const m_newArray = c.items.map((item) => {
               if (item.order > previousContainer.order) {
                 return {
                   ...item,
                   order: item.order - 1,
+                  status: c.status,
                 };
               }
 
-              return item;
+              return {
+                ...item,
+                status: c.status,
+              };
             });
             return {
               ...c,
@@ -550,13 +581,13 @@ export default function TodoBoard({
             id: c._id,
             status: c.status,
             order: c.order,
+            // completedAt: completedAt,
           }))
         );
 
         (async () => {
           await debouncePUTTask(payload);
         })();
-
 
         return updatedData;
       });
@@ -599,7 +630,9 @@ export default function TodoBoard({
     }, time);
   }
 
-  async function debouncePUTTask(data: {id: string, status: string, order: number}[]) {
+  async function debouncePUTTask(
+    data: { id: string; status: string; order: number }[]
+  ) {
     if (debounceTimer && debounceTimer.current) {
       clearTimeout(debounceTimer.current);
     }
@@ -704,7 +737,12 @@ export default function TodoBoard({
 
   async function handleDelete() {
     const deletedAt = LILLY_DATE.toISOString(LILLY_DATE.startOfTodayUTC());
-    await deleteTask({ activeDroppable, activeItemId, deletedAt, completedAt: activeItemCompletedAt });
+    await deleteTask({
+      activeDroppable,
+      activeItemId,
+      deletedAt,
+      completedAt: activeItemCompletedAt,
+    });
   }
 
   return (

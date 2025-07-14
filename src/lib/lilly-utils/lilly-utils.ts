@@ -28,9 +28,9 @@ export class LILLY_DATE {
         return utcDate;
     }
 
-    static toISOString(date: Date | undefined) {
+    static toISOString(date: Date | undefined): string {
 
-        if(!date) return;
+        if(!date) return "";
 
         const toISOString = date.toISOString();
         return toISOString;
