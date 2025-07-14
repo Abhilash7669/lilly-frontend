@@ -15,7 +15,7 @@ export const AXIOS_SERVER = {
     data: T,
     config?: AxiosRequestConfig
   ): Promise<U> {
-    const token = await getCookie();
+    const token = await getCookie("lillyToken");
 
     try {
       const m_data = await axios.post<U & CustomResponse>(

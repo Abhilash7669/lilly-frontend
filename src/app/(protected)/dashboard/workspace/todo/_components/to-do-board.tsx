@@ -388,6 +388,8 @@ export default function TodoBoard({
                     completedAt:
                       m_activeId === item._id && c.status === "done"
                         ? completedAt
+                        : c.status !== "done"
+                        ? ""
                         : item.completedAt,
                   };
                 }
@@ -398,6 +400,8 @@ export default function TodoBoard({
                   completedAt:
                     m_activeId === item._id && c.status === "done"
                       ? completedAt
+                      : c.status !== "done"
+                      ? ""
                       : item.completedAt,
                 };
               });
@@ -499,6 +503,8 @@ export default function TodoBoard({
                     completedAt:
                       m_activeId === item._id && c.status === "done"
                         ? completedAt
+                        : c.status !== "done"
+                        ? ""
                         : item.completedAt,
                   };
                 }
@@ -554,6 +560,8 @@ export default function TodoBoard({
               completedAt:
                 m_activeId === item._id && c.status === "done"
                   ? completedAt
+                  : c.status !== "done"
+                  ? ""
                   : item.completedAt,
             }));
 
@@ -643,13 +651,18 @@ export default function TodoBoard({
   }
 
   async function handleUpdateTaskState(
-    data: { id: string; status: StatusValue; order: number, completedAt: string | undefined }[]
+    data: {
+      id: string;
+      status: StatusValue;
+      order: number;
+      completedAt: string | undefined;
+    }[]
   ) {
     if (debounceTimer && debounceTimer.current) {
       clearTimeout(debounceTimer.current);
     }
-    debounceTimer.current = setTimeout(async() => {
-      await updateTask(data)
+    debounceTimer.current = setTimeout(async () => {
+      await updateTask(data);
     }, 500);
   }
 
@@ -755,7 +768,7 @@ export default function TodoBoard({
       deletedAt,
       completedAt: activeItemCompletedAt,
     });
-  };
+  }
 
   return (
     <>
