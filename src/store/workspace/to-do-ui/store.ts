@@ -22,6 +22,8 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
     add: false,
     delete: false,
   },
+  isEditTask: false,
+  setIsEditTask: (isEdit: boolean) => set(() => ({ isEditTask: isEdit })),
   setAddSheetState: (openState: boolean) =>
     set((state) => ({ modal: { add: openState, delete: state.modal.delete } })),
   setDeleteModal: (openState: boolean) =>
@@ -286,6 +288,76 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
     toggleDeleteLoading(false);
     toggleDeleteModal(false);
     setActiveItemId(null);
+  },
+  editTask: async function ({ taskDTO }) {
+
+    function toggleAddLoading(isLoading: boolean) {
+      set((state) => ({
+        loading: { delete: state.loading.delete, add: isLoading },
+      }));
+    }
+
+    toggleAddLoading(true);
+
+    const containers = useTodoDataStore.getState().todoData;
+    const setContainers = useTodoDataStore.getState().setTodoData;
+
+    const containerIndex = LILLY_TODO.findUpdatedContainerIndex(
+      containers,
+      taskDTO.status
+    );
+
+    if (containerIndex === -1) {
+      errorToast("Error", "Could not find item");
+      toggleAddLoading(false);
+      return false;
+    };
+
+
+    const response = await AXIOS_CLIENT.put<TaskPayload, TaskAddResponse>(
+      `/tasks/update/${taskDTO.id}`,
+      { task: taskDTO }
+    );
+
+    if(!response || !response.success) {
+      toggleAddLoading(false);
+      return false;
+    };
+
+    const data = response.data.task.taskItem;
+    setContainers(
+      prevState => {
+
+        return prevState.map((c, i) => {
+
+          if(i === containerIndex) {
+
+            const itemIndex = c.items.findIndex(item => item._id === taskDTO.id);
+
+            if(itemIndex !== -1) {
+
+              return {
+                ...c,
+                items: [
+                  ...c.items.slice(0, itemIndex + 1),
+                  data,
+                  ...c.items.slice(itemIndex + 1)
+                ]
+              }
+            };
+
+
+          }
+
+          return c;
+        })
+
+      }
+    )
+
+    return true;
+
+
   },
   updateTask: async function (
     updatedTasks: {

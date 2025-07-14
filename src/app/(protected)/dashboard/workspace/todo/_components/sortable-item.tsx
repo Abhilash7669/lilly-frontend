@@ -20,12 +20,15 @@ import {
 import PriorityBadge from "@/app/(protected)/dashboard/workspace/todo/_components/priority-badge";
 import { ICON_SIZE } from "@/lib/utils";
 import { format } from "date-fns";
-import { useSetDeleteModalState } from "@/store/workspace/to-do-ui";
+import { useSetAddSheetState, useSetDeleteModalState, useSetIsEditTask } from "@/store/workspace/to-do-ui";
 import {
   useFindTaskCompletedAt,
   useSetActiveDroppable,
   useSetActiveItemId,
+  useSetEditTaskData,
+  useTodoData,
 } from "@/store/workspace/to-do-data";
+import { LILLY_TODO } from "@/lib/lilly-utils/lilly-utils";
 
 type Props = {
   data: TodoItems;
@@ -57,6 +60,10 @@ export default function SortableItem({
   const setActiveItem = useSetActiveItemId();
   const setActiveDroppable = useSetActiveDroppable();
   const findTaskCompletedAt = useFindTaskCompletedAt();
+  const setTaskModal = useSetAddSheetState();
+  const setIsEditTask = useSetIsEditTask();
+  const setEditTaskData = useSetEditTaskData();
+  const data = useTodoData();
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -85,6 +92,19 @@ export default function SortableItem({
     setActiveDroppable(status as StatusValue);
   }
 
+  function handleOpenEditModal(): void {
+    setActiveItem(_id);
+    setTaskModal(true);
+    const containerIndex = LILLY_TODO.findUpdatedContainerIndex(data, status);
+    setIsEditTask(true);
+
+    if(containerIndex !== -1) {
+
+      const editData = data[containerIndex].items.find(item => item._id === _id);
+      if(editData) setEditTaskData(editData)
+    }
+  }
+
   return (
     <div
       key={_id}
@@ -105,7 +125,7 @@ export default function SortableItem({
             <BsThreeDots className="text-sm cursor-pointer transition-all hover:opacity-65" />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="p-2 space-y-1">
-            <DropdownMenuItem className="cursor-pointer">View</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleOpenEditModal} className="cursor-pointer">Edit</DropdownMenuItem>
             <DropdownMenuItem
               onClick={handleOpenDeleteModal}
               className="cursor-pointer transition-all focus:bg-destructive/70"
@@ -133,7 +153,7 @@ export default function SortableItem({
             <div className="w-full flex items-center justify-between">
               <Progress
                 className="bg-muted [&>div]:bg-gradient-to-r [&>div]:from-cyan-400 [&>div]:via-sky-500 [&>div]:to-indigo-500 [&>div]:rounded-l-full w-5/6"
-                value={parseInt(progress) || 40}
+                value={parseInt(progress) || 4}
               />
               <p className="text-sm text-muted-foreground">{progress}%</p>
             </div>

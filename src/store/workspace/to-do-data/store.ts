@@ -9,6 +9,8 @@ export const useTodoDataStore = create<TodoDataStore>((set, get) => ({
       todoData: typeof data === "function" ? data(state.todoData) : data,
     })),
   todoData: [],
+  editTaskData: null,
+  setEditTaskData: (data) => set(() => ({ editTaskData: data ? data : null })),
   itemId: null,
   setActiveItemId: (id) => set(() => ({ itemId: id })),
   activeDroppable: "todo",

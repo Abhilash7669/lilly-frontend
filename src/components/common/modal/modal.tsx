@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { ICON_SIZE } from "@/lib/utils";
+import { cn, ICON_SIZE } from "@/lib/utils";
 import { LoaderCircle } from "lucide-react";
 import { JSX, SetStateAction } from "react";
 
@@ -29,6 +29,7 @@ type Props = {
   open: boolean;
   setOpen: React.Dispatch<SetStateAction<boolean>>;
   isLoading: boolean;
+  className?: string;
 };
 
 export const Modal = ({
@@ -41,7 +42,8 @@ export const Modal = ({
   setOpen,
   confirmVariant = "default",
   onConfirm,
-  isLoading = false
+  isLoading = false,
+  className = "",
 }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -49,15 +51,15 @@ export const Modal = ({
       <DialogContent>
         {dialogHeader && (
           <>
-            <DialogHeader>
+            <DialogHeader className="px-2">
               <DialogTitle>{dialogHeader.title}&#x1F52E;</DialogTitle>
               <DialogDescription>{dialogHeader.description}</DialogDescription>
+              {children && <Separator className="bg-muted-foreground" />}
             </DialogHeader>
-            {children && <Separator className="bg-muted-foreground" />}
           </>
         )}
         {children && (
-          <ScrollArea className="max-h-[26rem] pb-2">
+          <ScrollArea className={cn("max-h-[26rem] pb-2", className)}>
             {children}
           </ScrollArea>
         )}
@@ -65,13 +67,16 @@ export const Modal = ({
           <DialogClose asChild>
             <Button variant="outline">{cancelText}</Button>
           </DialogClose>
-          <Button disabled={isLoading} onClick={onConfirm} variant={confirmVariant}>
-            {
-              isLoading ?
+          <Button
+            disabled={isLoading}
+            onClick={onConfirm}
+            variant={confirmVariant}
+          >
+            {isLoading ? (
               <LoaderCircle className={`${ICON_SIZE.small} animate-spin`} />
-              :
+            ) : (
               confirmText
-            }
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

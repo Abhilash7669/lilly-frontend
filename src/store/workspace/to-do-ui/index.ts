@@ -15,3 +15,7 @@ export const useSetDeleteTodoLoading = () => useTodoControls(state => state.setD
 export const useAddTask = () => useTodoControls(state => state.addTask);
 export const useDeleteTask = () => useTodoControls(state => state.deleteTask);
 export const useUpdateTask = () => useTodoControls(state => state.updateTask);
+export const useEditTask = () => useTodoControls(state => state.editTask);
+
+export const useIsEditTask = () => useTodoControls(state => state.isEditTask);
+export const useSetIsEditTask = () => useTodoControls(state => state.setIsEditTask);

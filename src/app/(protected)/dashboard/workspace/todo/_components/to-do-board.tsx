@@ -66,20 +66,29 @@ import {
   useAddTask,
   useDeleteModalState,
   useDeleteTask,
+  useEditTask,
   useIsAddSheetOpen,
   useIsAddTodoLoading,
   useIsDeleteTodoLoading,
+  useIsEditTask,
   useSetAddSheetState,
   useSetDeleteModalState,
+  useSetIsEditTask,
   useUpdateTask,
 } from "@/store/workspace/to-do-ui";
 import {
   useActiveDroppable,
   useActiveItemId,
+  useEditTaskData,
   useSetActiveDroppable,
+  useSetEditTaskData,
   useTaskCompletedAt,
 } from "@/store/workspace/to-do-data";
-import { Modal as DeleteModal, Modal as TaskModal } from "@/components/common/modal/modal";
+import {
+  Modal as DeleteModal,
+  Modal as TaskModal,
+} from "@/components/common/modal/modal";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type Props = {
   setContainers: React.Dispatch<React.SetStateAction<TodoData[]>>;
@@ -95,6 +104,7 @@ export default function TodoBoard({
   // zustand data store
   const activeItemId = useActiveItemId();
   const activeItemCompletedAt = useTaskCompletedAt();
+  const editTaskData = useEditTaskData();
 
   // zustand todocontrols states
   const isAddSheetOpen = useIsAddSheetOpen();
@@ -103,6 +113,9 @@ export default function TodoBoard({
   const setActiveDroppable = useSetActiveDroppable();
   const setIsDeleteModalOpen = useSetDeleteModalState();
   const isDeleteModalOpen = useDeleteModalState();
+  const isEditTaskData = useIsEditTask();
+  const setIsEditTask = useSetIsEditTask();
+  const setEditTaskData = useSetEditTaskData();
 
   // zustand loading states
   const isAddTodoLoading = useIsAddTodoLoading();
@@ -112,6 +125,7 @@ export default function TodoBoard({
   const addTask = useAddTask();
   const deleteTask = useDeleteTask();
   const updateTask = useUpdateTask();
+  const editTask = useEditTask();
 
   const [subTasks, setSubTasks] = useState<SubTasks[]>([]); // to set sub task at creation
 
@@ -199,6 +213,33 @@ export default function TodoBoard({
     if (activeDroppable)
       setTaskDTO((prevState) => ({ ...prevState, status: activeDroppable }));
   }, [activeDroppable]);
+
+  useEffect(() => {
+    if (isEditTaskData && editTaskData) {
+      const taskDTO: TaskDTO & { id: string } = {
+        id: editTaskData._id,
+        completedAt: editTaskData.completedAt,
+        date: {
+          startDate: editTaskData.startDate,
+          dueDate: editTaskData.dueDate,
+        },
+        deletedAt: editTaskData.deletedAt,
+        name: editTaskData.name,
+        order: editTaskData.order,
+        priority: editTaskData.priority,
+        status: editTaskData.status,
+        subTasks: editTaskData.subTasks,
+        summary: editTaskData.summary || "",
+        tags: editTaskData.tags,
+      };
+      setSelectedDateRange(() => ({
+        from: new Date(editTaskData.startDate) || undefined,
+        to: new Date(editTaskData.dueDate) || undefined,
+      }));
+      setSubTasks(() => editTaskData.subTasks);
+      setTaskDTO(taskDTO);
+    }
+  }, [isEditTaskData, editTaskData]);
 
   function findContainerId(
     itemId: UniqueIdentifier
@@ -748,10 +789,9 @@ export default function TodoBoard({
   ) {
     setTaskDTO((prevState) => ({ ...prevState, [key]: value }));
 
-    if(key === "status") {
+    if (key === "status") {
       setActiveDroppable(value as StatusValue);
     }
-
   }
 
   async function handleSendData() {
@@ -763,10 +803,26 @@ export default function TodoBoard({
       activeDroppable,
       activeItemId,
       completedAt: "",
-      deletedAt: ""
+      deletedAt: "",
     };
     const isTaskAdded = await addTask(data);
-    if(isTaskAdded) setTaskDTO(INITIAL_TASK_DTO);
+    if (isTaskAdded) setTaskDTO(INITIAL_TASK_DTO);
+  }
+
+  async function handleUpdateData() {
+    const data = {
+      taskDTO: {
+        ...taskDTO,
+        subTasks: subTasks,
+        id: activeItemId || "",
+      },
+      completedAt: LILLY_DATE.toISOString(LILLY_DATE.startOfTodayUTC()),
+      deletedAt: "",
+    };
+
+    const isEditTask = await editTask(data);
+
+    if (isEditTask) setTaskDTO(INITIAL_TASK_DTO);
   }
 
   async function handleDelete() {
@@ -828,24 +884,37 @@ export default function TodoBoard({
       </DndContext>
       {/* modals & side-panel */}
       <TaskModal
+        className="px-2 relative"
         open={isAddSheetOpen}
         setOpen={(e) => {
           setAddSheetState(e as boolean);
-          setSubTaskInput(() => "");
-          setSubTaskState((prevState) => ({ ...prevState, isAdding: false }));
+          if (!isEditTaskData) {
+            setSubTaskInput(() => "");
+            setSubTaskState((prevState) => ({ ...prevState, isAdding: false }));
+          }
+          if (!e) {
+            setIsEditTask(e);
+            setEditTaskData(null);
+          }
         }}
         dialogHeader={{
           title: ADD_TASK_HEADER.title,
           description: ADD_TASK_HEADER.description,
         }}
-        onConfirm={handleSendData}
+        onConfirm={isEditTaskData ? handleUpdateData : handleSendData}
         isLoading={isAddTodoLoading}
         // side="bottom"
       >
+        {isEditTaskData && !editTaskData && (
+          <div className="absolute top-0 left-0 h-full w-full bg-card">
+            <p>Spinner</p>
+          </div>
+        )}
         <div className="space-y-4 w-full">
           <InputGroup label="Name">
             <Input
               name="name"
+              defaultValue={taskDTO.name}
               onChange={(e) =>
                 debounceTaskData(handleTaskDTO, 300, "name", e.target.value)
               }
@@ -855,6 +924,7 @@ export default function TodoBoard({
           <InputGroup label="Summary">
             <Textarea
               name="summary"
+              defaultValue={taskDTO.summary}
               onChange={(e) =>
                 debounceTaskData(handleTaskDTO, 300, "summary", e.target.value)
               }
@@ -931,15 +1001,17 @@ export default function TodoBoard({
                 selectLabel="Priority"
               />
             </InputGroup>
-            <InputGroup className="w-2/4" label="Status">
-              <AppSelect<TaskDTO, "status">
-                name="status"
-                onValueChange={handleTaskDTO}
-                value={taskDTO.status}
-                selectLabel="Status"
-                selectData={STATUS_SELECT_OPTIONS}
-              />
-            </InputGroup>
+            {!isEditTaskData && (
+              <InputGroup className="w-2/4" label="Status">
+                <AppSelect<TaskDTO, "status">
+                  name="status"
+                  onValueChange={handleTaskDTO}
+                  value={taskDTO.status}
+                  selectLabel="Status"
+                  selectData={STATUS_SELECT_OPTIONS}
+                />
+              </InputGroup>
+            )}
           </div>
           <Separator />
           {/* Sub tasks */}
@@ -1001,7 +1073,21 @@ export default function TodoBoard({
                         className="text-xs w-full p-2 flex items-center justify-between hover:bg-accent cursor-pointer rounded-sm"
                       >
                         <div className="flex items-center gap-2">
-                          <span className="h-1 w-1 rounded-full bg-primary"></span>
+                          {/* <span className="h-1 w-1 rounded-full bg-primary"></span> */}
+                          <Checkbox
+                            className="cursor-pointer"
+                            onCheckedChange={(e) => {
+                              setSubTasks((prevState) => {
+                                const updatedSubTasks = [...prevState];
+                                updatedSubTasks[i] = {
+                                  ...updatedSubTasks[i],
+                                  status: e as boolean,
+                                };
+                                return updatedSubTasks;
+                              });
+                            }}
+                            checked={item.status}
+                          />
                           <span>{item.subTask}</span>
                         </div>
                         <DropdownMenu>

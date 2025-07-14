@@ -1,6 +1,7 @@
 import {
   StatusValue,
   TodoData,
+  TodoItems,
 } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 
 export type TodoDataStore = {
@@ -12,4 +13,6 @@ export type TodoDataStore = {
   setActiveDroppable: (target: StatusValue) => void;
   findTaskCompletedAt: (id: string, activeDroppable: StatusValue) => void;
   taskCompletedAt: string | undefined;
+  editTaskData: TodoItems | null;
+  setEditTaskData: (data: TodoItems | null) => void;
 };
