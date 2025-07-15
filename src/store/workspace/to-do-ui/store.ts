@@ -290,7 +290,6 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
     setActiveItemId(null);
   },
   editTask: async function ({ taskDTO }) {
-
     function toggleAddLoading(isLoading: boolean) {
       set((state) => ({
         loading: { delete: state.loading.delete, add: isLoading },
@@ -311,53 +310,43 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
       errorToast("Error", "Could not find item");
       toggleAddLoading(false);
       return false;
-    };
+    }
 
-
-    const response = await AXIOS_CLIENT.put<TaskPayload, TaskAddResponse>(
-      `/tasks/update/${taskDTO.id}`,
+    const response = await AXIOS_CLIENT.put<unknown, TaskAddResponse>(
+      `/tasks/edit/${taskDTO.id}`,
       { task: taskDTO }
     );
 
-    if(!response || !response.success) {
+    if (!response || !response.success) {
       toggleAddLoading(false);
       return false;
-    };
+    }
 
     const data = response.data.task.taskItem;
-    setContainers(
-      prevState => {
+    console.log(data, "dATA");
+    setContainers((prevState) => {
+      return prevState.map((c, i) => {
+        if (i === containerIndex) {
+          const itemIndex = c.items.findIndex(
+            (item) => item._id === taskDTO.id
+          );
 
-        return prevState.map((c, i) => {
-
-          if(i === containerIndex) {
-
-            const itemIndex = c.items.findIndex(item => item._id === taskDTO.id);
-
-            if(itemIndex !== -1) {
-
-              return {
-                ...c,
-                items: [
-                  ...c.items.slice(0, itemIndex + 1),
-                  data,
-                  ...c.items.slice(itemIndex + 1)
-                ]
-              }
+          if (itemIndex !== -1) {
+            return {
+              ...c,
+              items: [
+                ...c.items.slice(0, itemIndex),
+                data, // direct replacement
+                ...c.items.slice(itemIndex + 1),
+              ],
             };
-
-
           }
-
-          return c;
-        })
-
-      }
-    )
+        }
+        return c; // unchanged container
+      });
+    });
 
     return true;
-
-
   },
   updateTask: async function (
     updatedTasks: {

@@ -815,6 +815,8 @@ export default function TodoBoard({
         ...taskDTO,
         subTasks: subTasks,
         id: activeItemId || "",
+        startDate: LILLY_DATE.toISOString(selectedDateRange?.from),
+        dueDate: LILLY_DATE.toISOString(selectedDateRange?.to)
       },
       completedAt: LILLY_DATE.toISOString(LILLY_DATE.startOfTodayUTC()),
       deletedAt: "",
