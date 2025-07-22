@@ -1,6 +1,6 @@
 "use client";
 
-import { Ellipsis, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDroppable } from "@dnd-kit/core";
 import {
@@ -68,7 +68,7 @@ export default function Droppable({ data: { status, items } }: Props) {
                 size={16}
               />
             )}
-            <Ellipsis className="cursor-pointer" size={16} />
+            {/* <Ellipsis className="cursor-pointer" size={16} /> */}
           </div>
         </div>
         <div className="px-4">

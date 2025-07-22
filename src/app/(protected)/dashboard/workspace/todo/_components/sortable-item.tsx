@@ -112,8 +112,8 @@ export default function SortableItem({
       style={style}
       {...attributes}
       {...listeners}
-      className={`bg-card rounded-xl px-6 py-5 rotate-0 shadow-md cursor-grab ${
-        isDragging && "cursor-grabbing rotate-1 opacity-80"
+      className={`backdrop-blur-lg bg-card/50 rounded-xl px-6 py-5 rotate-0 shadow-md cursor-grab ${
+        isDragging && "cursor-grabbing rotate-1"
       }`}
     >
       <div className="w-full flex items-center justify-between mb-2">
@@ -124,7 +124,7 @@ export default function SortableItem({
           <DropdownMenuTrigger>
             <BsThreeDots className="text-sm cursor-pointer transition-all hover:opacity-65" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="p-2 space-y-1">
+          <DropdownMenuContent className="p-2 space-y-1 backdrop-blur-lg bg-popover/20">
             <DropdownMenuItem onClick={handleOpenEditModal} className="cursor-pointer">Edit</DropdownMenuItem>
             <DropdownMenuItem
               onClick={handleOpenDeleteModal}
@@ -137,14 +137,14 @@ export default function SortableItem({
       </div>
       <div className="space-y-6">
         <div>
-          <h2 className="text-lg w-full">{name}</h2>
+          <h2 className="text-base w-full">{name}</h2>
           {truncatedDesc && (
             <p className="text-muted-foreground text-xs">{truncatedDesc}</p>
           )}
         </div>
         <div className="space-y-2">
-          <div className="flex items-end gap-2">
-            <CalendarDays className={ICON_SIZE.medium} />
+          <div className="flex items-center gap-2">
+            <CalendarDays className={ICON_SIZE.small} />
             <p className="text-xs">
               {m_startDate} - {m_dueDate}
             </p>

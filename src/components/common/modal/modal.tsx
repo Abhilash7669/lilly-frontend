@@ -30,6 +30,7 @@ type Props = {
   setOpen: React.Dispatch<SetStateAction<boolean>>;
   isLoading: boolean;
   className?: string;
+  containerClassName?: string;
 };
 
 export const Modal = ({
@@ -44,15 +45,19 @@ export const Modal = ({
   onConfirm,
   isLoading = false,
   className = "",
+  containerClassName = "",
 }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {dialogTrigger && <DialogTrigger asChild>{dialogTrigger}</DialogTrigger>}
-      <DialogContent>
+      <DialogContent className={containerClassName}>
         {dialogHeader && (
           <>
             <DialogHeader className="px-2">
-              <DialogTitle>{dialogHeader.title}&#x1F52E;</DialogTitle>
+              <DialogTitle className="flex items-center">
+                {dialogHeader.title}
+                <div className="animate-bounce">&#x1F52E;</div>
+              </DialogTitle>
               <DialogDescription>{dialogHeader.description}</DialogDescription>
               {children && <Separator className="bg-muted-foreground" />}
             </DialogHeader>

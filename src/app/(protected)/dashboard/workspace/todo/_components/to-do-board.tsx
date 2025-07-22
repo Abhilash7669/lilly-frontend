@@ -902,7 +902,8 @@ export default function TodoBoard({
       </DndContext>
       {/* modals & side-panel */}
       <TaskModal
-        className="px-2 relative"
+        className="px-2 relative w-full"
+        containerClassName="min-w-[90%] h-[calc(100dvh-6rem)] backdrop-blur-lg bg-background/20"
         open={isAddSheetOpen}
         setOpen={(e) => {
           setAddSheetState(e as boolean);
@@ -980,7 +981,7 @@ export default function TodoBoard({
                 <Calendar
                   className="bg-card rounded-xl shadow-sm border"
                   mode="range"
-                  numberOfMonths={1}
+                  numberOfMonths={2}
                   onSelect={(e) => {
                     setSelectedDateRange((prevState) => ({
                       from: e?.from || prevState?.from,
@@ -1161,6 +1162,7 @@ export default function TodoBoard({
         </div>
       </TaskModal>
       <DeleteModal
+        containerClassName="backdrop-blur-lg bg-background/20"
         isLoading={isDeleteTodoLoading}
         dialogHeader={{
           title: "Delete Task",
@@ -1171,9 +1173,7 @@ export default function TodoBoard({
         open={isDeleteModalOpen}
         setOpen={(e) => setIsDeleteModalOpen(e as boolean)}
         onConfirm={handleDelete}
-      >
-        {activeItemId && <p className="text-xs">Delete task: {activeItemId}</p>}
-      </DeleteModal>
+      />
     </>
   );
 }

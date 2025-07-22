@@ -37,7 +37,7 @@ export default function TodoContainer() {
               </span>
             </p>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent className="backdrop-blur-lg bg-popover/20">
             <DropdownMenuItem
               className="cursor-pointer"
               onClick={() => handleTabSwitch("board")}
