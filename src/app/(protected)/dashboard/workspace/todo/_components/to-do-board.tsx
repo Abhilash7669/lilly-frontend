@@ -853,6 +853,8 @@ export default function TodoBoard({
     });
   }
 
+  console.log(taskDTO, "FINAL");
+
   return (
     <>
       <DndContext
@@ -988,10 +990,10 @@ export default function TodoBoard({
                       to: e?.to || prevState?.to,
                     }));
                     const startDate = e?.from
-                      ? LILLY_DATE.toUTC(e.from).toISOString()
+                      ? LILLY_DATE.toUTC(e.from)
                       : selectedDateRange?.from?.toISOString();
                     const dueDate = e?.to
-                      ? LILLY_DATE.toUTC(e.to).toISOString()
+                      ? LILLY_DATE.toUTC(e.to)
                       : selectedDateRange?.to?.toISOString();
                     debounceTaskData(handleTaskDTO, 100, "date", {
                       startDate,

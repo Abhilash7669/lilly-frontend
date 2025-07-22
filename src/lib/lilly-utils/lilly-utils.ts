@@ -24,8 +24,8 @@ export class LILLY_DATE {
 
     static toUTC(date: Date) {
         const targetDate = new Date(date);
-        const utcDate = new Date(Date.UTC(targetDate.getUTCFullYear(), targetDate.getUTCMonth(), targetDate.getUTCDate()));
-        return utcDate;
+        const utcDate = new Date(Date.UTC(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate(), targetDate.getHours(), targetDate.getMinutes(), targetDate.getSeconds()));
+        return utcDate.toISOString();
     }
 
     static toISOString(date: Date | undefined): string {
