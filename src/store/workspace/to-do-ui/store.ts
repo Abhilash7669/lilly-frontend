@@ -323,7 +323,6 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
     }
 
     const data = response.data.task.taskItem;
-    console.log(data, "dATA");
     setContainers((prevState) => {
       return prevState.map((c, i) => {
         if (i === containerIndex) {
@@ -345,7 +344,8 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
         return c; // unchanged container
       });
     });
-
+    toggleAddLoading(false);
+    set((state) => ({ modal: { delete: state.modal.delete, add: false }}));
     return true;
   },
   updateTask: async function (

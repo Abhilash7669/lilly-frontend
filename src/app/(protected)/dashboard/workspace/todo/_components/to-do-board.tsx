@@ -215,6 +215,7 @@ export default function TodoBoard({
   }, [activeDroppable]);
 
   useEffect(() => {
+    // todo: need to remove this from useEffect
     if (isEditTaskData && editTaskData) {
       const taskDTO: TaskDTO & { id: string } = {
         id: editTaskData._id,
@@ -816,15 +817,14 @@ export default function TodoBoard({
         subTasks: subTasks,
         id: activeItemId || "",
         startDate: LILLY_DATE.toISOString(selectedDateRange?.from),
-        dueDate: LILLY_DATE.toISOString(selectedDateRange?.to)
+        dueDate: LILLY_DATE.toISOString(selectedDateRange?.to),
       },
       completedAt: LILLY_DATE.toISOString(LILLY_DATE.startOfTodayUTC()),
       deletedAt: "",
     };
 
-    const isEditTask = await editTask(data);
+    await editTask(data);
 
-    if (isEditTask) setTaskDTO(INITIAL_TASK_DTO);
   }
 
   async function handleDelete() {
@@ -834,6 +834,22 @@ export default function TodoBoard({
       activeItemId,
       deletedAt,
       completedAt: activeItemCompletedAt,
+    });
+  }
+
+  function resetModal() {
+    if (!isEditTaskData) {
+      setSubTaskInput(() => "");
+      setSubTaskState((prevState) => ({ ...prevState, isAdding: false }));
+    }
+
+    setIsEditTask(false);
+    setEditTaskData(null);
+    setTaskDTO(INITIAL_TASK_DTO);
+    setSubTasks([]);
+    setSelectedDateRange({
+      from: LILLY_DATE.startOfTodayUTC(),
+      to: LILLY_DATE.endOfTodayUTC(),
     });
   }
 
@@ -890,14 +906,7 @@ export default function TodoBoard({
         open={isAddSheetOpen}
         setOpen={(e) => {
           setAddSheetState(e as boolean);
-          if (!isEditTaskData) {
-            setSubTaskInput(() => "");
-            setSubTaskState((prevState) => ({ ...prevState, isAdding: false }));
-          }
-          if (!e) {
-            setIsEditTask(e);
-            setEditTaskData(null);
-          }
+          if (!e) resetModal();
         }}
         dialogHeader={{
           title: ADD_TASK_HEADER.title,
