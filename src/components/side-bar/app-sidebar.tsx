@@ -39,7 +39,7 @@ const data = {
       items: [
         {
           title: "Todo",
-          url: "/dashboard/workspace/todo",
+          url: "/dashboard/workspace/todo?q=over-view",
           icon: ListTodo,
         },
         {

@@ -174,7 +174,7 @@ export default function TodoBoard({
 
   const isInitialLoading = loading && containers.length === 0;
   const hasFetchedData = !loading && containers.length > 0;
-  const isEmptyAfterFetch = !loading && containers.length === 0;
+  // const isEmptyAfterFetch = !loading && containers.length === 0;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -853,7 +853,6 @@ export default function TodoBoard({
     });
   }
 
-  console.log(taskDTO, "FINAL");
 
   return (
     <>
@@ -884,13 +883,13 @@ export default function TodoBoard({
             </div>
           ) : (
             <>
-              {isEmptyAfterFetch && (
+              {/* {isEmptyAfterFetch && (
                 <div className="w-full h-full flex items-center justify-center">
                   <Button onClick={() => setAddSheetState(true)}>
                     Add Task
                   </Button>
                 </div>
-              )}
+              )} */}
               {hasFetchedData && (
                 <div className="grid sm:grid-cols-3 sm:gap-2 lg:gap-2 h-full">
                   {containers.map((item) => {
