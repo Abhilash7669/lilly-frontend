@@ -21,25 +21,44 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
   loading: {
     add: false,
     delete: false,
+    filter: false,
+  },
+  sheet: {
+    filterOpen: false,
   },
   isEditTask: false,
+  setFilterSheetOpen: (isOpen: boolean) =>
+    set(() => ({ sheet: { filterOpen: isOpen } })),
   setIsEditTask: (isEdit: boolean) => set(() => ({ isEditTask: isEdit })),
   setAddSheetState: (openState: boolean) =>
     set((state) => ({ modal: { add: openState, delete: state.modal.delete } })),
   setDeleteModal: (openState: boolean) =>
     set((state) => ({ modal: { add: state.modal.add, delete: openState } })),
+  setFilterLoading: (isLoading: boolean) => set((state) => ({ loading: { add: state.loading.add, delete: state.loading.delete, filter: isLoading }})),
   setAddTodoLoading: (isLoading: boolean) =>
     set((state) => ({
-      loading: { delete: state.loading.delete, add: isLoading },
+      loading: {
+        delete: state.loading.delete,
+        add: isLoading,
+        filter: state.loading.filter,
+      },
     })),
   setDeleteTodoLoading: (isDeleting: boolean) =>
     set((state) => ({
-      loading: { add: state.loading.add, delete: isDeleting },
+      loading: {
+        add: state.loading.add,
+        delete: isDeleting,
+        filter: state.loading.filter,
+      },
     })),
   addTask: async function ({ taskDTO, activeDroppable }) {
     function toggleAddLoading(isLoading: boolean) {
       set((state) => ({
-        loading: { delete: state.loading.delete, add: isLoading },
+        loading: {
+          delete: state.loading.delete,
+          add: isLoading,
+          filter: state.loading.filter,
+        },
       }));
     }
 
@@ -118,7 +137,11 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
 
     function toggleDeleteLoading(isLoading: boolean) {
       set((state) => ({
-        loading: { add: state.loading.add, delete: isLoading },
+        loading: {
+          add: state.loading.add,
+          delete: isLoading,
+          filter: state.loading.filter,
+        },
       }));
     }
 
@@ -292,7 +315,11 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
   editTask: async function ({ taskDTO }) {
     function toggleAddLoading(isLoading: boolean) {
       set((state) => ({
-        loading: { delete: state.loading.delete, add: isLoading },
+        loading: {
+          delete: state.loading.delete,
+          add: isLoading,
+          filter: state.loading.filter,
+        },
       }));
     }
 
@@ -345,7 +372,7 @@ export const useTodoControls = create<TodoControlsStore>((set) => ({
       });
     });
     toggleAddLoading(false);
-    set((state) => ({ modal: { delete: state.modal.delete, add: false }}));
+    set((state) => ({ modal: { delete: state.modal.delete, add: false } }));
     return true;
   },
   updateTask: async function (

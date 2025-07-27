@@ -68,7 +68,7 @@ export type TaskDTO = {
   name: string;
   summary: string;
   tags: Array<string>;
-  priority: "high" | "medium" | "low";
+  priority: Priority;
   order: number;
   subTasks: Array<SubTasks> | [];
   status: StatusValue;

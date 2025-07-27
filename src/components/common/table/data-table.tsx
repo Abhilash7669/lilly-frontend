@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
-} from "@tanstack/react-table"
+} from "@tanstack/react-table";
 
 import {
   Table,
@@ -14,26 +14,41 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
-}
+// interface DataTableProps<TData, TValue> {
+//   columns: ColumnDef<TData, TValue>[]
+//   data: TData[]
+// }
 
-export function DataTable<TData, TValue>({
+type LColumnDef<T> = ColumnDef<T>;
+
+type TableProps<T> = {
+  columns: LColumnDef<T>[];
+  data: T[];
+  onRowClick?: (id: string) => void;
+};
+
+export function DataTable<T extends { id: string }>({
   columns,
   data,
-}: DataTableProps<TData, TValue>) {
+  onRowClick,
+}: TableProps<T>) {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-  })
+  });
+
+  function handleRowClick(id: string): void {
+    if (!id || !onRowClick) return;
+
+    onRowClick(id);
+  }
 
   return (
     <div className="rounded-md border">
-      <Table>
+      <Table className="rounded-md overflow-hidden">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -47,16 +62,17 @@ export function DataTable<TData, TValue>({
                           header.getContext()
                         )}
                   </TableHead>
-                )
+                );
               })}
             </TableRow>
           ))}
         </TableHeader>
-        <TableBody>
+        <TableBody className="cursor-pointer">
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
+                onClick={() => handleRowClick(row.original.id)}
                 data-state={row.getIsSelected() && "selected"}
               >
                 {row.getVisibleCells().map((cell) => (
@@ -76,5 +92,5 @@ export function DataTable<TData, TValue>({
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

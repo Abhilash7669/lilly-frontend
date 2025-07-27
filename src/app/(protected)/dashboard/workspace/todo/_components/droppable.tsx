@@ -25,11 +25,6 @@ export default function Droppable({ data: { status, items } }: Props) {
   const { setNodeRef } = useDroppable({ id: status });
   const totalItems = items && items.length > 0 ? items.length : 0;
 
-  //   ${id === "inProgress" && "bg-purple-600/20"}
-  // ${id === "todo" && "bg-cyan-600/20"}
-  // ${id === "done" && "bg-emerald-600/20"}
-
-  // backdrop-blur-lg backdrop-filter
   function handleOpenSheet() {
     setAddSheetState(true);
     setActiveDroppable(status as StatusValue);

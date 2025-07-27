@@ -26,14 +26,14 @@ type Props = {
   confirmText?: string;
   children: React.ReactNode;
   onCancel?: () => void;
-  onConfirm?: () => Promise<void>;
+  onConfirm?: () => Promise<void> | void;
   open: boolean;
   setOpen: React.Dispatch<SetStateAction<boolean>>;
   isLoading: boolean;
   side?: "top" | "right" | "bottom" | "left";
 };
 
-export default function SidePanel({
+export const SidePanel = ({
   header = { title: "", description: "" },
   cancelText = "Cancel",
   confirmText = "Confirm",
@@ -43,8 +43,8 @@ export default function SidePanel({
   open = false,
   setOpen,
   isLoading,
-  side="right"
-}: Props) {
+  side = "right",
+}: Props) => {
   function handleCancel(): void {
     if (onCancel) onCancel();
     return;
@@ -57,9 +57,7 @@ export default function SidePanel({
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>Open</SheetTrigger>
-      <SheetContent
-        side={side}
-      >
+      <SheetContent side={side}>
         <ScrollArea className="h-[calc(100dvh-5rem)]">
           {header && (
             <SheetHeader>
@@ -76,19 +74,15 @@ export default function SidePanel({
               {cancelText}
             </Button>
           </SheetClose>
-          <Button 
-            disabled={isLoading}
-            onClick={handleConfirm}
-          >
-            {
-              isLoading ?
+          <Button disabled={isLoading} onClick={handleConfirm}>
+            {isLoading ? (
               <LoaderCircle className={`${ICON_SIZE.small} animate-spin`} />
-              :
+            ) : (
               confirmText
-            }
+            )}
           </Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
   );
-}
+};

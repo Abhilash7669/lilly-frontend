@@ -37,7 +37,11 @@ export const STATUS_SELECT_OPTIONS: TaskStatusSelectOptions[] = [
   {
     label: "In Progress",
     value: "inProgress"
-  }
+  },
+  {
+    label: "Done",
+    value: "done"
+  },
 ];
 
 export const ADD_TASK_HEADER: { title: string; description: string } = {

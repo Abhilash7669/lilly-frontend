@@ -15,10 +15,10 @@ export default function TodoLayout() {
 
     if(typeof window !== "undefined") {
 
-      const _params = new URLSearchParams();
+      const _params = new URLSearchParams(window.location.search);
       _params.set("q", query);
 
-      router.push(`?${_params.toString()}`);
+      router.replace(`?${_params.toString()}`);
 
     }
 

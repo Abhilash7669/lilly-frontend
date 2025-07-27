@@ -17,10 +17,14 @@ import {
   StatusValue,
   TodoItems,
 } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
-import PriorityBadge from "@/app/(protected)/dashboard/workspace/todo/_components/priority-badge";
+import PriorityBadge from "@/components/common/indicator/priority-badge";
 import { ICON_SIZE } from "@/lib/utils";
 import { format } from "date-fns";
-import { useSetAddSheetState, useSetDeleteModalState, useSetIsEditTask } from "@/store/workspace/to-do-ui";
+import {
+  useSetAddSheetState,
+  useSetDeleteModalState,
+  useSetIsEditTask,
+} from "@/store/workspace/to-do-ui";
 import {
   useFindTaskCompletedAt,
   useSetActiveDroppable,
@@ -98,10 +102,11 @@ export default function SortableItem({
     const containerIndex = LILLY_TODO.findUpdatedContainerIndex(data, status);
     setIsEditTask(true);
 
-    if(containerIndex !== -1) {
-
-      const editData = data[containerIndex].items.find(item => item._id === _id);
-      if(editData) setEditTaskData(editData)
+    if (containerIndex !== -1) {
+      const editData = data[containerIndex].items.find(
+        (item) => item._id === _id
+      );
+      if (editData) setEditTaskData(editData);
     }
   }
 
@@ -125,7 +130,12 @@ export default function SortableItem({
             <BsThreeDots className="text-sm cursor-pointer transition-all hover:opacity-65" />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="p-2 space-y-1 backdrop-blur-lg bg-popover/20">
-            <DropdownMenuItem onClick={handleOpenEditModal} className="cursor-pointer">Edit</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={handleOpenEditModal}
+              className="cursor-pointer"
+            >
+              Edit
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={handleOpenDeleteModal}
               className="cursor-pointer transition-all focus:bg-destructive/70"
