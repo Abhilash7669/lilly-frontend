@@ -70,21 +70,6 @@ export default function TodoTable() {
     setIsFilterLoading(false);
   }
 
-  // function onRowClick(id: string) {
-  //   if (!id) return;
-  //   setActiveItem(id);
-  //   const _data: TodoItems = containers.flatMap((c) =>
-  //     c.items.filter((item) => item._id === id)
-  //   )[0];
-
-  //   console.log(_data);
-
-  //   if (_data) {
-  //     setTaskModal(true);
-  //     setIsEditTask(true);
-  //     setEditTaskData(_data);
-  //   }
-  // }
 
   if (loading) return <Skeleton className="h-[calc(100dvh-10rem)] w-full" />;
 
