@@ -6,22 +6,46 @@ import {
 } from "@/app/(protected)/dashboard/workspace/todo/_components/to-do-columns";
 import { TodoData } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 import { DataTable as WorkspaceTable } from "@/components/common/table/data-table";
+import { Skeleton } from "@/components/ui/skeleton";
+import useAxiosFetch from "@/hooks/useAxiosFetch";
+import {
+  useSetFilterLoading,
+  useSetFilterSheetOpen,
+} from "@/store/workspace/to-do-ui";
+import { useSearchParams } from "next/navigation";
 
 import { useEffect, useState } from "react";
 
-type Props = {
-  containers: TodoData[] | [];
-};
-
-export default function TodoTable({ containers }: Props) {
+export default function TodoTable() {
   const [tableData, setTableData] = useState<TaskTable[] | null>(null);
-  // const setActiveItem = useSetActiveItemId();
-  // const setTaskModal = useSetAddSheetState();
-  // const setIsEditTask = useSetIsEditTask();
-  // const setEditTaskData = useSetEditTaskData();
+
+  const setFilterSheetOpen = useSetFilterSheetOpen();
+  const setIsFilterLoading = useSetFilterLoading();
+  const searchParams = useSearchParams();
+
+  const status = searchParams.get("status");
+  const priority = searchParams.get("priority");
+
+  const { data, loading } = useAxiosFetch<TodoData[]>(
+    "/tasks/",
+    [],
+    "tasks",
+    false,
+    {
+      status: status || "",
+      priority: priority || "",
+    },
+    [status, priority]
+  );
 
   useEffect(() => {
-    const m_data = containers.flatMap((item) => item.items);
+    if (!loading && data.length === 0) setTableData([]);
+
+    handleInvokeTableData(data);
+  }, [data]);
+
+  function handleInvokeTableData(data: TodoData[]): void {
+    const m_data = data.flatMap((item) => item.items);
     setTableData(() => {
       const _data = m_data.map((item) => ({
         id: item._id,
@@ -42,7 +66,9 @@ export default function TodoTable({ containers }: Props) {
 
       return _data;
     });
-  }, [containers]);
+    setFilterSheetOpen(false);
+    setIsFilterLoading(false);
+  }
 
   // function onRowClick(id: string) {
   //   if (!id) return;
@@ -60,9 +86,15 @@ export default function TodoTable({ containers }: Props) {
   //   }
   // }
 
-  if (!tableData) return <p>No table data found!</p>;
+  if (loading) return <Skeleton className="h-[calc(100dvh-10rem)] w-full" />;
+
+  if (!loading && data.length === 0 && !tableData)
+    return <p>No table data found</p>;
 
   return (
-    <WorkspaceTable<TaskTable> columns={taskTableColumns} data={tableData} />
+    <WorkspaceTable<TaskTable>
+      columns={taskTableColumns}
+      data={tableData || []}
+    />
   );
 }

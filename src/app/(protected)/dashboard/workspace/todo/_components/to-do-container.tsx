@@ -16,8 +16,7 @@ import { ICON_SIZE } from "@/lib/utils";
 import { useTodoData } from "@/store/workspace/to-do-data";
 import { useSetFilterSheetOpen } from "@/store/workspace/to-do-ui";
 import { ListFilterPlus } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function TodoContainer() {
   const data = useTodoData();
@@ -28,21 +27,8 @@ export default function TodoContainer() {
   } = useInitTodoData({ hasData: data.length > 0 });
   const setFilterSheetOpen = useSetFilterSheetOpen();
 
-  const searchParams = useSearchParams();
 
   const [tabValue, setTabValue] = useState<"board" | "table">("board");
-  const [filteredData, setFilteredData] = useState(containers);
-
-  const status = searchParams.get("status");
-
-  useEffect(() => {
-
-    if(!status || status === "") return;
-    setFilteredData(
-      prevState =>  prevState.filter(item => item.status === status as "done" | "inProgress" | "todo")
-    )
-
-  }, [status]);
 
   function handleTabSwitch(tab: "board" | "table"): void {
     setTabValue(() => tab);
@@ -90,7 +76,7 @@ export default function TodoContainer() {
           />
         </TabsContent>
         <TabsContent value="table" className="mt-2">
-          <TodoTable containers={filteredData} />
+          <TodoTable />
         </TabsContent>
       </Tabs>
       <TodoFilter />

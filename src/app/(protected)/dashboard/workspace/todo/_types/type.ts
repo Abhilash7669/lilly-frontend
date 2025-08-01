@@ -106,3 +106,11 @@ export type TaskAddResponse = {
     };
   };
 };
+
+
+// ================== //
+// Filter
+export type TodoFilterType = {
+  status: string;
+  priority: string;
+};

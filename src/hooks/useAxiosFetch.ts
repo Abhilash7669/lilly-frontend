@@ -10,6 +10,8 @@ export default function useAxiosFetch<T>(
   initialState?: T,
   dataKey?: string,
   hasData?: boolean,
+  urlParams?: Record<string, string>,
+  deps?: Array<string | null>
 ): {
   data: T;
   setData: React.Dispatch<React.SetStateAction<T>>;
@@ -23,7 +25,7 @@ export default function useAxiosFetch<T>(
     if(hasData) return;
     (async () => {
       setLoading(() => true);
-      const response = await AXIOS_CLIENT.get<BasicResponse<Record<string, T>>>(endpoint);
+      const response = await AXIOS_CLIENT.get<BasicResponse<Record<string, T>>>(endpoint, urlParams);
 
       if (!response) {
         setLoading(() => false);
@@ -59,7 +61,7 @@ export default function useAxiosFetch<T>(
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasData]);
+  }, [hasData, ...deps || ""]);
 
   return {
     data,

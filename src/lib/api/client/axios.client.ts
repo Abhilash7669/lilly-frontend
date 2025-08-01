@@ -26,12 +26,12 @@ export const AXIOS_CLIENT = {
 
     try {
       const m_data = await axios.get<T & CustomResponse>(
-        `${ENV.BASEURL}${url}`,
+        `${ENV.BASEURL}${url}?${m_urlParams}`,
         {
           headers: {
             Authorization: `Bearer ${token ? token : null}`,
           },
-          params: m_urlParams ?? null,
+          // params: m_urlParams || {},
           signal: AbortSignal.timeout(5000),
           timeoutErrorMessage: "Request Timed out",
         }
