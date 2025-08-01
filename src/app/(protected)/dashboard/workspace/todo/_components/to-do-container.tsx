@@ -42,54 +42,45 @@ export default function TodoContainer() {
   return (
     <div>
       <Tabs value={tabValue} defaultValue={tabValue} className="gap-0">
-        <div className="flex items-center gap-4 w-full justify-between py-2">
+        <div className="flex items-center gap-1.5 place-self-end py-1.5">
           {tabValue === "table" && (
-            <p className="text-[0.62rem] text-muted-foreground">
-              Current functionalities: Filter and view tasks
-            </p>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button onClick={() => setFilterSheetOpen(true)} size="sm">
+                    <ListFilterPlus className={ICON_SIZE.small} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Filter
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
-          <div className="flex items-center gap-2">
-            {tabValue === "table" && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Button onClick={() => setFilterSheetOpen(true)} size="sm">
-                      <ListFilterPlus className={ICON_SIZE.small} />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    sideOffset={0}
-                  >
-                    Filter
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-            <DropdownMenu>
-              <DropdownMenuTrigger className="place-self-end">
-                <p className="text-xs cursor-pointer border rounded-sm p-2 hover:opacity-60 transition-all">
-                  View:{" "}
-                  <span className="text-muted-foreground capitalize">
-                    {tabValue}
-                  </span>
-                </p>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="backdrop-blur-lg bg-popover/20">
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={() => handleTabSwitch("board")}
-                >
-                  Board
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={() => handleTabSwitch("table")}
-                >
-                  Table
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="place-self-end">
+              <p className="text-xs cursor-pointer border rounded-sm p-2 hover:opacity-60 transition-all">
+                View:{" "}
+                <span className="text-muted-foreground capitalize">
+                  {tabValue}
+                </span>
+              </p>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="backdrop-blur-lg bg-popover/20">
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => handleTabSwitch("board")}
+              >
+                Board
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => handleTabSwitch("table")}
+              >
+                Table
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         <TabsContent value="board">
           <TodoBoard
