@@ -89,7 +89,7 @@ export const AXIOS_CLIENT = {
             Authorization: `Bearer ${token ? token : null}`,
           },
           params: m_urlParams || null,
-          signal: AbortSignal.timeout(5000),
+          signal: AbortSignal.timeout(60000),
           timeoutErrorMessage: "Request Timed out",
           ...config,
         }
