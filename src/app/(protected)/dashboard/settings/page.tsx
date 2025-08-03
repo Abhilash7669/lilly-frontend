@@ -56,6 +56,7 @@ export default function Page() {
     
     const formData = new FormData();
     
+    formData.append("text", "profile/avatar/");
     formData.append("image", image);
     const _userId = await getCookie("lillyUser");
     
@@ -78,18 +79,6 @@ export default function Page() {
   return (
     <main className="flex items-center justify-center">
       <div>
-        <Image 
-          src="https://dpytug06lde0z.cloudfront.net/1754169074493-anders-jilden-cYrMQA7a3Wc-unsplash.jpg"
-          height={200}
-          width={200}
-          alt="image"
-        />
-        <Image 
-          src="https://dpytug06lde0z.cloudfront.net/test-folder/1754170086749-anders-jilden-cYrMQA7a3Wc-unsplash.jpg"
-          height={200}
-          width={200}
-          alt="image"
-        />
         <Button variant="outline" onClick={() => setIsModalOpen(true)}>
           Upload Profile picture
         </Button>

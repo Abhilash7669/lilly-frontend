@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   BadgeCheck,
@@ -7,13 +7,9 @@ import {
   CreditCard,
   LogOut,
   Sparkles,
-} from "lucide-react"
+} from "lucide-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,51 +18,53 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { deleteCookie } from "@/lib/cookies/cookie"
-import { useState } from "react"
-import SpinnerDefault from "@/components/common/spinner/spinner-default"
-import { toast } from "sonner"
-import { useRouter } from "next/navigation"
+} from "@/components/ui/sidebar";
+import { deleteCookie } from "@/lib/cookies/cookie";
+import { useEffect, useState } from "react";
+import SpinnerDefault from "@/components/common/spinner/spinner-default";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    userName: string
-    email: string
-    avatar: string
-  }
-}) {
+export function NavUser() {
+  const [user, setUser] = useState({
+    avatar: "",
+    userName: "",
+  });
 
   const { isMobile } = useSidebar();
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  async function handleLogout(): Promise<void> {
+  useEffect(() => {
+    const _avatar =
+      localStorage.getItem("lilly-profile-avatar") || "/avatars/goku-blue.jpg";
+    const _userName = localStorage.getItem("lilly-username") || "User name";
 
+    setUser({ avatar: _avatar, userName: _userName });
+  }, []);
+
+  async function handleLogout(): Promise<void> {
     setIsLoading(() => true);
 
     const isLoggedOut = await deleteCookie("lillyToken");
 
-    if(!isLoggedOut) {
+    if (!isLoggedOut) {
       toast.error("Error", {
         description: "Something went wrong",
-        duration: 1500
+        duration: 1500,
       });
       setIsLoading(() => false);
       return;
-    };
-    
-    router.push("/login");
+    }
 
+    router.push("/login");
   }
 
   return (
@@ -80,12 +78,11 @@ export function NavUser({
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.userName} />
+                  <AvatarImage src={user.avatar} alt="avatar" />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.userName}</span>
-                  <span className="truncate text-xs">{user.email}</span>
                 </div>
                 <ChevronsUpDown className="ml-auto size-4" />
               </SidebarMenuButton>
@@ -103,8 +100,9 @@ export function NavUser({
                     <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">{user.userName}</span>
-                    <span className="truncate text-xs">{user.email}</span>
+                    <span className="truncate font-medium">
+                      {user.userName}
+                    </span>
                   </div>
                 </div>
               </DropdownMenuLabel>
@@ -131,7 +129,10 @@ export function NavUser({
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={handleLogout}
+              >
                 <LogOut />
                 Log out
               </DropdownMenuItem>
@@ -139,9 +140,7 @@ export function NavUser({
           </DropdownMenu>
         </SidebarMenuItem>
       </SidebarMenu>
-      {isLoading && (
-        <SpinnerDefault />
-      )}
+      {isLoading && <SpinnerDefault />}
     </>
-  )
+  );
 }

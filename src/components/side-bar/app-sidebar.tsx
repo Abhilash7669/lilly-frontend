@@ -12,12 +12,12 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import {
-  Calendar,
+  // Calendar,
   BriefcaseBusiness,
   Inbox,
   ListTodo,
   NotebookIcon,
-  Search,
+  // Search,
   Settings,
   PawPrint,
 } from "lucide-react";
@@ -25,11 +25,6 @@ import Link from "next/link";
 import { JSX } from "react";
 
 const data = {
-  user: {
-    userName: "Kaizen47",
-    email: "abhilashsk1998@gmail.com",
-    avatar: "/avatars/goku-blue.jpg"
-  },
   navMain: [
     {
       title: "Workspace",
@@ -54,16 +49,16 @@ const data = {
       url: "/dashboard/credentialmanager",
       icon: Inbox,
     },
-    {
-      title: "Calendar",
-      url: "#",
-      icon: Calendar,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: Search,
-    },
+    // {
+    //   title: "Calendar",
+    //   url: "#",
+    //   icon: Calendar,
+    // },
+    // {
+    //   title: "Search",
+    //   url: "#",
+    //   icon: Search,
+    // },
     {
       title: "Settings",
       url: "/dashboard/settings",
@@ -98,7 +93,7 @@ export default function AppSidebar(): JSX.Element {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );

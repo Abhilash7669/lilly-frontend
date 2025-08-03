@@ -35,6 +35,8 @@ type LoginResponse = {
   data: {
     token: string;
     userId: string;
+    avatar: string;
+    userName: string;
   };
 };
 
@@ -92,6 +94,9 @@ export default function LoginForm(): JSX.Element {
         key: "lillyUser",
         value: response.data.userId
       });
+
+      localStorage.setItem("lilly-profile-avatar", response.data.avatar);
+      localStorage.setItem("lilly-username", response.data.userName)
 
       if (isCookieSet && isUserIdSet) router.push("/dashboard/workspace");
     }
