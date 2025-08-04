@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
-import { setCookie } from "@/lib/cookies/cookie";
+import { setCookieValue } from "@/lib/cookies/cookie";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { JSX } from "react";
@@ -24,13 +24,14 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Link from "next/link";
 
-type Response = {
+type SignUpResponse = {
   success: boolean;
   message: string;
   data: {
     token: string;
     user: {
-      _id: string;
+      userId: string;
+      userName: string;
     };
   };
 };
@@ -64,7 +65,7 @@ export default function SignupForm(): JSX.Element {
       email: formData.email,
     };
 
-    const response = await AXIOS_CLIENT.post<Data, Response>(
+    const response = await AXIOS_CLIENT.post<Data, SignUpResponse>(
       "/auth/sign-up",
       m_data,
       {
@@ -80,9 +81,22 @@ export default function SignupForm(): JSX.Element {
       return;
     }
 
-    const storeCookie = await setCookie(response.data.token);
-    const storeUserId = await setCookie(response.data.user?._id);
-    if (storeCookie && storeUserId) {
+    const isCookieSet = await setCookieValue({
+      key: "lillyToken",
+      value: response.data.token,
+    });
+
+    const isUserIdSet = await setCookieValue({
+      key: "lillyUser",
+      value: response.data.user.userId,
+    });
+    
+    localStorage.removeItem("lilly-username");
+    localStorage.removeItem("lilly-profile-avatar");
+
+    localStorage.setItem("lilly-username", response.data.user.userName);
+
+    if (isCookieSet && isUserIdSet) {
       form.reset();
       setTimeout(() => router.push("/dashboard/workspace"), 3500);
     }
