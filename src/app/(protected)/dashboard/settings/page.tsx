@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
 import { deleteCookie, getCookie } from "@/lib/cookies/cookie";
 import { errorToast } from "@/lib/toast/toast-function";
+import { BasicResponse } from "@/lib/types/api";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
@@ -15,6 +16,7 @@ export default function Page() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
 
   const router = useRouter();
 
@@ -53,13 +55,14 @@ export default function Page() {
       setLoading(false);
       return;
     }
-    
+
     const formData = new FormData();
-    
+
     formData.append("text", "profile/avatar/");
     formData.append("image", image);
+
     const _userId = await getCookie("lillyUser");
-    
+
     if (!_userId) {
       errorToast("Error", "Detected Unauthorized user");
       await deleteCookie("lillyToken");
@@ -67,13 +70,20 @@ export default function Page() {
       setLoading(false);
       return;
     }
-    
-    const result = await AXIOS_CLIENT.post(
-      `/users/${_userId}/avatar`,
-      formData
-    );
+
+    const result = await AXIOS_CLIENT.post<
+      FormData,
+      BasicResponse<{ avatar: string }>
+    >(`/users/${_userId}/avatar`, formData);
+
     setLoading(false);
-    console.log(result);
+    if (!result) return;
+
+    
+
+    setSuccess(true);
+    setImage(null);
+    setPreviewUrl(null);
   }
 
   return (
@@ -93,23 +103,30 @@ export default function Page() {
         isLoading={loading}
         onConfirm={handleSubmit}
       >
-        <div className="space-y-5">
-          {previewUrl && (
-            <div className="relative w-full h-[14rem] rounded-lg overflow-hidden">
-              <Image
-                src={previewUrl}
-                fill
-                alt="image"
-                className="object-cover"
-              />
-            </div>
-          )}
-          <Input
-            type="file"
-            accept="image/jpg, image/png, image/jpeg"
-            onChange={handleImageChange}
-          />
-        </div>
+        {success ? (
+          <div>
+            <h2>Success!</h2>
+            <p>Your profile picture has been changed.</p>
+          </div>
+        ) : (
+          <div className="space-y-5">
+            {previewUrl && (
+              <div className="relative w-full h-[14rem] rounded-lg overflow-hidden">
+                <Image
+                  src={previewUrl}
+                  fill
+                  alt="image"
+                  className="object-cover"
+                />
+              </div>
+            )}
+            <Input
+              type="file"
+              accept="image/jpg, image/png, image/jpeg"
+              onChange={handleImageChange}
+            />
+          </div>
+        )}
       </UploadPictureModal>
     </main>
   );

@@ -23,6 +23,7 @@ import { JSX } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Link from "next/link";
+import { useSetUsername } from "@/store/user";
 
 type SignUpResponse = {
   success: boolean;
@@ -52,6 +53,8 @@ export default function SignupForm(): JSX.Element {
       confirmPassword: "",
     },
   });
+
+  const setUsername = useSetUsername();
 
   const router = useRouter();
   const isSubmitting = form.formState.isSubmitting;
@@ -90,10 +93,8 @@ export default function SignupForm(): JSX.Element {
       key: "lillyUser",
       value: response.data.user.userId,
     });
-    
-    localStorage.removeItem("lilly-username");
-    localStorage.removeItem("lilly-profile-avatar");
 
+    setUsername(response.data.user.userName);
     localStorage.setItem("lilly-username", response.data.user.userName);
 
     if (isCookieSet && isUserIdSet) {

@@ -26,29 +26,22 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { deleteCookie } from "@/lib/cookies/cookie";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SpinnerDefault from "@/components/common/spinner/spinner-default";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useUserAvatar, useUsername } from "@/store/user";
 
 export function NavUser() {
-  const [user, setUser] = useState({
-    avatar: "",
-    userName: "",
-  });
+  
+  const userAvatar = useUserAvatar();
+  const userName = useUsername();
 
   const { isMobile } = useSidebar();
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    const _avatar =
-      localStorage.getItem("lilly-profile-avatar") || "/avatars/goku-blue.jpg";
-    const _userName = localStorage.getItem("lilly-username") || "User name";
-
-    setUser({ avatar: _avatar, userName: _userName });
-  }, []);
 
   async function handleLogout(): Promise<void> {
     setIsLoading(() => true);
@@ -78,11 +71,11 @@ export function NavUser() {
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt="avatar" />
+                  <AvatarImage src={userAvatar || "/avatars/goku-blue.jpg"} alt="avatar" />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.userName}</span>
+                  <span className="truncate font-medium">{userName}</span>
                 </div>
                 <ChevronsUpDown className="ml-auto size-4" />
               </SidebarMenuButton>
@@ -96,12 +89,12 @@ export function NavUser() {
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={user.avatar} alt={user.userName} />
+                    <AvatarImage src={userAvatar || "/avatars/goku-blue.jpg"} alt={userName || "avatar"} />
                     <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-medium">
-                      {user.userName}
+                      {userName}
                     </span>
                   </div>
                 </div>

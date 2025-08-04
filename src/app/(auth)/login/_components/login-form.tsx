@@ -23,6 +23,7 @@ import Link from "next/link";
 import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
 import { Check, LoaderCircle } from "lucide-react";
 import { ICON_SIZE } from "@/lib/utils";
+import { useSetAvatar, useSetUsername } from "@/store/user";
 
 type Data = {
   email: string;
@@ -42,6 +43,9 @@ type LoginResponse = {
 
 export default function LoginForm(): JSX.Element {
   const [success, setSuccess] = useState<boolean>(false);
+  
+  const setUsername = useSetUsername();
+  const setUserAvatar = useSetAvatar();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -95,8 +99,8 @@ export default function LoginForm(): JSX.Element {
         value: response.data.userId
       });
 
-      localStorage.setItem("lilly-profile-avatar", response.data.avatar);
-      localStorage.setItem("lilly-username", response.data.userName)
+      setUserAvatar(response.data.avatar);
+      setUsername(response.data.userName);
 
       if (isCookieSet && isUserIdSet) router.push("/dashboard/workspace");
     }
