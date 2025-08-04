@@ -95,7 +95,6 @@ export default function SignupForm(): JSX.Element {
     });
 
     setUsername(response.data.user.userName);
-    localStorage.setItem("lilly-username", response.data.user.userName);
 
     if (isCookieSet && isUserIdSet) {
       form.reset();

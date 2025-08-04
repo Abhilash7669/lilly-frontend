@@ -7,6 +7,7 @@ import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
 import { deleteCookie, getCookie } from "@/lib/cookies/cookie";
 import { errorToast } from "@/lib/toast/toast-function";
 import { BasicResponse } from "@/lib/types/api";
+import { useSetAvatar } from "@/store/user";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
@@ -17,6 +18,8 @@ export default function Page() {
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
+
+  const setUserAvatar = useSetAvatar();
 
   const router = useRouter();
 
@@ -71,16 +74,15 @@ export default function Page() {
       return;
     }
 
-    const result = await AXIOS_CLIENT.post<
+    const response = await AXIOS_CLIENT.post<
       FormData,
       BasicResponse<{ avatar: string }>
     >(`/users/${_userId}/avatar`, formData);
 
     setLoading(false);
-    if (!result) return;
+    if (!response) return;
 
-    
-
+    setUserAvatar(response.data?.avatar || "/avatars/goku-blue.jpg");
     setSuccess(true);
     setImage(null);
     setPreviewUrl(null);
@@ -95,7 +97,7 @@ export default function Page() {
       </div>
       <UploadPictureModal
         dialogHeader={{
-          title: "Upload Picture",
+          title: "Change Profile picture",
           description: "Choose a picture and upload",
         }}
         open={isModalOpen}
@@ -104,7 +106,7 @@ export default function Page() {
         onConfirm={handleSubmit}
       >
         {success ? (
-          <div>
+          <div className="flex flex-col items-center justify-center text-center gap-2">
             <h2>Success!</h2>
             <p>Your profile picture has been changed.</p>
           </div>
