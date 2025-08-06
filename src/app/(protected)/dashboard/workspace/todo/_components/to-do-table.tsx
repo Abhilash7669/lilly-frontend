@@ -41,34 +41,33 @@ export default function TodoTable() {
   useEffect(() => {
     if (!loading && data.length === 0) setTableData([]);
 
+    function handleInvokeTableData(data: TodoData[]): void {
+      const m_data = data.flatMap((item) => item.items);
+      setTableData(() => {
+        const _data = m_data.map((item) => ({
+          id: item._id,
+          name: item.name,
+          priority: item.priority,
+          status: item.status,
+          startDate: new Date(item.startDate).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          }),
+          dueDate: new Date(item.dueDate).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          }),
+        }));
+
+        return _data;
+      });
+      setFilterSheetOpen(false);
+      setIsFilterLoading(false);
+    }
     handleInvokeTableData(data);
   }, [data]);
-
-  function handleInvokeTableData(data: TodoData[]): void {
-    const m_data = data.flatMap((item) => item.items);
-    setTableData(() => {
-      const _data = m_data.map((item) => ({
-        id: item._id,
-        name: item.name,
-        priority: item.priority,
-        status: item.status,
-        startDate: new Date(item.startDate).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        }),
-        dueDate: new Date(item.dueDate).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        }),
-      }));
-
-      return _data;
-    });
-    setFilterSheetOpen(false);
-    setIsFilterLoading(false);
-  }
 
 
   if (loading) return <Skeleton className="h-[calc(100dvh-10rem)] w-full" />;

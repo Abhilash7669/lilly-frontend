@@ -12,12 +12,10 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import {
-  // Calendar,
   BriefcaseBusiness,
   Inbox,
   ListTodo,
   NotebookIcon,
-  // Search,
   Settings,
   PawPrint,
 } from "lucide-react";
@@ -49,16 +47,6 @@ const data = {
       url: "/dashboard/credentialmanager",
       icon: Inbox,
     },
-    // {
-    //   title: "Calendar",
-    //   url: "#",
-    //   icon: Calendar,
-    // },
-    // {
-    //   title: "Search",
-    //   url: "#",
-    //   icon: Search,
-    // },
     {
       title: "Settings",
       url: "/dashboard/settings",
