@@ -24,6 +24,11 @@ import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
 import { Check, LoaderCircle } from "lucide-react";
 import { ICON_SIZE } from "@/lib/utils";
 import { useSetAvatar, useSetUsername } from "@/store/user";
+import { Separator } from "@/components/ui/separator";
+import { FcGoogle } from "react-icons/fc";
+import axios from "axios";
+import { ENV } from "@/lib/config/env.config";
+import Spinner from "@/components/common/spinner/spinner";
 
 type Data = {
   email: string;
@@ -41,9 +46,19 @@ type LoginResponse = {
   };
 };
 
+type OAuthResponse = {
+  message: string;
+  success: boolean;
+  title: string;
+  data: {
+    googleAuthUrl: string;
+  };
+};
+
 export default function LoginForm(): JSX.Element {
   const [success, setSuccess] = useState<boolean>(false);
-  
+  const [oAuthSubmitting, setOAuthSubmitting] = useState<boolean>(false);
+
   const setUsername = useSetUsername();
   const setUserAvatar = useSetAvatar();
 
@@ -96,7 +111,7 @@ export default function LoginForm(): JSX.Element {
 
       const isUserIdSet = await setCookieValue({
         key: "lillyUser",
-        value: response.data.userId
+        value: response.data.userId,
       });
 
       setUserAvatar(response.data.avatar);
@@ -104,6 +119,24 @@ export default function LoginForm(): JSX.Element {
 
       if (isCookieSet && isUserIdSet) router.push("/dashboard/workspace");
     }
+  }
+
+  async function handleOAuthLogin() {
+    setOAuthSubmitting(true);
+
+    const response = (await axios.get<OAuthResponse>(`${ENV.BASE_ENDPOINT}/`))
+      .data;
+
+    if (!response.success) {
+      console.error("Error with OaUTH RESponse");
+      setOAuthSubmitting(false);
+      return;
+    }
+
+    router.push(`${response.data.googleAuthUrl}`);
+    setOAuthSubmitting(false);
+
+    return;
   }
 
   return (
@@ -164,9 +197,27 @@ export default function LoginForm(): JSX.Element {
           </div>
         </form>
       </Form>
-      <div className="text-center text-sm">
+      <div className="space-y-2">
+        <div className="flex items-center justify-center gap-x-4 w-full">
+          <Separator className="!w-[34%]" />
+          <p className="text-xs text-muted-foreground">or login with</p>
+          <Separator className="!w-[34%]" />
+        </div>
+        <Button
+          disabled={oAuthSubmitting}
+          onClick={handleOAuthLogin}
+          className="w-full"
+          variant="outline"
+        >
+          {oAuthSubmitting ? <Spinner /> : <FcGoogle />}
+        </Button>
+      </div>
+      <div className="text-center text-xs text-muted-foreground">
         Don&apos;t have an account?{" "}
-        <Link href="/sign-up" className="underline underline-offset-4">
+        <Link
+          href="/sign-up"
+          className="underline underline-offset-4 text-white"
+        >
           Sign up
         </Link>
       </div>
