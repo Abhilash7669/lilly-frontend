@@ -19,11 +19,15 @@ import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
 import { setCookieValue } from "@/lib/cookies/cookie";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { JSX } from "react";
+import { JSX, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Link from "next/link";
+import { FcGoogle } from "react-icons/fc";
 import { useSetUsername } from "@/store/user";
+import { Separator } from "@/components/ui/separator";
+import { ENV } from "@/lib/config/env.config";
+import axios from "axios";
 
 type SignUpResponse = {
   success: boolean;
@@ -43,7 +47,18 @@ type Data = {
   email: string;
 };
 
+type OAuthResponse = {
+  message: string;
+  success: boolean;
+  title: string;
+  data: {
+    googleAuthUrl: string;
+  };
+};
+
 export default function SignupForm(): JSX.Element {
+  const [oAuthSubmitting, setOAuthSubmitting] = useState<boolean>(false);
+
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -102,6 +117,24 @@ export default function SignupForm(): JSX.Element {
     }
   }
 
+  async function handleOAuthLogin() {
+    setOAuthSubmitting(true);
+
+    const response = (await axios.get<OAuthResponse>(`${ENV.BASE_ENDPOINT}/`))
+      .data;
+
+    if (!response.success) {
+      console.error("Error with OaUTH RESponse");
+      setOAuthSubmitting(false);
+      return;
+    }
+
+    router.push(`${response.data.googleAuthUrl}`);
+    setOAuthSubmitting(false);
+
+    return;
+  }
+
   return (
     <AuthFormLayout
       title="Sign up"
@@ -109,7 +142,7 @@ export default function SignupForm(): JSX.Element {
     >
       <Form {...form}>
         <form
-          className="space-y-6 w-full"
+          className="space-y-5 w-full"
           onSubmit={form.handleSubmit(handleSignUp)}
         >
           <InputRow>
@@ -190,7 +223,22 @@ export default function SignupForm(): JSX.Element {
           </div>
         </form>
       </Form>
-      <div className="text-center text-sm">
+      <div className="space-y-2">
+        <div className="flex items-center justify-center gap-x-4 w-full">
+          <Separator className="!w-[34%]" />
+          <p className="text-xs text-muted-foreground">or</p>
+          <Separator className="!w-[34%]" />
+        </div>
+        <Button
+          disabled={oAuthSubmitting}
+          onClick={handleOAuthLogin}
+          className="w-full"
+          variant="outline"
+        >
+          {oAuthSubmitting ? <Spinner /> : <FcGoogle />}
+        </Button>
+      </div>
+      <div className="text-center text-xs text-muted-foreground">
         Already have an account?{" "}
         <Link href="/login" className="underline underline-offset-4">
           Login

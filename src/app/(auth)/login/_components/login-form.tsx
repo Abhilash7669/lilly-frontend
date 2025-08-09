@@ -200,7 +200,7 @@ export default function LoginForm(): JSX.Element {
       <div className="space-y-2">
         <div className="flex items-center justify-center gap-x-4 w-full">
           <Separator className="!w-[34%]" />
-          <p className="text-xs text-muted-foreground">or login with</p>
+          <p className="text-xs text-muted-foreground">or</p>
           <Separator className="!w-[34%]" />
         </div>
         <Button
