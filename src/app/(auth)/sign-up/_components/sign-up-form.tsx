@@ -240,7 +240,7 @@ export default function SignupForm(): JSX.Element {
       </div>
       <div className="text-center text-xs text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="underline underline-offset-4">
+        <Link href="/login" className="underline underline-offset-4 text-primary">
           Login
         </Link>
       </div>

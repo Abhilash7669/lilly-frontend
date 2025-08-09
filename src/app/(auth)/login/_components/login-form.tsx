@@ -216,7 +216,7 @@ export default function LoginForm(): JSX.Element {
         Don&apos;t have an account?{" "}
         <Link
           href="/sign-up"
-          className="underline underline-offset-4 text-white"
+          className="underline underline-offset-4 text-primary"
         >
           Sign up
         </Link>
