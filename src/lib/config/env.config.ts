@@ -1,6 +1,6 @@
 
 export const ENV = {
     BASEURL: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api/v1/lilly",
-    BASE_ENDPOINT: "http://localhost:8080",
+    BASE_ENDPOINT: process.env.NEXT_PUBLIC_API_OAUTH || "http://localhost:8080",
     NODE_ENV: process.env.NODE_ENV || "development"
 };
