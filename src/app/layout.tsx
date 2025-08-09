@@ -22,6 +22,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Project Lilly",
   description: "Project lilly, a companion that's always there for you",
+  verification: {
+    google: "QJ7Ul5dNz5zJMLl-971TsomjxiYD8HbNLvhl2_vkqjo"
+  }
 };
 
 export default function RootLayout({

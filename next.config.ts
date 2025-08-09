@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "dpytug06lde0z.cloudfront.net",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com"
       }
     ]
   }

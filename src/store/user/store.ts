@@ -9,8 +9,8 @@ export const useUserDataStore = create<UserDataStore>()(
     setUserName: (username: string) => {
       set(() => ({ username: username }));
     },
-    setAvatar: (avatar: string) => {
-      set(() => ({ avatar: avatar }));
+    setAvatar: (avatar: string | null) => {
+      set(() => ({ avatar: avatar || "/avatars/goku-blue.jpg" }));
     },
   }),
   {

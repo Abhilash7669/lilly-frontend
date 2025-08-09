@@ -36,6 +36,7 @@ export function NavUser() {
   
   const userAvatar = useUserAvatar();
   const userName = useUsername();
+  console.log(userAvatar, "AVATAR");
 
   const { isMobile } = useSidebar();
   const router = useRouter();
@@ -47,6 +48,7 @@ export function NavUser() {
     setIsLoading(() => true);
 
     const isLoggedOut = await deleteCookie("lillyToken");
+    await deleteCookie("lillyUser");
 
     if (!isLoggedOut) {
       toast.error("Error", {
