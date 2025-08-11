@@ -60,7 +60,6 @@ export default function SignupForm(): JSX.Element {
 
     const response = await authServices.signUp(m_data);
 
-
     if (!response || !response.success) return; // todo: handle error
 
     const isCookieSet = await setCookieValue({

@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TodoTabList } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 import TodoContainer from "@/app/(protected)/dashboard/workspace/todo/_components/to-do-container";
 import { useSearchParams, useRouter } from "next/navigation";
+import { TodoOverview } from "@/app/(protected)/dashboard/workspace/todo/_components/to-do-overview";
 
 export default function TodoLayout() {
   const params = useSearchParams();
@@ -79,7 +80,7 @@ export default function TodoLayout() {
                 case "over-view":
                   content = (
                     <TabsContent key={tabValue} value={tabValue}>
-                      <p>Overview dashboard</p>
+                      <TodoOverview />
                     </TabsContent>
                   );
                   break;
