@@ -176,8 +176,6 @@ export default function CanvaProvider({ children }: Props) {
           const dy = (Math.random() - 0.5) * 0.24;
           const alpha = parseFloat((Math.random() * 1).toFixed(1));
 
-          console.log(alpha, "ALPHA");
-
           circleArray[i] = new Circle(x, y, dy, dx, radius, mxr, alpha);
         }
 

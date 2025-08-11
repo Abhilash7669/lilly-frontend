@@ -1,6 +1,6 @@
 "use client";
 
-import AuthFormLayout from "@/app/(auth)/_components/auth-form-layout";
+import AuthFormContainer from "@/app/(auth)/_components/auth-form-container";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
@@ -36,7 +36,7 @@ export default function Page({}: Props) {
 
   return (
     <div className="p-6 flex flex-col items-center justify-center w-[90%] md:w-auto">
-      <AuthFormLayout title="Hi!" description="Testing QR triggered Camera">
+      <AuthFormContainer title="Hi!" description="Testing QR triggered Camera">
         {imageSrc.hasImage && (
           <div className="space-y-4">
             <Image
@@ -76,7 +76,7 @@ export default function Page({}: Props) {
             </Button>
           </div>
         )}
-      </AuthFormLayout>
+      </AuthFormContainer>
     </div>
   );
 }

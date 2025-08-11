@@ -1,7 +1,5 @@
 "use client";
 
-import AuthFormLayout from "@/app/(auth)/_components/auth-form-layout";
-import { signUpSchema } from "@/app/(auth)/sign-up/_schema/sign-up-schema";
 import InputRow from "@/components/common/input-elements/input-row";
 import PasswordInput from "@/components/common/input-elements/password-input";
 import Spinner from "@/components/common/spinner/spinner";
@@ -15,7 +13,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
 import { setCookieValue } from "@/lib/cookies/cookie";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -28,33 +25,11 @@ import { useSetUsername } from "@/store/user";
 import { Separator } from "@/components/ui/separator";
 import { ENV } from "@/lib/config/env.config";
 import axios from "axios";
+import AuthFormContainer from "@/app/(auth)/_components/auth-form-container";
+import { signUpSchema } from "@/schema/auth/auth.schema";
+import { OAuthResponse, SignUpFormData } from "@/types/auth/auth.types";
+import { authServices } from "@/services/auth/auth.services";
 
-type SignUpResponse = {
-  success: boolean;
-  message: string;
-  data: {
-    token: string;
-    user: {
-      userId: string;
-      userName: string;
-    };
-  };
-};
-
-type Data = {
-  userName: string;
-  password: string;
-  email: string;
-};
-
-type OAuthResponse = {
-  message: string;
-  success: boolean;
-  title: string;
-  data: {
-    googleAuthUrl: string;
-  };
-};
 
 export default function SignupForm(): JSX.Element {
   const [oAuthSubmitting, setOAuthSubmitting] = useState<boolean>(false);
@@ -77,27 +52,16 @@ export default function SignupForm(): JSX.Element {
   async function handleSignUp(
     formData: z.infer<typeof signUpSchema>
   ): Promise<void> {
-    const m_data: Data = {
+    const m_data: SignUpFormData = {
       userName: formData.userName,
       password: formData.password,
       email: formData.email,
     };
 
-    const response = await AXIOS_CLIENT.post<Data, SignUpResponse>(
-      "/auth/sign-up",
-      m_data,
-      {
-        headers: {
-          "Content-type": "application/json",
-        },
-      }
-    );
+    const response = await authServices.signUp(m_data);
 
-    if (!response) return;
 
-    if (!response.success) {
-      return;
-    }
+    if (!response || !response.success) return; // todo: handle error
 
     const isCookieSet = await setCookieValue({
       key: "lillyToken",
@@ -136,7 +100,7 @@ export default function SignupForm(): JSX.Element {
   }
 
   return (
-    <AuthFormLayout
+    <AuthFormContainer
       title="Sign up"
       description="A gentle companion, inspired by a little soul full of love."
     >
@@ -240,10 +204,13 @@ export default function SignupForm(): JSX.Element {
       </div>
       <div className="text-center text-xs text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="underline underline-offset-4 text-primary">
+        <Link
+          href="/login"
+          className="underline underline-offset-4 hover:text-foreground"
+        >
           Login
         </Link>
       </div>
-    </AuthFormLayout>
+    </AuthFormContainer>
   );
 }

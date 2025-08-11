@@ -1,7 +1,5 @@
 "use client";
 
-import AuthFormLayout from "@/app/(auth)/_components/auth-form-layout";
-import { loginSchema } from "@/app/(auth)/login/_schema/login-schema";
 import PasswordInput from "@/components/common/input-elements/password-input";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,40 +18,16 @@ import { JSX, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Link from "next/link";
-import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
 import { Check, LoaderCircle } from "lucide-react";
 import { ICON_SIZE } from "@/lib/utils";
 import { useSetAvatar, useSetUsername } from "@/store/user";
 import { Separator } from "@/components/ui/separator";
 import { FcGoogle } from "react-icons/fc";
-import axios from "axios";
-import { ENV } from "@/lib/config/env.config";
 import Spinner from "@/components/common/spinner/spinner";
-
-type Data = {
-  email: string;
-  password: string;
-};
-
-type LoginResponse = {
-  success: boolean;
-  message: string;
-  data: {
-    token: string;
-    userId: string;
-    avatar: string;
-    userName: string;
-  };
-};
-
-type OAuthResponse = {
-  message: string;
-  success: boolean;
-  title: string;
-  data: {
-    googleAuthUrl: string;
-  };
-};
+import { LoginFormData } from "@/types/auth/auth.types";
+import { authServices } from "@/services/auth/auth.services";
+import { loginSchema } from "@/schema/auth/auth.schema";
+import AuthFormContainer from "@/app/(auth)/_components/auth-form-container";
 
 export default function LoginForm(): JSX.Element {
   const [success, setSuccess] = useState<boolean>(false);
@@ -79,31 +53,17 @@ export default function LoginForm(): JSX.Element {
   async function handleLogin(
     formData: z.infer<typeof loginSchema>
   ): Promise<void> {
-    const m_data: Data = {
+    const m_data: LoginFormData = {
       email: formData.email,
       password: formData.password,
     };
 
     if (m_data) {
-      const response = await AXIOS_CLIENT.post<Data, LoginResponse>(
-        "/auth/login",
-        m_data,
-        {
-          headers: {
-            "Content-type": "application/json",
-          },
-        }
-      );
+      const response = await authServices.login(m_data);
 
-      if (!response) return;
-
-      if (!response.success) {
-        // do something when there is an error;
-        return;
-      }
+      if (!response) return; // do something when error logging in
 
       setSuccess(() => true);
-
       const isCookieSet = await setCookieValue({
         key: "lillyToken",
         value: response.data.token,
@@ -124,23 +84,22 @@ export default function LoginForm(): JSX.Element {
   async function handleOAuthLogin() {
     setOAuthSubmitting(true);
 
-    const response = (await axios.get<OAuthResponse>(`${ENV.BASE_ENDPOINT}/`))
-      .data;
+    const response = await authServices.oAuth();
 
-    if (!response.success) {
+    if (!response || !response.success) {
       console.error("Error with OaUTH RESponse");
       setOAuthSubmitting(false);
       return;
     }
 
-    router.push(`${response.data.googleAuthUrl}`);
     setOAuthSubmitting(false);
+    router.push(`${response.data.googleAuthUrl}`);
 
     return;
   }
 
   return (
-    <AuthFormLayout
+    <AuthFormContainer
       title="Login"
       description="A gentle companion, inspired by a little soul full of love."
     >
@@ -216,11 +175,11 @@ export default function LoginForm(): JSX.Element {
         Don&apos;t have an account?{" "}
         <Link
           href="/sign-up"
-          className="underline underline-offset-4 text-primary"
+          className="underline underline-offset-4 hover:text-foreground"
         >
           Sign up
         </Link>
       </div>
-    </AuthFormLayout>
+    </AuthFormContainer>
   );
 }

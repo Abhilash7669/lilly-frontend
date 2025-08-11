@@ -12,7 +12,7 @@ type Props = {
     children: React.ReactNode;
 };
 
-export default function AuthFormLayout({ title="Welcome", description="", children }: Props) {
+export default function AuthFormContainer({ title="Welcome", description="", children }: Props) {
   return (
     <Card className="min-w-[90%] md:min-w-sm bg-card/20 backdrop-blur-lg">
       <CardHeader>
