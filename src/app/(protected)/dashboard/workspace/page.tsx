@@ -1,9 +1,9 @@
 export default function page() {
   return (
-    <main className="flex items-center justify-center h-[calc(100dvh-20rem)]">
-      <div className="w-[92%] mx-auto bg-muted p-4 rounded-lg">
+    <main className="flex items-center justify-center mt-12">
+      <div className="w-[92%] mx-auto bg-primary/35 backdrop-blur-lg p-4 rounded-lg space-y-2">
         <h1 className="text-2xl font-semibold">From Vision to First Steps</h1>
-        <code className="leading-0.5 text-sm">
+        <p className="text-sm text-muted-foreground">
           This project is dedicated to Lilly, my late kitten, who was always by
           my side. No matter the hour, she would find me — jumping through my
           window at night, meowing for attention, and keeping me company through
@@ -16,7 +16,7 @@ export default function page() {
           design, build, and launch this application. These are its first baby
           steps — created to be reliable, ever-present, and a companion in your
           day-to-day journey, just as Lilly was in mine.
-        </code>
+        </p>
       </div>
     </main>
   );
