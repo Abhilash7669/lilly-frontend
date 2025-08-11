@@ -162,7 +162,8 @@ export default function SortableItem({
           {hasSubTasks && (
             <div className="w-full flex items-center justify-between">
               <Progress
-                className="bg-muted [&>div]:bg-gradient-to-r [&>div]:from-cyan-400 [&>div]:via-sky-500 [&>div]:to-indigo-500 [&>div]:rounded-l-full w-5/6"
+                // className="bg-muted [&>div]:bg-gradient-to-r [&>div]:from-cyan-400 [&>div]:via-sky-500 [&>div]:to-indigo-500 [&>div]:rounded-l-full w-5/6"
+                className="bg-muted [&>div]:bg-primary [&>div]:rounded-l-full w-5/6 h-1"
                 value={parseInt(progress) || 4}
               />
               <p className="text-sm text-muted-foreground">{progress}%</p>
