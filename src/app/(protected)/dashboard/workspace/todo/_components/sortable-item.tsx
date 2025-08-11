@@ -166,7 +166,7 @@ export default function SortableItem({
                 className="bg-muted [&>div]:bg-primary [&>div]:rounded-l-full w-5/6 h-1"
                 value={parseInt(progress) || 4}
               />
-              <p className="text-sm text-muted-foreground">{progress}%</p>
+              <p className="text-xs text-muted-foreground">{progress}%</p>
             </div>
           )}
         </div>
