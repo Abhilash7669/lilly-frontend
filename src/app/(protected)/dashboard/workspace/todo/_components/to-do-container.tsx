@@ -21,7 +21,7 @@ import useInitTodoData from "@/hooks/useInitTodoData";
 import { ICON_SIZE } from "@/lib/utils";
 import { useTodoData } from "@/store/workspace/to-do-data";
 import { useSetFilterSheetOpen } from "@/store/workspace/to-do-ui";
-import { ListFilterPlus } from "lucide-react";
+import { ListFilterPlus, LucideChevronsUpDown } from "lucide-react";
 import { useState } from "react";
 
 export default function TodoContainer() {
@@ -59,22 +59,22 @@ export default function TodoContainer() {
           )}
           <DropdownMenu>
             <DropdownMenuTrigger className="place-self-end">
-              <p className="text-xs cursor-pointer border rounded-sm p-2 hover:opacity-60 transition-all">
-                View:{" "}
+              <p className="flex items-center gap-1 text-xs cursor-pointer border rounded-sm p-2 hover:opacity-60 transition-all">
                 <span className="text-muted-foreground capitalize">
                   {tabValue}
                 </span>
+                <LucideChevronsUpDown className={`${ICON_SIZE.small} text-muted-foreground`} />
               </p>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="backdrop-blur-lg bg-popover/20">
               <DropdownMenuItem
-                className="cursor-pointer"
+                className="cursor-pointer text-xs"
                 onClick={() => handleTabSwitch("board")}
               >
                 Board
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="cursor-pointer"
+                className="cursor-pointer text-xs"
                 onClick={() => handleTabSwitch("table")}
               >
                 Table

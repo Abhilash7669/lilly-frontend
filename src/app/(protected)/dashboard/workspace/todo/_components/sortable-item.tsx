@@ -127,18 +127,18 @@ export default function SortableItem({
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <BsThreeDots className="text-sm cursor-pointer transition-all hover:opacity-65" />
+            <BsThreeDots className="text-base cursor-pointer transition-all hover:opacity-65" />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="p-2 space-y-1 backdrop-blur-lg bg-popover/20">
             <DropdownMenuItem
               onClick={handleOpenEditModal}
-              className="cursor-pointer"
+              className="cursor-pointer text-xs"
             >
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={handleOpenDeleteModal}
-              className="cursor-pointer transition-all focus:bg-destructive/70"
+              className="cursor-pointer text-xs transition-all focus:bg-destructive/70"
             >
               Delete
             </DropdownMenuItem>
@@ -155,7 +155,7 @@ export default function SortableItem({
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <CalendarDays className={ICON_SIZE.small} />
-            <p className="text-xs">
+            <p className="text-xs text-muted-foreground">
               {m_startDate} - {m_dueDate}
             </p>
           </div>
