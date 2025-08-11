@@ -178,9 +178,9 @@ export default function TodoBoard({
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: {
-        delay: 100,
+      activationConstraint: { // todo: read docs to improve drag and drop feature
         tolerance: 5,
+        delay: 100
       },
     }),
     useSensor(KeyboardSensor)
@@ -1053,6 +1053,16 @@ export default function TodoBoard({
                           <Input
                             ref={editInputRef}
                             defaultValue={subTasks[i].subTask}
+                            onKeyDown={(e) => {
+                              if(e.key === "Enter") {
+                                setSubTaskState((prevState) => ({
+                                  ...prevState,
+                                  isEditing: false,
+                                }));
+                                setEditingSubTask(() => null);
+                                handleEditSubTask(i, subTaskInput);
+                              }
+                            }}
                             onChange={(e) =>
                               debounceAddSubTask(e, setSubTaskInput, 300)
                             }

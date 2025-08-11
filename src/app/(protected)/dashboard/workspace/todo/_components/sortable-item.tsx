@@ -117,7 +117,7 @@ export default function SortableItem({
       style={style}
       {...attributes}
       {...listeners}
-      className={`backdrop-blur-lg bg-card/50 rounded-xl px-6 py-5 rotate-0 shadow-md cursor-grab ${
+      className={`backdrop-blur-lg bg-card/50 rounded-xl px-6 py-5 rotate-0 shadow-md select-none cursor-grab ${
         isDragging && "cursor-grabbing rotate-1"
       }`}
     >
