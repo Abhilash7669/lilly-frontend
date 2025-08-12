@@ -1,7 +1,7 @@
-import SpinnerDefault from "@/components/common/spinner/spinner-default";
+import Spinner from "@/components/common/spinner/spinner";
 import { JSX } from "react";
 
 
 export default function Loading(): JSX.Element {
-    return <SpinnerDefault />;
+    return <Spinner />;
 }
