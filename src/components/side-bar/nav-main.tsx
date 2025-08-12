@@ -112,7 +112,9 @@ function DetectActivePath(url: string): boolean {
 
   if (!url) return false;
 
-  const isPathActive = pathName.includes(url);
+  const cleanUrl = url.split("?")[0];
+
+  const isPathActive = pathName === cleanUrl;
 
   if (isPathActive) return true;
 
