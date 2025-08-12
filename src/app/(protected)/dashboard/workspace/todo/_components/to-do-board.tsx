@@ -89,6 +89,7 @@ import {
   Modal as TaskModal,
 } from "@/components/common/modal/modal";
 import { Checkbox } from "@/components/ui/checkbox";
+import KanbanSkeleton from "@/components/skeleton/kanban.skeleton";
 
 type Props = {
   setContainers: React.Dispatch<React.SetStateAction<TodoData[]>>;
@@ -866,21 +867,7 @@ export default function TodoBoard({
       >
         <div className="h-full w-full">
           {isInitialLoading ? (
-            <div className="grid sm:grid-cols-3 sm:gap-2 lg:gap-6 h-full">
-              {[0, 1, 2].map((item) => (
-                <div
-                  className="py-4 rounded-xl bg-card-foreground/20 space-y-2 h-full"
-                  key={item}
-                >
-                  {[0, 1, 2, 4, 5, 6].map((card) => (
-                    <div
-                      key={card}
-                      className="bg-card rounded-xl px-6 py-5 animate-pulse w-[94%] h-[8rem] mx-auto"
-                    ></div>
-                  ))}
-                </div>
-              ))}
-            </div>
+            <KanbanSkeleton />
           ) : (
             <>
               {/* {isEmptyAfterFetch && (

@@ -119,15 +119,16 @@ export function TodoOverview() {
     <main className="space-y-4">
       <div className="mt-2 bg-yellow-600 rounded-lg p-2 w-fit">
         <p className="text-xs flex items-center gap-1">
-            <CircleAlert className={`${ICON_SIZE.medium}`} /> This is just a preview for what&apos;s to come. Here is a dummy graph
+          <CircleAlert className={`${ICON_SIZE.medium}`} /> This is just a
+          preview for what&apos;s to come. Here is a dummy graph
         </p>
       </div>
       <Card className="py-0">
         <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
           <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:!py-0">
             <CardTitle>Bar Chart - Interactive</CardTitle>
-            <CardDescription className="font-geist-sans">
-              Showing Dummy tasks data(Will be binding soon)
+            <CardDescription>
+              <p>Showing Dummy tasks data(Will be binding soon)</p>
             </CardDescription>
           </div>
           <div className="flex">
