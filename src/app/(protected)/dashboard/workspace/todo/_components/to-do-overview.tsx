@@ -103,7 +103,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function TodoOverview() {
+export default function TodoOverview() {
   const [activeChart, setActiveChart] =
     React.useState<keyof typeof chartConfig>("totalTasks");
 

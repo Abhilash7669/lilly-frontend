@@ -3,9 +3,24 @@
 import { TAB_LIST } from "@/app/(protected)/dashboard/workspace/todo/_data/data";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TodoTabList } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
-import TodoContainer from "@/app/(protected)/dashboard/workspace/todo/_components/to-do-container";
 import { useSearchParams, useRouter } from "next/navigation";
-import { TodoOverview } from "@/app/(protected)/dashboard/workspace/todo/_components/to-do-overview";
+// import { TodoOverview } from "@/app/(protected)/dashboard/workspace/todo/_components/to-do-overview";
+import React, { Suspense } from "react";
+import ChartSkeleton from "@/components/skeleton/chart.skeleton";
+import KanbanSkeleton from "@/components/skeleton/kanban.skeleton";
+
+const TodoOverview = React.lazy(
+  () =>
+    import(
+      "@/app/(protected)/dashboard/workspace/todo/_components/to-do-overview"
+    )
+);
+const TodoContainer = React.lazy(
+  () =>
+    import(
+      "@/app/(protected)/dashboard/workspace/todo/_components/to-do-container"
+    )
+);
 
 export default function TodoLayout() {
   const params = useSearchParams();
@@ -80,7 +95,9 @@ export default function TodoLayout() {
                 case "over-view":
                   content = (
                     <TabsContent key={tabValue} value={tabValue}>
-                      <TodoOverview />
+                      <Suspense fallback={<ChartSkeleton />}>
+                        <TodoOverview />
+                      </Suspense>
                     </TabsContent>
                   );
                   break;
@@ -91,7 +108,9 @@ export default function TodoLayout() {
                       key={tabValue}
                       value={tabValue}
                     >
+                      <Suspense fallback={<KanbanSkeleton />}>
                         <TodoContainer />
+                      </Suspense>
                     </TabsContent>
                   );
                   break;

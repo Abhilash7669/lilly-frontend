@@ -6,7 +6,7 @@ import {
 } from "@/app/(protected)/dashboard/workspace/todo/_components/to-do-columns";
 import { TodoData } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 import { DataTable as WorkspaceTable } from "@/components/common/table/data-table";
-import { Skeleton } from "@/components/ui/skeleton";
+import TableSkeleton from "@/components/skeleton/table.skeleton";
 import useAxiosFetch from "@/hooks/useAxiosFetch";
 import {
   useSetFilterLoading,
@@ -70,7 +70,7 @@ export default function TodoTable() {
   }, [data]);
 
 
-  if (loading) return <Skeleton className="h-[calc(100dvh-10rem)] w-full" />;
+  if (loading) return <TableSkeleton />;
 
   if (!loading && data.length === 0 && !tableData)
     return <p>No table data found</p>;
