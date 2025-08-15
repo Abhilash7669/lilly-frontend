@@ -70,13 +70,17 @@ export default function TodoOverview() {
         router.push("/login");
         return;
       }
-
+      const startTime = new Date();
       const response = await AXIOS_CLIENT.get<
         BasicResponse<TaskSummaryResponse>
       >(`/tasks/summary/${_token}`, {
         startDate: new Date("1970-01-01"), //todo: need to re-work the date selection feature for pie chart task summary
         endDate: LILLY_DATE.endOfTodayUTC(),
       });
+
+      const endTime = new Date();
+
+      console.log(`Api response time: ${endTime.getTime() - startTime.getTime()}`);
 
       if (!response || !response.success) {
         // do some error handling(already error handling done by the AXIOS_CLIENT);
@@ -87,17 +91,17 @@ export default function TodoOverview() {
         const _chartData = [
           {
             category: "todo",
-            count: response?.data?.summary.todoCount || 0,
+            count: response?.data?.summary.todo || 0,
             fill: "var(--color-todo)",
           },
           {
             category: "inProgress",
-            count: response?.data?.summary.inProgressCount || 0,
+            count: response?.data?.summary.inProgress || 0,
             fill: "var(--color-inProgress)",
           },
           {
             category: "done",
-            count: response?.data?.summary.doneCount || 0,
+            count: response?.data?.summary.done || 0,
             fill: "var(--color-done)",
           },
         ];
