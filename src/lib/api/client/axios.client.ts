@@ -37,12 +37,18 @@ export const AXIOS_CLIENT = {
         }
       );
 
+      const isSuccess = m_data.data.success;
+
       toast(m_data.data.title || "Success", {
         description: m_data.data.message || "Welcome",
         duration: 3400,
         style: {
-          background: "var(--custom-success)",
-          border: "1px var(--custom-success-border) solid",
+          background: isSuccess
+            ? "var(--custom-success)"
+            : "var(--custom-error)",
+          border: isSuccess
+            ? "1px var(--custom-success-border) solid"
+            : "1px var(--custom-error-border) solid",
           color: "var(--custom-toast-text)",
           backdropFilter: "blur(120px)",
           WebkitBackdropFilter: "blur(120px)",
@@ -58,10 +64,15 @@ export const AXIOS_CLIENT = {
         throw axiosError;
       }
 
-      toast.error(axiosError.response.data.title || "Error", {
+      toast(axiosError.response.data.title || "Error", {
         description: axiosError.response.data.message || "Something went wrong",
+        duration: 3400,
         style: {
-          background: "oklch(--custom-error)",
+          background: "var(--custom-error)",
+          border: "1px var(--custom-error-border) solid",
+          color: "var(--custom-toast-text)",
+          backdropFilter: "blur(120px)",
+          WebkitBackdropFilter: "blur(120px)",
         },
       });
 

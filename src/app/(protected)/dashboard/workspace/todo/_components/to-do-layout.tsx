@@ -4,10 +4,9 @@ import { TAB_LIST } from "@/app/(protected)/dashboard/workspace/todo/_data/data"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TodoTabList } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 import { useSearchParams, useRouter } from "next/navigation";
-// import { TodoOverview } from "@/app/(protected)/dashboard/workspace/todo/_components/to-do-overview";
 import React, { Suspense } from "react";
-import ChartSkeleton from "@/components/skeleton/chart.skeleton";
 import KanbanSkeleton from "@/components/skeleton/kanban.skeleton";
+import PieChartSkeleton from "@/components/skeleton/pie-chart.skeleton";
 
 const TodoOverview = React.lazy(
   () =>
@@ -95,7 +94,7 @@ export default function TodoLayout() {
                 case "over-view":
                   content = (
                     <TabsContent key={tabValue} value={tabValue}>
-                      <Suspense fallback={<ChartSkeleton />}>
+                      <Suspense fallback={<PieChartSkeleton />}>
                         <TodoOverview />
                       </Suspense>
                     </TabsContent>
