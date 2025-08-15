@@ -4,14 +4,18 @@ import PieChartSkeleton from "@/components/skeleton/pie-chart.skeleton";
 import {
   Card,
   CardContent,
+  CardDescription,
   // CardDescription,
   CardFooter,
   CardHeader,
+  CardTitle,
   // CardTitle,
 } from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
@@ -75,7 +79,7 @@ export default function TodoOverview() {
       });
 
       if (!response || !response.success) {
-        // do some error handling
+        // do some error handling(already error handling done by the AXIOS_CLIENT);
         return;
       }
 
@@ -101,23 +105,31 @@ export default function TodoOverview() {
       });
     })();
   }, []);
-  
-  if(!chartData) return (
-    <div className="mt-12 w-full flex items-center justify-center">
-      <PieChartSkeleton />
-    </div>
-  );
+
+  if (!chartData)
+    return (
+      <Card className="mt-12 max-w-[40rem] mx-auto flex items-center justify-center">
+        <PieChartSkeleton />
+      </Card>
+    );
 
   return (
-    <Card className="flex flex-col mt-2">
+    <Card className="flex flex-col max-w-[40rem] mt-8 mx-auto">
       <CardHeader className="items-center pb-0">
-        {/* <CardTitle>Pie Chart - Donut with Text</CardTitle>
-        <CardDescription>January - June 2024</CardDescription> */}
+        <CardTitle>
+          <h1>Task Distribution Overview</h1>
+        </CardTitle>
+        <CardDescription>
+          <p className="text-sm w-[90%]">
+            Proportional view of all tasks, segmented into To Do, In Progress,
+            and Done for a quick progress snapshot
+          </p>
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="mx-auto aspect-square max-h-[350px]"
         >
           <PieChart>
             <ChartTooltip
@@ -153,7 +165,7 @@ export default function TodoOverview() {
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Total Count
+                          Total Tasks
                         </tspan>
                       </text>
                     );
@@ -161,6 +173,10 @@ export default function TodoOverview() {
                 }}
               />
             </Pie>
+            <ChartLegend
+              content={<ChartLegendContent nameKey="category" />}
+              className="-translate-y-2 flex-wrap gap-2 *:basis-1/4 *:justify-center"
+            />
           </PieChart>
         </ChartContainer>
       </CardContent>
