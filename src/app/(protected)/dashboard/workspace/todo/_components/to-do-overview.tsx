@@ -49,11 +49,15 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function TodoOverview() {
-  const [chartData, setChartData] = useState<Array<{
-    category: string;
-    count: number;
-    fill: string;
-  }> | null>(null);
+  const [chartData, setChartData] = useState<
+    | Array<{
+        category: string;
+        count: number;
+        fill: string;
+      }>
+    | null
+    | undefined
+  >(undefined);
 
   const router = useRouter();
 
@@ -80,10 +84,17 @@ export default function TodoOverview() {
 
       const endTime = new Date();
 
-      console.log(`Api response time: ${endTime.getTime() - startTime.getTime()}`);
+      console.log(
+        `Api response time: ${endTime.getTime() - startTime.getTime()}`
+      );
 
       if (!response || !response.success) {
         // do some error handling(already error handling done by the AXIOS_CLIENT);
+        return;
+      }
+
+      if (!response.data) {
+        setChartData(null);
         return;
       }
 
@@ -110,12 +121,20 @@ export default function TodoOverview() {
     })();
   }, []);
 
-  if (!chartData)
+  if (chartData === undefined)
     return (
       <Card className="mt-12 max-w-[40rem] mx-auto flex items-center justify-center">
         <PieChartSkeleton />
       </Card>
     );
+
+  if (chartData === null) {
+    return (
+      <Card className="flex items-center justify-center max-w-[40rem] mt-8 mx-auto">
+        <p>Your chart will appear here once tasks are added.</p>
+      </Card>
+    );
+  }
 
   return (
     <Card className="flex flex-col max-w-[40rem] mt-8 mx-auto">
