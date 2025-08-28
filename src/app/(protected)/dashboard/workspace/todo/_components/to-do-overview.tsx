@@ -36,15 +36,15 @@ const chartConfig = {
   },
   todo: {
     label: "To do",
-    color: "var(--chart-2)",
+    color: "var(--chart-1)",
   },
   inProgress: {
     label: "In Progress",
-    color: "var(--chart-3)",
+    color: "var(--chart-2)",
   },
   done: {
     label: "Done",
-    color: "var(--chart-4)",
+    color: "var(--chart-3)",
   },
 } satisfies ChartConfig;
 
@@ -137,7 +137,7 @@ export default function TodoOverview() {
   }
 
   return (
-    <Card className="flex flex-col max-w-[40rem] mt-8 mx-auto">
+    <Card className="flex flex-col max-w-[30rem] mt-8 mx-auto">
       <CardHeader className="items-center pb-0">
         <CardTitle>
           <h1>Task Distribution Overview</h1>
@@ -152,7 +152,7 @@ export default function TodoOverview() {
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[350px]"
+          className="mx-auto aspect-square max-h-[300px] w-full"
         >
           <PieChart>
             <ChartTooltip

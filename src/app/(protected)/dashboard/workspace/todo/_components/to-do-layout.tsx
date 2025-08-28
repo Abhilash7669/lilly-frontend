@@ -7,6 +7,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import React, { Suspense } from "react";
 import KanbanSkeleton from "@/components/skeleton/kanban.skeleton";
 import PieChartSkeleton from "@/components/skeleton/pie-chart.skeleton";
+import { Card } from "@/components/ui/card";
 
 const TodoOverview = React.lazy(
   () =>
@@ -94,7 +95,13 @@ export default function TodoLayout() {
                 case "over-view":
                   content = (
                     <TabsContent key={tabValue} value={tabValue}>
-                      <Suspense fallback={<PieChartSkeleton />}>
+                      <Suspense
+                        fallback={
+                          <Card className="mt-12 max-w-[40rem] mx-auto flex items-center justify-center">
+                            <PieChartSkeleton />
+                          </Card>
+                        }
+                      >
                         <TodoOverview />
                       </Suspense>
                     </TabsContent>
