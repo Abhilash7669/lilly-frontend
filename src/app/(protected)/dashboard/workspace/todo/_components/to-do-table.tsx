@@ -22,8 +22,8 @@ import { useEffect, useState } from "react";
 export default function TodoTable() {
   const [tableData, setTableData] = useState<TaskTable[] | null>(null);
   const [paginationData, setPaginationData] = useState({
-    limit: 10,
-    skip: 50
+    limit: 4,
+    page: 2
   });
 
   const setFilterSheetOpen = useSetFilterSheetOpen();
@@ -36,15 +36,15 @@ export default function TodoTable() {
   const { data, loading } = useAxiosFetch<TodoItems[]>({
     endpoint: "/tasks",
     initialState: [],
-    dataKey: "tasks",
+    dataKey: "items",
     urlParams: {
       status: status || "",
       priority: priority || "",
       limit: paginationData.limit,
-      skip: paginationData.skip,
+      page: 1,
       table: true,
     },
-    deps: [status, priority, paginationData.skip, paginationData.limit],
+    deps: [status, priority, paginationData.page, paginationData.limit],
   });
 
 
@@ -77,6 +77,7 @@ export default function TodoTable() {
       setIsFilterLoading(false);
     }
     handleInvokeTableData(data);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   async function onPaginate(_pageNumber: number): Promise<void> {

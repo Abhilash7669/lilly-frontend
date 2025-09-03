@@ -1,6 +1,6 @@
 "use client";
 
-import { TodoData } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
+// import { TodoData } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 import PieChartSkeleton from "@/components/skeleton/pie-chart.skeleton";
 import {
   Card,
@@ -20,7 +20,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import useAxiosFetch from "@/hooks/useAxiosFetch";
+// import useAxiosFetch from "@/hooks/useAxiosFetch";
 import { AXIOS_CLIENT } from "@/lib/api/client/axios.client";
 import { getCookie } from "@/lib/cookies/cookie";
 import { LILLY_DATE } from "@/lib/lilly-utils/lilly-utils";
