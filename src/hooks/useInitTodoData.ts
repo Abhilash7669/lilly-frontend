@@ -8,12 +8,13 @@ type Props = {
 };
 
 export default function useInitTodoData({ hasData }: Props) {
-  const { data, loading } = useAxiosFetch<TodoData[]>(
-    "/tasks/",
-    [],
-    "tasks",
-    hasData
-  );
+  const axiosParams = {
+    endpoint: "/tasks/",
+    initialState: [],
+    dataKey: "tasks",
+    hasData: hasData,
+  };
+  const { data, loading } = useAxiosFetch<TodoData[]>(axiosParams);
   const setTodoData = useSetTodoData();
   const todoData = useTodoData();
 

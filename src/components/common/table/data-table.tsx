@@ -4,6 +4,7 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
@@ -15,6 +16,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Pagination, PaginationContent } from "@/components/ui/pagination";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ICON_SIZE } from "@/lib/utils";
+import PaginationControl from "@/components/common/table/pagination-control";
+import { useState } from "react";
 
 // interface DataTableProps<TData, TValue> {
 //   columns: ColumnDef<TData, TValue>[]
@@ -27,27 +33,41 @@ type TableProps<T> = {
   columns: LColumnDef<T>[];
   data: T[];
   onRowClick?: (id: string) => void;
+  onPaginate?: (_pageNumber: number) => Promise<void>;
 };
 
 export function DataTable<T extends { id: string }>({
   columns,
   data,
   onRowClick,
+  onPaginate,
 }: TableProps<T>) {
+  const [pageNumber, setPageNumber] = useState<number>(10);
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    manualPagination: true,
   });
 
   function handleRowClick(id: string): void {
     if (!id || !onRowClick) return;
-
     onRowClick(id);
+  };
+
+  function handlePageNumber() {
+    setPageNumber(
+      prevState => {
+
+
+
+      }
+    )
   }
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border overflow-hidden">
       <Table className="rounded-md overflow-hidden">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -91,6 +111,31 @@ export function DataTable<T extends { id: string }>({
           )}
         </TableBody>
       </Table>
+      {onPaginate && (
+        <div className="flex items-center justify-end space-x-2 py-3 px-2 bg-muted/10">
+          <Pagination>
+            <PaginationContent className="flex items-center justify-between w-full">
+              <div className="text-muted-foreground flex-1 text-xs">
+                {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                {table.getFilteredRowModel().rows.length} row(s) selected.
+              </div>
+              <div className="flex items-center gap-2">
+                <PaginationControl
+                  onClick={async() => await onPaginate(0)}
+                >
+                  <ChevronLeft className={`${ICON_SIZE.medium}`} />
+                </PaginationControl>
+                <PaginationControl onClick={async() => {
+                  await onPaginate(20);
+                  console.log("CLICKED");
+                }}>
+                  <ChevronRight className={`${ICON_SIZE.medium}`} />
+                </PaginationControl>
+              </div>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }
