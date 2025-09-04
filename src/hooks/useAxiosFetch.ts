@@ -11,7 +11,7 @@ type AxiosFetchProps<T> = {
   dataKey?: string;
   hasData?: boolean;
   urlParams?: Record<string, unknown>;
-  deps?: Array<string | null | number>;
+  deps?: Array<unknown>;
 };
 
 export default function useAxiosFetch<T>({

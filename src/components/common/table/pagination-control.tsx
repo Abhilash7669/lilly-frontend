@@ -1,20 +1,23 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-type Props = {
-  children: React.ReactNode;
+type CustomPagination = React.ComponentPropsWithoutRef<"button"> & {
   className?: string;
-  onClick?: (() => Promise<void> | void)
 };
 
-export default function PaginationControl({ children, className, onClick }: Props) {
+export default function PaginationControl({
+  children,
+  className,
+  ...props
+}: CustomPagination) {
   return (
-    <div
-      onClick={onClick}
+    <Button
       className={cn("bg-primary/60 rounded-md p-2 cursor-pointer", className)}
+      {...props}
     >
       {children}
-    </div>
+    </Button>
   );
 }

@@ -44,6 +44,18 @@ export enum TASK_PRIORITY {
   LOW = "low",
 }
 
+export type PaginatedResult<T> = {
+  items: T;
+  pagingInfo: PagingInfo;
+};
+
+export type PagingInfo = {
+  currentPage: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  totalPages: number;
+};
+
 export type TodoItems = {
   _id: string;
   name: string;
@@ -63,7 +75,6 @@ export type TodoData = {
   status: StatusValue;
   items: TodoItems[];
 };
-
 
 export type TaskDTO = {
   name: string;
@@ -107,7 +118,6 @@ export type TaskAddResponse = {
     };
   };
 };
-
 
 // ================== //
 // Filter

@@ -133,6 +133,7 @@ export default function TodoOverview() {
         return _chartData;
       });
     })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (chartData === undefined)
