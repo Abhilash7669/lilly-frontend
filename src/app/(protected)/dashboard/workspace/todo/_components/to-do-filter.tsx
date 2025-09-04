@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { LILLY_URL } from "@/lib/lilly-utils/lilly-utils";
 import {
   useFilterSheetOpen,
   useIsFilterLoading,
@@ -22,7 +23,6 @@ import {
 } from "@/store/workspace/to-do-ui";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-
 
 export default function TodoFilter() {
   const searchParams = useSearchParams();
@@ -43,20 +43,9 @@ export default function TodoFilter() {
   const router = useRouter();
 
   function updateUrlState(filters: Record<string, string | null>) {
-    if (typeof window !== "undefined") {
-      const _params = new URLSearchParams(window.location.search);
-
-      for (const key in filters) {
-        const value = filters[key];
-
-        if (value === null || value === "") {
-          _params.delete(key);
-        } else {
-          _params.set(key, value);
-        }
-      }
-      router.replace(`?${_params.toString()}`);
-    }
+    const _stringParams = LILLY_URL.updateUrlState(filters);
+    if (!_stringParams) return;
+    router.replace(_stringParams);
   }
 
   function handleFilter() {
@@ -64,6 +53,7 @@ export default function TodoFilter() {
     updateUrlState({
       status: filterObject.status,
       priority: filterObject.priority,
+      page: `${1}`,
     });
   }
 

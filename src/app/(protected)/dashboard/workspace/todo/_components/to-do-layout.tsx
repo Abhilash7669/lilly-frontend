@@ -41,31 +41,11 @@ export default function TodoLayout() {
       {!q && <p>Ooops!</p>}
       {q && (
         <div>
-          {/* <div className="grid grid-cols-4 min-h-28 gap-2 my-2">
-            <div className="rounded-sm p-4 bg-card h-full">
-              Total Tasks
-            </div>
-            <div className="rounded-sm p-4 bg-card h-full">
-              CARD
-            </div>
-            <div className="rounded-sm p-4 bg-card h-full">
-              CARD
-            </div>
-            <div className="rounded-sm p-4 bg-card h-full">
-              CARD
-            </div>
-          </div> */}
           <Tabs
             className="h-full"
             defaultValue={q || TAB_LIST[0].value || "over-view"}
           >
             <div className="border-b">
-              {/* <div>
-            <h1 className="text-2xl">My Tasks</h1>
-            <p className="text-sm text-muted-foreground">
-              Keep track of your tasks
-            </p>
-          </div> todo: some text */}
               <TabsList className="max-w-xs p-0 justify-start bg-transparent rounded-none gap-2">
                 {TAB_LIST.map((tab) => (
                   <TabsTrigger
@@ -82,12 +62,6 @@ export default function TodoLayout() {
                 ))}
               </TabsList>
             </div>
-            {/* <div className="grid grid-cols-4 min-h-28 gap-2 my-2"> 
-              <div className="rounded-sm p-4 bg-card/50 h-full backdrop-blur-lg">Total Tasks</div>
-              <div className="rounded-sm p-4 bg-card/50 h-full backdrop-blur-lg">CARD</div>
-              <div className="rounded-sm p-4 bg-card/50 h-full backdrop-blur-lg">CARD</div>
-              <div className="rounded-sm p-4 bg-card/50 h-full backdrop-blur-lg">CARD</div>
-            </div> todo: cards */}
             {TAB_LIST.map((tab) => {
               const tabValue = tab.value as TodoTabList;
               let content;

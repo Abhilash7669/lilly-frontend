@@ -4,10 +4,15 @@ import {
   TaskTable,
   taskTableColumns,
 } from "@/app/(protected)/dashboard/workspace/todo/_components/to-do-columns";
-import { TodoData } from "@/app/(protected)/dashboard/workspace/todo/_types/type";
+import {
+  PaginatedResult,
+  TodoItems,
+} from "@/app/(protected)/dashboard/workspace/todo/_types/type";
 import { DataTable as WorkspaceTable } from "@/components/common/table/data-table";
 import TableSkeleton from "@/components/skeleton/table.skeleton";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import useAxiosFetch from "@/hooks/useAxiosFetch";
+import { LILLY_UTILS } from "@/lib/utils";
 import {
   useSetFilterLoading,
   useSetFilterSheetOpen,
@@ -15,6 +20,16 @@ import {
 import { useSearchParams } from "next/navigation";
 
 import { useEffect, useState } from "react";
+
+const INITIAL_STATE = {
+  pagingInfo: {
+    currentPage: 1,
+    hasNextPage: false,
+    hasPrevPage: false,
+    totalPages: 1,
+  },
+  items: [],
+};
 
 export default function TodoTable() {
   const [tableData, setTableData] = useState<TaskTable[] | null>(null);
@@ -25,26 +40,28 @@ export default function TodoTable() {
 
   const status = searchParams.get("status");
   const priority = searchParams.get("priority");
+  const page = searchParams.get("page");
+  const limit = searchParams.get("limit");
 
-  const { data, loading } = useAxiosFetch<TodoData[]>(
-    "/tasks/",
-    [],
-    "tasks",
-    false,
-    {
+  const { data, loading } = useAxiosFetch<PaginatedResult<TodoItems[]>>({
+    endpoint: "/tasks",
+    initialState: INITIAL_STATE,
+    urlParams: {
       status: status || "",
       priority: priority || "",
+      limit: limit || LILLY_UTILS.pagination.limit,
+      page: page || LILLY_UTILS.pagination.resetPage,
+      table: true,
     },
-    [status, priority]
-  );
+    deps: [status, priority, page, limit],
+  });
 
   useEffect(() => {
-    if (!loading && data.length === 0) setTableData([]);
+    if (!loading && data.items.length === 0) setTableData([]);
 
-    function handleInvokeTableData(data: TodoData[]): void {
-      const m_data = data.flatMap((item) => item.items);
+    function handleInvokeTableData(data: TodoItems[]): void {
       setTableData(() => {
-        const _data = m_data.map((item) => ({
+        const _data = data.map((item) => ({
           id: item._id,
           name: item.name,
           priority: item.priority,
@@ -66,19 +83,22 @@ export default function TodoTable() {
       setFilterSheetOpen(false);
       setIsFilterLoading(false);
     }
-    handleInvokeTableData(data);
+    handleInvokeTableData(data.items);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
-
 
   if (loading) return <TableSkeleton />;
 
-  if (!loading && data.length === 0 && !tableData)
+  if (!loading && data.items.length === 0 && !tableData)
     return <p>No table data found</p>;
 
   return (
-    <WorkspaceTable<TaskTable>
-      columns={taskTableColumns}
-      data={tableData || []}
-    />
+    <ScrollArea className="h-[calc(100dvh-12rem)]">
+      <WorkspaceTable<TaskTable>
+        columns={taskTableColumns}
+        pagingInfo={data.pagingInfo}
+        data={tableData || []}
+      />
+    </ScrollArea>
   );
 }

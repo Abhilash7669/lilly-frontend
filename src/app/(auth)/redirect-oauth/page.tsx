@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { setCookieValue } from "@/lib/cookies/cookie";
@@ -40,10 +39,10 @@ export default function Page() {
         key: "lillyUser",
         value: userId,
       });
-      console.log(avatar, "AVATAR");
 
       if (isCookieSet && isUserIdSet) router.push("/dashboard/workspace");
     })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, userId, userName, avatar]);
 
   if (isError)
