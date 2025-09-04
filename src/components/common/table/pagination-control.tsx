@@ -14,7 +14,11 @@ export default function PaginationControl({
 }: CustomPagination) {
   return (
     <Button
-      className={cn("bg-primary/60 rounded-md p-2 cursor-pointer", className)}
+      className={cn(
+        "rounded-md p-2 cursor-pointer h-7 w-7 active:scale-95 transition-all",
+        className
+      )}
+      variant="outline"
       {...props}
     >
       {children}

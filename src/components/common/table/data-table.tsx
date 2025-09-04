@@ -55,10 +55,9 @@ export function DataTable<T extends { id: string }>({
   }
 
   function updateUrlState(filters: Record<string, string | null>) {
-
     const _stringParams = LILLY_URL.updateUrlState(filters);
 
-    if(!_stringParams) return;
+    if (!_stringParams) return;
 
     router.replace(_stringParams);
   }
@@ -116,31 +115,33 @@ export function DataTable<T extends { id: string }>({
                 {table.getFilteredSelectedRowModel().rows.length} of{" "}
                 {table.getFilteredRowModel().rows.length} row(s) selected.
               </div>
-              <div className="flex items-center gap-2">
-                <PaginationControl
-                  onClick={async () => {
-                    const prev = pagingInfo.currentPage - 1;
-                    updateUrlState({
-                      page: `${prev}`,
-                    });
-                  }}
-                  disabled={!pagingInfo.hasPrevPage}
-                >
-                  <ChevronLeft className={`${ICON_SIZE.medium}`} />
-                </PaginationControl>
-                <Select></Select>
-                <PaginationControl
-                  onClick={async () => {
-                    const next = pagingInfo.currentPage + 1;
-                    updateUrlState({
-                      page: `${next}`,
-                    });
-                  }}
-                  disabled={!pagingInfo.hasNextPage}
-                >
-                  <ChevronRight className={`${ICON_SIZE.medium}`} />
-                </PaginationControl>
-              </div>
+              {pagingInfo.totalPages > 1 && (
+                <div className="flex items-center gap-2">
+                  <PaginationControl
+                    onClick={async () => {
+                      const prev = pagingInfo.currentPage - 1;
+                      updateUrlState({
+                        page: `${prev}`,
+                      });
+                    }}
+                    disabled={!pagingInfo.hasPrevPage}
+                  >
+                    <ChevronLeft className={`${ICON_SIZE.medium}`} />
+                  </PaginationControl>
+                  <Select></Select>
+                  <PaginationControl
+                    onClick={async () => {
+                      const next = pagingInfo.currentPage + 1;
+                      updateUrlState({
+                        page: `${next}`,
+                      });
+                    }}
+                    disabled={!pagingInfo.hasNextPage}
+                  >
+                    <ChevronRight className={`${ICON_SIZE.medium}`} />
+                  </PaginationControl>
+                </div>
+              )}
             </PaginationContent>
           </Pagination>
         </div>
